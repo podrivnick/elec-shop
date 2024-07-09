@@ -1,134 +1,113 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.shortcuts import redirect
-from django.contrib import messages
-from django.http import JsonResponse
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 from django.template.loader import render_to_string
+from django.views import View
 
+from .services import AddToPacketProduct, DeleteCartFromPacketLogic, ChangeCartQuantity
 from .utils import get_carts
-from .models import Cart
-from main_favorite.models import Products
 
 
-def save_packet(request):
-    if request.method == 'POST':
-        product_id = request.POST.get("product_id")
-        product = Products.objects.get(id_product=product_id)
+class AddProductToPacket(View):
+    def post(self, request):
 
-        if request.user.is_authenticated:
-            username = request.user.username
+        product_id = self.request.POST.get("product_id")
+
+        if self.request.user.is_authenticated:
+            username = self.request.user.username
             user = get_user_model().objects.get(username=username)
 
-            packet = Cart.objects.filter(user=user, product=product)
-
-            if packet:
-                packet = [item_packet for item_packet in packet]
-                packet[0].quantity = packet[0].quantity + 1
-
-                packet[0].save()
-            else:
-                packet = Cart.objects.create(
-                    user=user,
-                    product=product,
-                    quantity=1,
-                )
+            add_to_packet = AddToPacketProduct(True, product_id, user)
+            add_to_packet.add_product_packet()
         else:
-            packet = Cart.objects.filter(session_key=request.session.session_key, product=product)
+            add_to_packet = AddToPacketProduct(False, product_id, self.request.session.session_key)
+            add_to_packet.add_product_packet()
 
-            if packet:
-                packet = [item_packet for item_packet in packet]
-                packet[0].quantity = packet[0].quantity + 1
-
-                packet[0].save()
-            else:
-                packet = Cart.objects.create(
-                    session_key=request.session.session_key,
-                    product=product,
-                    quantity=1,
-                )
-
-        packets = get_carts(request)
+        packets = get_carts(self.request)
         carts_items_user = render_to_string(
-        "modal_packet.html", {"packet": packets}, request=request)
+            "modal_packet.html",
+            {"packet": packets},
+            request=self.request
+        )
 
         return JsonResponse({
             'message': 'packet has updated',
             'carts_items_user': carts_items_user
         })
-    else:
-        return JsonResponse({'message': 'Неверный метод запроса'}, status=400)
 
 
-def delete_cart(request):
-    if request.method == 'POST':
-        cart_id = request.POST.get('cart_id')
-        is_profile = request.POST.get('is_profile')
-        cart = Cart.objects.get(pk=cart_id)
-        cart.delete()
+class DeleteCartFromPacket(View):
 
-        user = get_user_model().objects.get(username=request.user)
+    def post(self, request):
+        cart_id = self.request.POST.get('cart_id')
+        is_profile = self.request.POST.get('is_profile')
 
-        carts_left = Cart.objects.filter(user=user)
-        new_quantity = sum([item.quantity for item in carts_left])
+        if self.request.user.is_authenticated:
+            user = get_user_model().objects.get(username=self.request.user)
+            packet_delete_object = DeleteCartFromPacketLogic(True, cart_id, user)
+        else:
+            session_key = self.request.session.session_key
+            packet_delete_object = DeleteCartFromPacketLogic(False, cart_id, session_key)
 
-        packets = get_carts(request)
+        new_quantity = packet_delete_object.delete_cart_packet()
+
+        packets = get_carts(self.request)
+
         if is_profile == 'true':
             carts_items_user = render_to_string(
-                "users/packet_profile/packet_profile.html", {"packet": packets}, request=request)
+                "users/packet_profile/packet_profile.html",
+                {"packet": packets},
+                request=self.request
+            )
+
         else:
             carts_items_user = render_to_string(
-            "modal_packet.html", {"packet": packets}, request=request)
+                "modal_packet.html",
+                {"packet": packets},
+                request=self.request
+            )
 
         return JsonResponse({
             'message': 'packet has updated',
             'new_quantity': new_quantity,
             'carts_items_user': carts_items_user
         })
-    else:
-        return JsonResponse({'message': 'Неверный метод запроса'}, status=400)
 
-def change_count_product(request):
-    if request.method == 'POST':
-        is_plus = request.POST.get('is_plus')
-        cart_id = request.POST.get('cart_id')
-        is_profile = request.POST.get('is_profile')
 
-        cart = Cart.objects.get(pk=cart_id)
+class ChangeCountProductPacket(View):
+    def post(self, request):
+        is_plus = self.request.POST.get('is_plus')
+        cart_id = self.request.POST.get('cart_id')
+        is_profile = self.request.POST.get('is_profile')
 
-        if is_plus == 'true':
-            cart.quantity = cart.quantity + 1
-            cart.save()
-        elif is_plus == 'false':
-            cart.quantity = cart.quantity - 1
-            if cart.quantity == 0:
-                cart.delete()
-            else:
-                cart.save()
+        if self.request.user.is_authenticated:
+            user = get_user_model().objects.get(username=self.request.user)
+            packet_change_quantity = ChangeCartQuantity(True, is_plus, cart_id, user)
+        else:
+            session_key = self.request.session.session_key
+            packet_change_quantity = ChangeCartQuantity(False, is_plus, cart_id, session_key)
 
-        user = get_user_model().objects.get(username=request.user)
+        new_quantity = packet_change_quantity.change_cart_quantity()
 
-        carts = Cart.objects.filter(user=user)
-
-        new_quantity = sum([item.quantity for item in carts])
-
-        packets = get_carts(request)
+        packets = get_carts(self.request)
 
         if is_profile == 'true':
             carts_items_user = render_to_string(
-                "users/packet_profile/packet_profile.html", {"packet": packets}, request=request)
+                "users/packet_profile/packet_profile.html",
+                {"packet": packets},
+                request=self.request
+            )
         else:
             carts_items_user = render_to_string(
-            "modal_packet.html", {"packet": packets}, request=request)
+            "modal_packet.html",
+            {"packet": packets},
+            request=self.request)
 
         return JsonResponse({
             'message': 'packet has updated',
             'new_quantity': new_quantity,
             'carts_items_user': carts_items_user
         })
-    else:
-        return JsonResponse({'message': 'Неверный метод запроса'}, status=400)
+
 
 
 

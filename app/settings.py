@@ -9,10 +9,13 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+
+import sentry_sdk
 import os.path
-from pathlib import Path
 import environ
 
+from sentry_sdk.integrations.django import DjangoIntegration
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -81,6 +84,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
+sentry_sdk.init(
+    dsn=env('SENTRY_DSN'),
+    integrations=[DjangoIntegration()],
+    environment="production",
+    traces_sample_rate=1.0,
+    send_default_pii=True
+)
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

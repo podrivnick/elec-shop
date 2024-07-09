@@ -1,152 +1,155 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout, authenticate
-from django.shortcuts import redirect
-from django.contrib import messages, auth
-from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages, auth
+from django.http import HttpResponseRedirect
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.template.loader import render_to_string
-
-
-from users.forms import UserLoginForm, UserRegistration, ProfileImages
-from .models import *
+from django.urls import reverse, reverse_lazy
+from django.views import View
+from django.views.generic import CreateView, TemplateView
 
 from packet.models import Cart
-from orders.models import Orders, OrderItem
-from main_favorite.models import Products
 
-@login_required
-def logout_user(request):
-    messages.success(request, f"{request.user.username}", 'Вы вышли с аккаунта')
-    logout(request)
-    return redirect(reverse('main_favorite:index'))
-
-def login(request):
-    if request.method == 'POST':
-        login_form = UserLoginForm(data=request.POST)
-        if login_form.is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
-            email = request.POST['email']
-
-            user = auth.authenticate(username=username, password=password, email=email)
-            session_key = request.session.session_key
-            if user:
-                auth.login(request, user)
-                messages.success(request, f"{username} u've entered to profile")
-
-                if session_key:
-                    Cart.objects.filter(session_key=session_key).update(user=user)
-
-                redirect_page = request.POST.get('next', None)
-
-                if redirect_page and redirect_page != 'user:logout':
-                    return HttpResponseRedirect(request.POST.get('next'))
-
-                return HttpResponseRedirect(reverse('main_favorite:index'))
-
-    else:
-        login_form = UserLoginForm()
-
-    context = {
-        'form': login_form
-    }
-    return render(request, "users/login.html", context)
+from .config import MESSAGE_UPDATE_PROFILE, MESSAGE_UPDATED_AVATAR_OR_USERNAME, MESSAGE_LOGOUT
+from .forms import UserLoginForm, UserRegistration, ProfileImages
+from .services import AddSessionCartToUser, ChangeProfileUserData, UpdateProfileAvatarUsername
 
 
-def registration(request):
-    if request.method == 'POST':
-        form = UserRegistration(data=request.POST)
+class CustomLogoutView(LogoutView):
+    next_page = reverse_lazy('main_favorite:index')
 
-        if form.is_valid():
+    def dispatch(self, request, *args, **kwargs):
+        messages.success(request, f"{MESSAGE_LOGOUT} {request.user.username}")
+        return super().dispatch(request, *args, **kwargs)
+
+
+class LoginUser(LoginView):
+    form_class = UserLoginForm
+    template_name = 'users/login.html'
+    success_url = reverse_lazy("main_favorite:index")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = UserLoginForm()
+        return context
+
+    def form_valid(self, form):
+        user = form.get_user()
+        session_key = (self.request.session.session_key or False)
+
+        if user:
+            auth.login(self.request, user)
+
+            username = form.cleaned_data['username']
+            messages.success(self.request, f"{username} u've entered to profile")
+
+            add_session_packet_to_user = AddSessionCartToUser(session_key, user)
+            add_session_packet_to_user.add_session_cart_to_user()
+
+            return HttpResponseRedirect(reverse('main_favorite:index'))
+
+
+class RegisterUser(CreateView):
+    form_class = UserRegistration
+    template_name = "users/registration.html"
+    success_url = reverse_lazy('main_favorite:index')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = UserRegistration()
+        return context
+
+    def form_valid(self, form):
+        session_key = self.request.session.session_key
+        user = form.instance
+
+        if user:
             form.save()
+            auth.login(self.request, user)
 
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
+            add_session_packet_to_user = AddSessionCartToUser(session_key, user)
+            add_session_packet_to_user.add_session_cart_to_user()
 
-            user = authenticate(request, username=username, password=password)
+            messages.success(self.request, f"{user.username} you've created an account")
 
-            session_key = request.session.session_key
+            return HttpResponseRedirect(reverse('main_favorite:index'))
 
-            if user is not None:
-                auth.login(request, user)
-                messages.success(request, f"{user.username} you've created an account")
 
-                if session_key:
-                    Cart.objects.filter(session_key=session_key).update(user=user)
+class ProfileUserData(LoginRequiredMixin, TemplateView):
+    template_name = "users/profile.html"
+    success_url = reverse_lazy('users:profile')
 
-                return HttpResponseRedirect(reverse('main_favorite:index'))
-            else:
-                # Обработка случая, если аутентификация не удалась
-                messages.error(request, "Failed to authenticate user")
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    else:
-        form = UserRegistration()
-
-    context = {
-        'form': form
-    }
-    return render(request, "users/registration.html", context)
-
-@login_required
-def profile(request):
-    context = {
-        'is_packet': True
-    }
-
-    if request.method == 'POST':
-        form = ProfileImages(data=request.POST, instance=request.user, files=request.FILES)
-        if form.is_valid():
-            user = form.save(commit=False)
-            if request.user:
-                user.username = request.user.username
-                user.save(update_fields=['username'])
-            if request.FILES.get('avatar'):
-                user.image = request.FILES['avatar']
-                user.save(update_fields=['image'])
-
-            messages.success(request, f"{request.user} u've update profile")
-            return HttpResponseRedirect(reverse("users:profile"))
-    else:
-        form = ProfileImages(instance=request.user)
-        if request.GET.dict():
-            user = form.save(commit=False)
-            all_new_data = request.GET.dict()
-            for par, value in all_new_data.items():
-                if not value:
-                    continue
-                setattr(user, par, value)
-                user.save(update_fields=[par])
-            messages.success(request, f"u've update profile,\n new data will be reflection after clearing cash")
-
-        user = get_user_model().objects.get(username=request.user)
-
+        user = get_user_model().objects.get(username=self.request.user)
         carts = Cart.objects.filter(user=user)
         list_carts = [cart for cart in carts]
 
+        context["form"] = ProfileImages(instance=self.request.user)
+        context["is_packet"] = True
         context['packet'] = list_carts
 
-    context['form'] = form
+        return context
 
-    return render(request, "users/profile.html", context)
+    def get(self, request, *args, **kwargs):
+        if self.request.GET.dict():
+            form = ProfileImages(instance=self.request.user)
+            user_data = form.save(commit=False)
+            all_new_data = self.request.GET.dict()
 
-def change_below_profile(request):
-    if request.method == 'POST':
-        is_packet = request.POST.get('is_packet')
+            change_profile = ChangeProfileUserData(user_data, all_new_data)
+            change_profile.change_profile()
+
+            messages.success(self.request, MESSAGE_UPDATE_PROFILE)
+
+            # Перенаправляем на страницу, с которой пришел запрос
+            referer = request.META.get('HTTP_REFERER')
+            if referer:
+                return redirect(referer)
+            else:
+                return redirect(self.success_url)
+        else:
+            return super().get(request, *args, **kwargs)
+
+    def post(self, request):
+        form = ProfileImages(data=request.POST, instance=request.user, files=request.FILES)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            change_user_avatar_or_username = UpdateProfileAvatarUsername(user, request.POST, request.FILES)
+            change_user_avatar_or_username.change_avatar_or_username()
+
+            messages.success(request, f"{MESSAGE_UPDATED_AVATAR_OR_USERNAME}{request.user}")
+
+            return redirect("users:profile")
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+class ChangeDataBelowProfile(View):
+    def post(self, request):
+        is_packet = self.request.POST.get('is_packet')
 
         if is_packet == 'order':
             carts_items_user = render_to_string(
-                "users/packet_profile/orders_profile.html", {"is_packet": False}, request=request)
+                "users/packet_profile/orders_profile.html",
+                {"is_packet": False},
+                request=self.request
+            )
         else:
             carts_items_user = render_to_string(
-            "users/packet_profile/packet_profile.html", {"is_packet": True}, request=request)
+                "users/packet_profile/packet_profile.html",
+                {"is_packet": True},
+                request=self.request
+            )
 
         return JsonResponse({
             'message': 'packet has updated',
             'carts_items_user': carts_items_user
         })
-    else:
-        return JsonResponse({'message': 'Неверный метод запроса'}, status=400)
+
+
 

@@ -1,4 +1,4 @@
-
+// Добавляем товар в корзину, удаляем и изменяем количество товаров в корзине профиля
 $(document).ready(function () {
   function initDeleteCart() {
      $(document).on("click", ".btn_delete_product_from_packet", function (e) {

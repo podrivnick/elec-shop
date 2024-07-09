@@ -1,17 +1,16 @@
 import json
 
-from django.core.paginator import Paginator
-from django.http import JsonResponse
-from django.shortcuts import render, get_list_or_404
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView
-from .models import Information, Products, Categories_Product, Favorites
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
+from django.views.generic import ListView
+from django.views import View
+from django.views.generic import TemplateView
 
-from packet.models import Cart
+from .models import Information, Products, Categories_Product, Favorites
 from .utils import q_search
 
-class Main_Page(ListView):
+
+class MainPage(ListView):
     template_name = "main_favorite/index.html"
     model = Products
     context_object_name = 'products'
@@ -32,6 +31,7 @@ class Main_Page(ListView):
         context['categories'] = categories
 
         return dict(list(context.items()))
+
     def get_queryset(self, **kwargs):
         queryset = super().get_queryset()
 
@@ -61,51 +61,55 @@ class Main_Page(ListView):
         return queryset
 
 
-def favorites(request):
-    if request.user.is_authenticated:
-        username = request.user.username
-        user = get_user_model().objects.get(username=username)
+class FavoritesPage(ListView):
+    template_name = "main_favorite/favorites.html"
+    model = Products
+    context_object_name = 'products'
 
-        favorites = Favorites.objects.filter(user=user)
-        products_id = [item.product_id for item in favorites]
+    def get_queryset(self, **kwargs):
+        queryset = super().get_queryset()
 
-        products = Products.objects.filter(id_product__in=products_id)
-
-        context = {
-            "products": products
-        }
-
-        return render(request, "main_favorite/favorites.html", context)
-
-
-def save_favorite(request):
-
-    if request.method == 'POST':
-        data = json.loads(request.body)
-
-        username = data['data'][0]
-        product_id = data['data'][1]
-
-        try:
+        if self.request.user.is_authenticated:
+            username = self.request.user.username
             user = get_user_model().objects.get(username=username)
-            is_favorite_here = Favorites.objects.get(product_id=product_id, user=user)
-            is_favorite_here.delete()
-        except Favorites.DoesNotExist:
-            new_favorite = Favorites.objects.create(
-                product_id=product_id,
-                user=user
-            )
+
+            favorites = Favorites.objects.filter(user=user)
+            products_id = [item.product_id for item in favorites]
+
+            queryset = queryset.filter(id_product__in=products_id)
+
+        return queryset
+
+
+class SaveFavorite(View):
+    def post(self, request):
+        data = json.loads(self.request.body)
+
+        if self.request.user.is_authenticated:
+            username = data['data'][0]
+            product_id = data['data'][1]
+
+            user = get_user_model().objects.get(username=username)
+
+            try:
+                is_favorite_here = Favorites.objects.get(product_id=product_id, user=user)
+                is_favorite_here.delete()
+            except Favorites.DoesNotExist:
+                new_favorite = Favorites.objects.create(
+                    product_id=product_id,
+                    user=user
+                )
 
         return JsonResponse({'message': 'Данные успешно сохранены'})
-    else:
-        return JsonResponse({'message': 'Неверный метод запроса'}, status=400)
 
 
-def info(request):
-    information = Information.objects.all()
+class BaseInformation(TemplateView):
+    template_name = "main_favorite/information.html"
 
-    context = {
-        'info': information
-    }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        information = Information.objects.all()
 
-    return render(request, "main_favorite/information.html", context)
+        context['info'] = information[0]
+
+        return dict(list(context.items()))
