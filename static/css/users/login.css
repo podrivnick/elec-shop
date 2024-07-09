@@ -1,0 +1,75 @@
+
+.block_entering_profile.login form{
+    display: flex;
+    width: 400px;
+    justify-content: space-evenly;
+    align-content: center;
+    flex-wrap: wrap;
+}
+.block_login{
+    display: flex;
+    align-items: center;
+}
+.input_block_login.block_login button{
+    margin: 35px;
+}
+.header_authorisation{
+    font-size: 30px;
+}
+.block_login_form label{
+    font-size: 18px;
+}
+.block_login_form input{
+    padding: 6px;
+    margin: 10px;
+}
+.input_block_login{
+    margin: 5px;
+}
+
+
+
+@media (max-width: 400px) {
+    .block_login_form{
+        width: 290px !important;
+    }
+    .input_block_login.block_login button{
+        margin: 2px;
+    }
+}
+
+@media (max-width: 300px) {
+    .block_login_form{
+        width: 260px !important;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

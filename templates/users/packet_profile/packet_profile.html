@@ -1,0 +1,58 @@
+{% load static %}
+{% load carts_packet %}
+
+{% get_packets request as packet %}
+            <h2 style="font-size: 40px; color: white; display: flex;">{{ packet.total_price }}$</h2>
+            {% for cart in packet %}
+            {% if cart.quantity >= 1 %}
+                <div class="carts_on_sell">
+                <img src="{{ cart.product.image.url }}" alt="..." style="height: 90px; width: 130px;"
+                class="img_product_profile">
+                <div class="data_cart_product">
+                    <span>{{ cart.product.name }}</span>
+                    <span>{{ cart.quantity }} шт</span>
+                    <span>{{ cart.product.sell_price }}$/1шт</span>
+                </div>
+                <div class="output_price_product">
+                    <span class="">{{ cart.products_price }}$</span>
+                </div>
+                <div class="status">
+                    <span style="height: 58px" class="data_added_packet">{{ cart.created_timestamp }}</span>
+                        <div class="block_cart_product_packet_data profile">
+                            {% csrf_token %}
+                            <button class="btn_settings_count_product_ btn_minus"
+                            data-cart-id="{{ cart.pk }}">
+                                -
+                            </button>
+                            {% csrf_token %}
+                            <button class="btn_settings_count_product_ btn_plus"
+                            data-cart-id="{{ cart.pk }}">
+                                +
+                            </button>
+                            <div class="block_count_product">
+                                {{ cart.quantity }}
+                            </div>
+                            <div class="block_price_product">
+                                <span>x {{ cart.product.sell_price }}$  = </span>
+                            </div>
+                            <div class="block_price_output">
+                                <span> {{ cart.products_price }}$</span>
+                            </div>
+                        </div>
+                    <div class="block__packet__delete">
+                        {% csrf_token %}
+                        <button class="btn_delete_product_from_packet"
+                                data-cart-id="{{ cart.pk }}">
+                          <img src="{% static 'icons/free-icon-recycle-bin-container-12960.png' %}"
+                              alt="recycle" style="width: 16px; height: 18px;">
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            <div class="block_btn_buy_all_packet">
+                <button class="btn btn_buy_all_packet btn_submit_packet">
+                    <a href="{% url 'carts_products:finalize_product' %}">Оформить заказ</a>
+                </button>
+            </div>

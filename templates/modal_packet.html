@@ -1,0 +1,73 @@
+{% load static %}
+{% load carts_packet %}
+
+{% get_packets request as packet %}
+<div class="modal_popup_packet">
+  <div class="close_popup_packet_btn_block">
+    <button class="close_popup_packet_btn">
+      X
+    </button>
+  </div>
+  <h2>Корзина</h2>
+  <div class="block_cart_product_packet" id="modal_packet_popup">
+    {% for packet_item in packet %}
+    {% if packet_item.quantity >= 1 %}
+      <div class="block_cart_product_packet_name" >
+        <a href="{% url 'carts_products:product' packet_item.product.slug %}" style="text-decoration: none">
+          {{packet_item.product.name}}
+        </a>
+      </div>
+
+      <div class="block_cart_product_packet_data">
+        {% csrf_token %}
+        <button class="btn_settings_count_product_ btn_minus"
+        data-cart-id="{{ packet_item.pk }}">
+          -
+        </button>
+        {% csrf_token %}
+        <button class="btn_settings_count_product_ btn_plus"
+        data-cart-id="{{ packet_item.pk }}">
+          +
+        </button>
+        <div class="block_count_product">
+          {{ packet_item.quantity }}
+        </div>
+        <div class="block_price_product">
+            <span>x {{packet_item.product.sell_price}}$  = </span>
+        </div>
+        <div class="block_price_output">
+          <span> {{ packet_item.products_price }}$</span>
+        </div>
+        {% csrf_token %}
+        <button class="btn_delete_product_from_packet"
+                data-cart-id="{{ packet_item.pk }}">
+          <img src="{% static 'icons/free-icon-recycle-bin-container-12960.png' %}"
+               alt="recycle" style="width: 16px; height: 18px;">
+        </button>
+      </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="output">
+    <div class="block_data_products">
+      <span class="text_output_product">
+        В итоге
+        <span class="text_output_product_count">
+            {{ packet.total_quantity }}
+          товар(-а)
+        </span>
+      </span>
+      <span class="text_output_product" id="total_price_all_packet">
+        <br>
+        {{ packet.total_price }}$
+      </span>
+    </div>
+    <div class="block_output_button">
+      <br>
+      <button class="btn_buy_product btn btn_submit_filters">
+        <a href="{% url 'carts_products:finalize_product' %}">Оформить заказ</a>
+      </button>
+    </div>
+  </div>
+</div>

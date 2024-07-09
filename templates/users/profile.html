@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load carts_packet %}
+
+{% get_packets request as packet %}
+
+{% block links_css %}
+<link rel="stylesheet" href="{% static 'css/users/profile.css' %}">
+{% endblock %}
+
+{% block title %}
+<title>
+  Профиль
+</title>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/packet/add_to_packet_profile.js' %}"></script>
+    <script src="{% static 'js/packet/change_profile_reflection.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page_profile" style="background-image: url('{% static 'icons/background.jpg' %}')">
+  <div class="profile">
+    <div class="container_left_avatar">
+        <div class="avatar">
+            {% if not user.image %}
+            <img src="{% static 'icons/1640528661_1-abrakadabra-fun-p-serii-chelovek-na-avu-1.png' %}" alt="..."
+                 style="width: 110px; height: 110px; border-radius: 50%">
+            {% else %}
+            <img src="{{ user.image.url }}" alt="{{ form.image.url }}"
+                 style="width: 110px; height: 110px; border-radius: 50%">
+            {% endif %}
+        </div>
+        <form action="{% url 'users:profile' %}" method="post" enctype="multipart/form-data" >
+            {% csrf_token %}
+            <input type="hidden" name="old_username" value="{{ request.user.username }}">
+            <input type="file" name="avatar" accept="image/*">
+            <label for="id_username">Login: </label>
+            <input id="id_username" type="text" name="username" class="username_data" placeholder="Введите новый логин"
+            value="{{form.username.value}}">
+            <div class="block_btn_save_new_data_user">
+                <button class="btn_save_new_data_user btn_submit_filters btn" type="submit">Сохранить</button>
+            </div>
+        </form>
+    </div>
+    <div class="container_right_data_user">
+        <form action="{% url 'users:profile' %}" method="get">
+            <div class="container_data_user">
+                <label for="id_first_name">First name: </label>
+                <input id="id_first_name" type="text" name="first_name" class="username_data" placeholder="Введите новое имя"
+                value="{{form.first_name.value}}">
+            </div>
+            <div class="container_data_user">
+                <label for="id_last_name">Last name: </label>
+                <input id="id_last_name" type="text" name="last_name" class="username_data" placeholder="Введите новую фамилию"
+                value="{{form.last_name.value}}">
+            </div>
+            <div class="container_data_user">
+                <label for="id_email">Current Email:</label>
+                <input id="id_email" type="email" name="email" class="username_data" placeholder="Введите новый email"
+                value="{{form.email.value}}">
+            </div>
+            <div class="container_data_user">
+                <label for="id_phone">Current Phone:</label>
+                <input id="id_phone" type="text" name="phone" class="username_data" placeholder="Введите новый телефон"
+                {% if form.initial.phone and form.initial.phone|length > 4 %} value="{{form.initial.phone}}" {% endif %}>
+            </div>
+            <div class="container_data_user">
+                <label for="id_age">Current Age:</label>
+                <input id="id_age" type="text" name="age" class="username_data" placeholder="Введите новый возраст"
+                {% if form.initial.age  %} value="{{form.initial.age}}" {% endif %}>
+            </div>
+            <div class="block_btn_save_new_data_user">
+                <button class="btn_save_new_data_user btn_submit_filters btn" type="submit">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+  <div class="data_of_products_merge">
+    <div class="data_of_products">
+        <div class="chenger_reflections_products taken">
+            {% csrf_token %}
+            <button class="btn btn_tab_profile1 toggle_btn__profile"
+            value="packet">Корзина</button>
+        </div>
+        <div class="chenger_reflections_products">
+            {% csrf_token %}
+            <button class="btn btn_tab_profile2 toggle_btn__profile"
+            value="order">Заказы</button>
+        </div>
+        <div class="chenger_reflections_products">
+            <button class="btn btn_tab_profile3 ">История</button>
+        </div>
+    </div>
+    <div class="container_products" id="packet_profile_">
+        {% if is_packet %}
+            {% include 'users/packet_profile/packet_profile.html' %}
+        {% else %}
+            {% include 'users/packet_profile/orders_profile.html' %}
+        {% endif %}
+    </div>
+</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load carts_packet %}
+
+{% get_packets request as packet %}
+
+{% block title %}
+  <title>
+    Отзывы
+  </title>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/packet/add_to_packet.js' %}"></script>
+  <script src="{% static 'js/opinion/do_like.js' %}"></script>
+  <script src="{% static 'js/opinion/delete_opinion.js' %}"></script>
+{% endblock %}
+
+{% block links_css %}
+  <link rel="stylesheet" href="{% static 'icons/6687187-1594999590.jpg' %}">
+  <link rel="stylesheet" href="{% static 'css/carts_products/cart_product.css' %}">
+  <link rel="stylesheet" href="{% static 'css/carts_products/all_opinions.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container_modal_popup_packet" id="modal_packet_popup">
+        {% include 'modal_packet.html' %}
+    </div>
+<div class="main_all_opinions" style="background-image: url('{% static 'icons/background.jpg' %}')">
+    <div class="product_main_block" style="padding: 18px">
+      <div class="image_product_opinions_">
+    {% if product.discount %}
+      <div class="discount">Скидка -{{product.discount}}%</div>
+    {% else %}
+      <div class="discount"></div>
+    {% endif %}
+    {% if product.image %}
+    <img src="{{ product.image.url }}" alt="мышь"
+         class="image_product_opinions_ "
+    {% if product.discount %} style="height: 430px" {% endif %}>
+    {% endif  %}
+        </div>
+      <div class="main_data_product">
+    <div class="main-data">
+      <span class="name_product">
+       <a href="{% url 'carts_products:product' product.slug %}" style="text-decoration: none">{{ product.name }}</a>
+      </span>
+      <span class="name_product">
+        {% with opinions|length as list_length %}
+          <a href="{% url 'carts_products:product_all_opinion' product.slug %}" style="text-decoration: none">{{ list_length }} Отзывов</a>
+        {% endwith %}
+      </span>
+    </div>
+
+  </div>
+    </div>
+    <div class="opinions">
+      <div class="block_modal_popup_delete_opinion dis_none">
+          <div class="close_modal_popup_delete_opinion">
+              <button class="close_popup_confirm_opinion_delete clear_btn_base_styles">X</button>
+          </div>
+          <div class="block_aware__sure">
+              <span>Вы уверены, что хотите удалить отзыв ?</span>
+          </div>
+          <div class="btn_confirm__delete">
+              {% csrf_token %}
+              <button class="sure_delete_opinion clear_btn_base_styles"
+                      data-product-slug="{{product.slug}}"
+                      data-product-pk="{{product.pk}}">
+                  Yes
+              </button>
+          </div>
+      </div>
+        <h3 style="color: white">Отзывы</h3>
+        <form action="{% url 'carts_products:save_opinion' %}" class="form_sender_opinion" method="post">
+          {% csrf_token %}
+          <label for="id_opinion"></label>
+          <input type="hidden" name="id_product" value="{{ product.id_product }}">
+          <input type="hidden" name="slug_product" value="{{ product.slug }}">
+          <textarea name="message" cols="30" rows="4" placeholder="Введите отзыв" id="id_opinion"></textarea>
+          <button class="btn btn-outline-primary sender_message">Отправить Отзыв</button>
+        </form>
+    {% for opinion in opinions %}
+      <div class="store_opinions" style="margin: 4px">
+      {% if opinion.user.image %}
+        <img src="{{ opinion.user.image.url }}" alt="avatar"
+             style="height: 40px; width: 40px" class="img_avatar_opinion">
+      {% else %}
+        <img src="{% static 'icons/1640528661_1-abrakadabra-fun-p-serii-chelovek-na-avu-1.png' %}" alt="avatar"
+             style="height: 40px; width: 40px" class="img_avatar_opinion">
+      {% endif %}
+
+      <span class="nickname">{{ opinion.user.username }}.  </span>
+      <span class="nickname">Продавец: сайт</span>
+      <span class="data_added_opinion">{{ opinion.data_added }}</span>
+      <hr>
+      <p class="text_opinion">
+        {{ opinion.opinion }}
+      </p>
+      <div class="appreciate_opinion">
+        {% csrf_token %}
+        <button class="like_btn d" onclick="like('{{user.username}}', '{{ product.id_product }}',
+         '{{ opinion.pk }}', this)"
+               {% for like in liked_objects %}
+                {% if opinion == like.opinion_id %}
+                  style="color: red;"
+                {% endif %}
+              {% endfor %} >
+          &#x2764;
+        </button>
+        <span class="count_appreciate" id="count_likes_opinion">{{ opinion.likes }}</span>
+      </div>
+        {% if user == opinion.user %}
+        <div class="block_delete__opinion">
+          <button class="btn_delete_opinion">
+            <img src="{% static 'icons/free-icon-recycle-bin-container-12960.png' %}"
+                 alt="recycle" style="width: 16px; height: 18px;">
+          </button>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

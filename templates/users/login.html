@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <title>
+      Войти
+    </title>
+{% endblock %}
+
+
+{% block js %}
+<script src="{% static 'js/validation/login.js' %}"></script>
+{% endblock %}
+
+{% block links_css %}
+    <link rel="stylesheet" href="{% static 'css/users/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/users/register.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="main_login" style="background-image: url('{% static 'icons/background.jpg' %}')">
+    {% include 'notifications/validation.html' %}
+  <div class="block_entering_profile login">
+    <form action="{% url 'users:login' %}" class="block_login_form" method="post">
+      {% csrf_token %}
+        {% if request.GET.next %}
+           <input type="hidden" name="next" value={{request.GET.next}}>
+        {% endif %}
+      <h1 class="header_authorisation">Авторизация</h1>
+
+      <div class="input_block_login">
+        <label for="id_username">Login: </label>
+        <input type="text" id="id_username" placeholder="Введите логин" name="username"
+        value="{% if form.username.value %} {{form.username.value}} {% endif %}"
+               required>
+      </div>
+
+      <div class="input_block_login">
+        <label for="id_email">Email: </label>
+        <input type="email" id="id_email" placeholder="Введите email" name="email"
+        value="{% if form.email.value %} {{form.email.value}} {% endif %}"
+               required>
+      </div>
+
+      <div class="input_block_login">
+        <label for="id_password">Password: </label>
+        <input type="password" id="id_password" placeholder="Введите пароль" name="password"
+               required>
+      </div>
+      <div class="input_block_login block_login">
+          <a href="#">Забыл пароль</a><a href="{% url 'users:registration' %}">|Создать аккаунт</a>
+        <button class="registration_btn btn btn-outline-primary" id="login_form_submit" type="submit">Войти</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

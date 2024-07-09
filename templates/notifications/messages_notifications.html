@@ -1,0 +1,23 @@
+{% load static %}
+
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div class="messages_login_registration_position" id="success_message">
+                <div class="messages_login_registration" role="alert">
+                    <div class="close_message_success">
+                        <button class="close_message_success_btn clear_btn_base_styles">X</button>
+                    </div>
+                    <p>{{message}}</p>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<div class="added_packet dis_none">
+    <span class="added">Добавлено</span>
+</div>
+
+

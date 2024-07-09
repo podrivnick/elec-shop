@@ -1,0 +1,141 @@
+.block_setting_reflections_products {
+    padding: 7px;
+}
+#id_search{
+    width: 300px;
+    height: 24px;
+    margin: 10px;
+}
+.form_search_index label{
+    color: white;
+    font-size: 18px;
+}
+
+.filter_and_catalog{
+    display: flex;
+    justify-content: space-between;
+}
+.catalog{
+    padding: 2px;
+}
+.catalog_btn {
+  border: none;
+  max-width: 30px;
+  background-color: #e19fb8;
+  cursor: pointer;
+  border-radius: 20%;
+  padding: 2px;
+}
+
+.icon_catalog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px; /* Расстояние между кругами */
+}
+
+.circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: inset -10px -10px 100px #fccdcd, 10px 10px 20px #deaeae, inset 0 0 10px #d9a7a7;
+}
+.circle2{
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: inset -10px -10px 100px #0c0707, 10px 10px 20px #0c0707, inset 0 0 10px #0c0707;
+}
+
+.main_catalog_form{
+  width: 200px;
+  height: 200px;
+  background-color: #320259;
+  border-radius: 10px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1), -5px -5px 10px rgba(0, 0, 0, 0.1)
+}
+.main_catalog_form{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+.main_catalog_form a{
+    color: white;
+    font-size: 19px;
+    padding: 5px;
+    text-decoration: none;
+}
+.main_catalog_form a:hover{
+    background-color: rgba(243, 215, 215, 0.64);
+    transition: opacity 0.4s ease;;
+}
+.visible_popup_catalog{
+    display: none;
+    transition: opacity 0.4s ease;;
+}
+.close_filters{
+    float: right;
+    padding: 6px
+}
+.close_filters button{
+    border: none;
+    background: none;
+    box-shadow: none;
+    outline: none;
+    color: white;
+    font-size: 16px;
+    padding: 4px;
+}
+.container_filters{
+  position: relative;
+  bottom: 60px;
+  width: 210px;
+  height: 200px;
+  background-color: #6658c5;
+  border-radius: 10px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1), -5px -5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.filters form{
+    padding: 7px;
+}
+.filters span{
+    font-weight: bold;
+    width: 100%;
+}
+.filters label{
+    color: white;
+    font-size: 17px;
+}
+.block-filter.last{
+    height: 50px;
+}
+
+
+
+
+
+@media(max-width: 345px) {
+    .block_input_search_{
+        width: 200px !important;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

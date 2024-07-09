@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    <title>
+      Оформление заказа
+    </title>
+{% endblock %}
+
+{% block links_css %}
+    <link rel="stylesheet" href="{% static 'css/carts_products/finalize.css' %}">
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/finalize/validation_finalize.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="main_page_finalize" style="background-image: url('{% static 'icons/background.jpg' %}')">
+  <div class="finalize_data_product">
+    <h1 class="header_one_finalize">Оформление заказа</h1>
+    <h3 class="header_tree_finalize">Ваши контактные данные</h3>
+    <form action="{% url 'orders:create_order' %}" method="post" id="form_finalize_product_">
+      {% csrf_token %}
+      <div class="block_contact_data_on_buy">
+        <label for="id_name_finalize">Ваше имя</label>
+        <input type="text" id="id_name_finalize" name="first_name" placeholder="Имя:"
+        class="form_input_contact_data"
+        {% if form.initial.first_name %} value="{{form.initial.first_name}}" {% endif %}>
+
+        <label for="id_surname_finalize">Ваша фамилия</label>
+        <input type="text" id="id_surname_finalize" name="last_name" placeholder="Фамилия:"
+        class="form_input_contact_data"
+        {% if form.initial.last_name %} value="{{form.initial.last_name}}" {% endif %}>
+
+        <label for="id_email_finalize">Ваш email</label>
+        <input type="text" id="id_email_finalize" name="email" placeholder="Email:"
+        class="form_input_contact_data"
+        {% if form.initial.email %} value="{{form.initial.email}}" {% endif %}>
+
+        <label for="id_phone_finalize">Ваш телефон</label>
+        <input type="text" id="id_phone_finalize" name="phone" placeholder="Phone:"
+        class="form_input_contact_data"
+        {% if form.initial.phone and form.initial.phone|length > 4 %} value="{{form.initial.phone}}" {% endif %}>
+
+        <label for="id_address_finalize">Ваш адрес</label>
+        <input type="text" id="id_address_finalize" name="delivery_address" placeholder="address (не обязательно):"
+        class="form_input_contact_data">
+      </div>
+
+      <h3 class="header_tree_finalize">Доставка</h3>
+      <div class="transportation_info">
+        <img src="{% static 'icons/domik.png' %}" alt="...">
+        <label for="id_myself_transportation">Самовывоз</label>
+        <input type="radio" id="id_myself_transportation" name="required_delivery" checked
+        value="False">
+      </div>
+      <div class="transportation_info">
+        <img src="{% static 'icons/free-icon-mail-646094.png' %}" alt="...">
+        <label for="id_mail_transportation">Почтой</label>
+        <input type="radio" id="id_mail_transportation" name="required_delivery"
+        value="True">
+      </div>
+
+      <h3 class="header_tree_finalize">Оплата</h3>
+      <div class="transportation_info">
+        <label for="payment_on_get">При получении</label>
+        <input type="radio" id="payment_on_get" name="payment_on_get" checked
+        value="True">
+      </div>
+      <div class="transportation_info">
+        <label for="payment_on_internet">Онлайн</label>
+        <input type="radio" id="payment_on_internet" name="payment_on_get"
+        value="False">
+      </div>
+      <input type="hidden" name="total_price" value="{{ total_price }}">
+    </form>
+    <h3 class="header_tree_finalize">Заказ</h3>
+    <div class="seller_data">
+      <span>Продавец:</span>
+      <a href="{% url 'main_favorite:information' %}">
+          <img src="{% static 'icons/logo.png' %}" alt="inter"
+               style="width: 90px; height: 35px">
+      </a>
+
+    </div>
+    {% for cart in carts %}
+      <div class="order_on_buy">
+        <div class="order_on_buy_img_name">
+          <img src="{{ cart.product.image.url }}" alt="product"
+        style="height: 100px; width: 170px; margin: 0px 0px 7px 0px;">
+          <span>
+            <a href="{% url 'carts_products:product' cart.product.slug %}">
+              {{ cart.product.name }}
+            </a>
+          </span>
+        </div>
+        <div class="count_product_price">
+          <span class="price_output_in_buy_by_count">({{ cart.product.sell_price }}$ x 1шт)</span>
+          <span class="price_output_quantity">Всего {{ cart.quantity }}шт</span>
+          <span class="price_output_in_buy">{{ cart.products_price }}$</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="output_price_finalize_product">
+    <h2>Итого</h2>
+    <hr>
+    <div class="data_product">
+      <span class="count_product_on_buy">{{ carts|length }} товар на сумму</span>
+      <span class="price_output_with_discount">{{ total_price }}$</span>
+    </div>
+    <br>
+    <div class="data_transportation">
+      <span>Стоимость доставки</span>
+      <span class="info_transportation">по тарифам перевозчика
+      </span>
+      <br>
+    </div>
+    <hr>
+    <div class="data_output_price">
+      <span>К оплате</span>
+      <span>{{ total_price }}$</span>
+    </div>
+    <div class="btn_output_price_">
+      <button class="btn btn-outline-primary_finalize" id="order_cart_finalize">Заказать</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
