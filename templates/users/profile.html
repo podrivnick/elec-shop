@@ -49,17 +49,17 @@
             <div class="container_data_user">
                 <label for="id_first_name">First name: </label>
                 <input id="id_first_name" type="text" name="first_name" class="username_data" placeholder="Введите новое имя"
-                value="{{form.first_name.value}}">
+                {% if form.initial.first_name  %} value="{{ form.initial.first_name }}" {% endif %}>
             </div>
             <div class="container_data_user">
                 <label for="id_last_name">Last name: </label>
                 <input id="id_last_name" type="text" name="last_name" class="username_data" placeholder="Введите новую фамилию"
-                value="{{form.last_name.value}}">
+                {% if form.initial.last_name  %} value="{{ form.initial.last_name }}" {% endif %}>
             </div>
             <div class="container_data_user">
                 <label for="id_email">Current Email:</label>
                 <input id="id_email" type="email" name="email" class="username_data" placeholder="Введите новый email"
-                value="{{form.email.value}}">
+                {% if form.initial.email  %} value="{{ form.initial.email }}" {% endif %}>
             </div>
             <div class="container_data_user">
                 <label for="id_phone">Current Phone:</label>

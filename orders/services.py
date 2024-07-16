@@ -1,20 +1,17 @@
-from django.core.exceptions import ValidationError
 from main_favorite.models import Products
 from packet.models import Cart
 
-from .config import NOT_ENOUGH_COUNT_PRODUCTS
+from .exceptions import ExceptionNotEnoughQuantityProduct
 from .models import OrderItem
 
 
 class CreateBasicOrders:
-
     def __init__(self, *args):
         self.user = args[0]
         self.basic_orders = args[1]
 
-    def create_basic_orders(self):
-
-        packet = Cart.objects.filter(user=self.user)
+    def create_order(self):
+        packet = Cart.objects.filter(user=self.user).order_by('quantity')
 
         list_packet = [item for item in packet]
 
@@ -22,9 +19,9 @@ class CreateBasicOrders:
             product = Products.objects.get(id_product=cart.product.id_product)
 
             if product.count_product < cart.quantity:
-                raise ValidationError(f"{NOT_ENOUGH_COUNT_PRODUCTS}{product.name}")
+                raise ExceptionNotEnoughQuantityProduct(product.name)
 
-            order_item = OrderItem.objects.create(
+            OrderItem.objects.create(
                 order=self.basic_orders,
                 product=cart.product,
                 name=cart.product.name,
@@ -37,3 +34,4 @@ class CreateBasicOrders:
             product.save()
 
         packet.delete()
+

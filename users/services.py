@@ -1,5 +1,4 @@
 from packet.models import Cart
-from django.contrib.auth import get_user_model
 
 
 class AddSessionCartToUser:
@@ -19,7 +18,6 @@ class ChangeProfileUserData:
 
     def change_profile(self):
         if self.user and self.new_data_profile:
-
             for par, value in self.new_data_profile.items():
                 if not value:
                     continue
@@ -34,12 +32,15 @@ class UpdateProfileAvatarUsername:
         self.files = files
 
     def change_avatar_or_username(self):
-        User = get_user_model()
+        # Обновление username
+        new_username = self.data.get('username', self.user.username)
+        if new_username:
+            self.user.username = new_username
+            self.user.save(update_fields=['username'])
 
-        self.user.username = self.data.get('username', self.user.username)
+        # Обновление avatar
+        new_avatar = self.files.get('avatar')
+        if new_avatar:
+            self.user.image = new_avatar
+            self.user.save(update_fields=['image'])
 
-        if self.files.get('avatar'):
-            self.user.image = self.files['avatar']
-
-        self.user.save()
-        return self.user

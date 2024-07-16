@@ -1,11 +1,13 @@
-from .models import Cart
+from django.db.models import Sum
+
 from main_favorite.models import Products
+
+from .models import Cart
 
 
 class AddToPacketProduct:
-
-    def __init__(self, is_authenticate: bool, product_id, user_or_session_key):
-        self.is_authenticate = is_authenticate
+    def __init__(self, is_authenticated: bool, product_id, user_or_session_key):
+        self.is_authenticated = is_authenticated
         self.product_id = product_id
         self.user_or_session_key = user_or_session_key
 
@@ -13,7 +15,7 @@ class AddToPacketProduct:
         product = Products.objects.get(id_product=self.product_id)
 
         # Определяем фильтр на основе аутентификации пользователя
-        filter_kwargs = {'user': self.user_or_session_key} if self.is_authenticate else \
+        filter_kwargs = {'user': self.user_or_session_key} if self.is_authenticated else \
                         {'session_key': self.user_or_session_key}
 
         # Ищем пакет в корзине
@@ -30,53 +32,47 @@ class AddToPacketProduct:
                 **filter_kwargs
             )
 
+        return packet
+
 
 class DeleteCartFromPacketLogic:
-    def __init__(self, is_authenticated: bool, cart_id, user_or_session_key):
-        self.is_authenticated = is_authenticated
+    def __init__(self, cart_id):
         self.cart_id = cart_id
-        self.user_or_session_key = user_or_session_key
 
     def delete_cart_packet(self):
         cart = Cart.objects.get(pk=self.cart_id)
         cart.delete()
 
-        filter_kwargs_user = {"user": self.user_or_session_key} if self.is_authenticated else\
-                             {"session_key": self.user_or_session_key}
-
-        carts_left = Cart.objects.filter(**filter_kwargs_user)
-
-        new_quantity = sum([item.quantity for item in carts_left])
-
-        return new_quantity
-
 
 class ChangeCartQuantity:
-    def __init__(self, is_authenticated, is_plus, cart_id, user_or_session_key):
+    def __init__(self, is_authenticated: bool, user_or_session_key, is_plus: bool, cart_id):
         self.is_authenticated = is_authenticated
+        self.user_or_session_key = user_or_session_key
         self.is_plus = is_plus
         self.cart_id = cart_id
-        self.user_or_session_key = user_or_session_key
 
     def change_cart_quantity(self):
-        cart = Cart.objects.get(pk=self.cart_id)
-
         user_filter = {"user": self.user_or_session_key} if self.is_authenticated else \
                       {"session_key": self.user_or_session_key}
 
+        cart = Cart.objects.filter(pk=self.cart_id).first()
+
+        if not cart:
+            return 0  # Обработакта отсутствия корзины
+
         if self.is_plus == "false":
-            cart.quantity = cart.quantity - 1
-            if cart.quantity == 0:
+            new_quantity = cart.quantity - 1
+            if new_quantity <= 0:
                 cart.delete()
             else:
-                cart.save()
+                Cart.objects.filter(pk=self.cart_id).update(quantity=new_quantity)
         else:
-            cart.quantity = cart.quantity + 1
-            cart.save()
+            new_quantity = cart.quantity + 1
+            Cart.objects.filter(pk=self.cart_id).update(quantity=new_quantity)
 
-        carts_left = Cart.objects.filter(**user_filter)
+        carts_left = Cart.objects.filter(**user_filter).order_by('-quantity')
 
-        new_quantity = sum([item.quantity for item in carts_left])
+        total_quantity = carts_left.aggregate(Sum('quantity'))['quantity__sum'] or 0
 
-        return new_quantity
+        return carts_left, total_quantity
 

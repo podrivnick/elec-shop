@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 
 from main_favorite.models import Products
 
+
 class Opinions(models.Model):
     id_product = models.ForeignKey(Products, on_delete=models.CASCADE, verbose_name='Товар')
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
@@ -13,6 +14,7 @@ class Opinions(models.Model):
     class Meta:
         db_table = 'opinions'
         verbose_name = 'Отзывы'
+
 
 class LikesOpinion(models.Model):
     id_product = models.ForeignKey(Products, on_delete=models.CASCADE, verbose_name='Товар')

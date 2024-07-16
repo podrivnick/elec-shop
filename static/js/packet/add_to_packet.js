@@ -160,8 +160,6 @@ $(document).ready(function () {
           csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val(),
         },
         success: function (data) {
-          // Выводим сообщение об успешном добавлении товара в корзину
-            console.log(data.new_quantity)
           cartCount = data.new_quantity;
           total_price_all_packet.text(cartCount);
 

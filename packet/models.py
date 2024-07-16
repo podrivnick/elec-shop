@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator
 
 from main_favorite.models import Products
 
+
 class CartQueryset(models.QuerySet):
 
     def total_price(self):

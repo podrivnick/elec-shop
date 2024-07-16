@@ -29,11 +29,11 @@
     mkdir avatars
     mkdir products
     ```
-3. Установка зависимостей: 
+4. Установка зависимостей: 
     pip install -r requirements.txt
-4. Настройка переменных окружения: 
+5. Настройка переменных окружения: 
    создание .env, и заполнение по принципу .env.example
-5. Примените миграции и запустите сервер Django:
+6. Примените миграции и запустите сервер Django:
     python manage.py migrate
     python manage.py runserver
 

@@ -1,5 +1,4 @@
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages, auth
 from django.http import HttpResponseRedirect
@@ -10,6 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView
 
+from main_favorite.utils import GetUserModel
 from packet.models import Cart
 
 from .config import MESSAGE_UPDATE_PROFILE, MESSAGE_UPDATED_AVATAR_OR_USERNAME, MESSAGE_LOGOUT
@@ -33,6 +33,7 @@ class LoginUser(LoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = UserLoginForm()
+
         return context
 
     def form_valid(self, form):
@@ -59,10 +60,11 @@ class RegisterUser(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = UserRegistration()
+
         return context
 
     def form_valid(self, form):
-        session_key = self.request.session.session_key
+        session_key = (self.request.session.session_key or False)
         user = form.instance
 
         if user:
@@ -83,9 +85,9 @@ class ProfileUserData(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = GetUserModel(self.request.user).get_user_model()
 
-        user = get_user_model().objects.get(username=self.request.user)
-        carts = Cart.objects.filter(user=user)
+        carts = Cart.objects.filter(user=user).order_by('-quantity')
         list_carts = [cart for cart in carts]
 
         context["form"] = ProfileImages(instance=self.request.user)
@@ -115,14 +117,15 @@ class ProfileUserData(LoginRequiredMixin, TemplateView):
             return super().get(request, *args, **kwargs)
 
     def post(self, request):
-        form = ProfileImages(data=request.POST, instance=request.user, files=request.FILES)
+        form = ProfileImages(data=self.request.POST, instance=self.request.user, files=self.request.FILES)
 
         if form.is_valid():
             user = form.save(commit=False)
-            change_user_avatar_or_username = UpdateProfileAvatarUsername(user, request.POST, request.FILES)
+
+            change_user_avatar_or_username = UpdateProfileAvatarUsername(user, self.request.POST, self.request.FILES)
             change_user_avatar_or_username.change_avatar_or_username()
 
-            messages.success(request, f"{MESSAGE_UPDATED_AVATAR_OR_USERNAME}{request.user}")
+            messages.success(self.request, f"{MESSAGE_UPDATED_AVATAR_OR_USERNAME}{self.request.user}")
 
             return redirect("users:profile")
 

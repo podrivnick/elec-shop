@@ -1,4 +1,6 @@
+from dataclasses import dataclass
 
+from django.contrib.auth import get_user_model
 from django.contrib.postgres.search import SearchRank, SearchVector, SearchQuery, SearchHeadline
 
 
@@ -34,3 +36,12 @@ def q_search(query, current_db):
     )
 
     return result
+
+
+@dataclass
+class GetUserModel:
+    username: str
+
+    def get_user_model(self):
+        return get_user_model().objects.get(username=self.username)
+

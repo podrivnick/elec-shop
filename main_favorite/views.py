@@ -1,13 +1,12 @@
 import json
 
-from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.views.generic import ListView
 from django.views import View
 from django.views.generic import TemplateView
 
-from .models import Information, Products, Categories_Product, Favorites
-from .utils import q_search
+from .models import Information, Products, Categories_Product
+from .services import SaveFavoriteService, CreateFavoritePage, FilterProductsBySortingCategoriesSearch
 
 
 class MainPage(ListView):
@@ -22,11 +21,12 @@ class MainPage(ListView):
 
         categories = Categories_Product.objects.all()
         if self.request.user.is_authenticated:
-            username = self.request.user.pk
+            username = self.request.user.username
 
-            favorites = Favorites.objects.filter(user=username)
-            id_products = [query.product_id for query in favorites]
-            context['favorites'] = id_products
+            get_product_in_favorite = CreateFavoritePage(username, False)
+
+            context['favorites'] = get_product_in_favorite.create_data_for_favorite_page()
+
         context['is_search_failed'] = getattr(self, 'is_search_failed')
         context['categories'] = categories
 
@@ -41,22 +41,13 @@ class MainPage(ListView):
 
         slug = self.kwargs.get('category_slug')
         query = self.request.GET.get('search', None)
-        self.is_search_failed = False
 
-        if is_available:
-            queryset = queryset.filter(count_product__gt=0)
-        if is_discount:
-            queryset = queryset.filter(discount__gt=0)
-        if is_sorting and is_sorting != 'default':
-            queryset = queryset.order_by(is_sorting)
+        make_filters_products = FilterProductsBySortingCategoriesSearch(
+            is_available, is_discount, is_sorting,
+            slug, query, queryset
+        )
 
-        if slug:
-            queryset = queryset.filter(category__slug=slug)
-
-        if query:
-            queryset = q_search(query, queryset)
-            if not len(queryset):
-                self.is_search_failed = True
+        self.is_search_failed, queryset = make_filters_products.make_filters()
 
         return queryset
 
@@ -71,12 +62,10 @@ class FavoritesPage(ListView):
 
         if self.request.user.is_authenticated:
             username = self.request.user.username
-            user = get_user_model().objects.get(username=username)
 
-            favorites = Favorites.objects.filter(user=user)
-            products_id = [item.product_id for item in favorites]
+            filter_favorites = CreateFavoritePage(username, queryset)
 
-            queryset = queryset.filter(id_product__in=products_id)
+            queryset = filter_favorites.create_data_for_favorite_page()
 
         return queryset
 
@@ -86,19 +75,8 @@ class SaveFavorite(View):
         data = json.loads(self.request.body)
 
         if self.request.user.is_authenticated:
-            username = data['data'][0]
-            product_id = data['data'][1]
-
-            user = get_user_model().objects.get(username=username)
-
-            try:
-                is_favorite_here = Favorites.objects.get(product_id=product_id, user=user)
-                is_favorite_here.delete()
-            except Favorites.DoesNotExist:
-                new_favorite = Favorites.objects.create(
-                    product_id=product_id,
-                    user=user
-                )
+            save_favorite_object = SaveFavoriteService(data=data)
+            save_favorite_object.save_favorite_service()
 
         return JsonResponse({'message': 'Данные успешно сохранены'})
 
