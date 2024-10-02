@@ -43,6 +43,6 @@ RUN pip install --upgrade --no-cache-dir pip==24.0 \
     && pip install --no-cache-dir -r requirements.dev.txt
 
 
-# COPY ./core /elec-shop/core
+COPY . /elec-shop/
 
 EXPOSE 8000
