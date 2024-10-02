@@ -27,6 +27,7 @@ from app import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/", include("core.api.urls")),
     path("", include("main_favorite.urls", namespace="main")),
     path("users/", include("users.urls", namespace="users")),
     path("carts_products/", include("carts_products.urls", namespace="carts_products")),
