@@ -1,0 +1,99 @@
+[tool.poetry]
+name = "elec-shop"
+version = "0.1.0"
+description = ""
+authors = ["Rybakov Artem Oleekseevich <vp41919@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+asgiref = "3.8.1"
+dj-database-url = "2.2.0"
+django = "5.0.6"
+django-environ = "0.11.2"
+environ = "1.0"
+gunicorn = "22.0.0"
+packaging = "24.1"
+pillow = "10.4.0"
+psycopg2-binary = "2.9.9"
+python-dotenv = "1.0.1"
+sqlparse = "0.5.0"
+typing-extensions = "4.12.2"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.8.0"
+pyupgrade = "^3.17.0"
+add-trailing-comma = "^3.1.0"
+autoflake = "^2.3.1"
+isort = "^5.13.2"
+docformatter = "^1.7.5"
+flake8 = "^7.1.1"
+flake8-builtins = "^2.5.0"
+flake8-commas = "^4.0.0"
+flake8-debugger = "^4.1.2"
+flake8-comprehensions = "^3.15.0"
+flake8-eradicate = "^1.5.0"
+dlint = "^0.15.0"
+faker = "^27.0.0"
+pytest-django = "^4.8.0"
+pytest = "^8.3.2"
+factory-boy = "^3.3.0"
+drf-spectacular = "^0.27.2"
+sentry-sdk = "^2.13.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.flake8]
+max-line-length = 120
+ignore = [
+    "E203",
+    "E266",
+    "E501",
+    "W503",
+    "E800",
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    "docs/source/conf.py",
+    "old",
+    "build",
+    "dist",
+]
+
+[tool.isort]
+multi_line_output=3
+include_trailing_comma=true
+line_length=120
+lines_after_imports=2
+lines_between_sections=1
+lines_between_types=0
+force_alphabetical_sort_within_sections=true
+ensure_newline_before_comments=true
+combine_as_imports=true
+combine_star=true
+skip_gitignore=true
+balanced_wrapping=true
+force_grid_wrap=2
+src_paths=["core", ]
+skip_glob=[
+    ".git",
+    ".idea",
+    ".vscode",
+    "venv",
+    ".venv",
+]
+known_django=["django","rest_framework"]
+known_first_party=["core"]
+sections=[
+    "FUTURE",
+    "STDLIB",
+    "DJANGO",
+    "THIRDPARTY",
+    "FIRSTPARTY",
+    "LOCALFOLDER",
+]

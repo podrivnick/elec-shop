@@ -1,0 +1,13 @@
+*.pyc
+*.md
+
+.pre-commit-config.yaml
+
+.pytest_cache/
+.idea/
+.git/
+.vscode/
+.ruff_cache/
+
+docker_compose/
+__pycache__/

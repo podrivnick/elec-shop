@@ -1,0 +1,21 @@
+services:
+  app-shop:
+    build:
+      context: ../../elec-shop/
+      dockerfile: Dockerfile
+    container_name: shop
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+    command: ["gunicorn", "app.wsgi:application", "--bind", "0.0.0.0:8000"]
+    env_file:
+      - ../.env
+    depends_on:
+      - postgres
+    networks:
+      - ppostgres.network
+
+networks:
+  ppostgres.network:
+    driver: bridge
