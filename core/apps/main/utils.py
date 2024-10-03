@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 
 from django.contrib.auth import get_user_model
-from django.contrib.postgres.search import SearchRank, SearchVector, SearchQuery, SearchHeadline
+from django.contrib.postgres.search import (
+    SearchHeadline,
+    SearchQuery,
+    SearchRank,
+    SearchVector,
+)
 
 
 def q_search(query, current_db):
@@ -14,7 +19,7 @@ def q_search(query, current_db):
     result = (
         current_db.annotate(rank=SearchRank(vector, query))
         .filter(rank__gt=0)
-        .order_by('-rank')
+        .order_by("-rank")
     )
 
     result = result.annotate(
@@ -23,7 +28,7 @@ def q_search(query, current_db):
             query,
             start_sel='<span style="background-color: yellow;">',
             stop_sel="</span>",
-        )
+        ),
     )
 
     result = result.annotate(
@@ -32,7 +37,7 @@ def q_search(query, current_db):
             query,
             start_sel='<span style="background-color: yellow;">',
             stop_sel="</span>",
-        )
+        ),
     )
 
     return result
@@ -44,4 +49,3 @@ class GetUserModel:
 
     def get_user_model(self):
         return get_user_model().objects.get(username=self.username)
-

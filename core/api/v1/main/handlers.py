@@ -1,34 +1,53 @@
 from django.http import HttpRequest
 
-from ninja import Router
-
-from core.api.schemas import ApiResponse
-from core.api.v1.customers.schemas import (
-    AuthInSchema,
-    AuthOutSchema,
+from ninja import (
+    Query,
+    Router,
 )
+
+from core.api.filters import PaginationIn
+from core.api.v1.main.schemas import FiltersProductsSchema
 from core.apps.customers.services.auth import BaseAuthService
+from core.infrastructure.di.main import init_container
+from core.infrastructure.exceptions.base import BaseAppException
+from core.infrastructure.mediator.mediator import Mediator
 from core.project.containers import get_container
 
 
-router = Router(tags=["Customers"])
+router = Router(tags=["Main Page"])
 
 
-@router.get("index", response=ApiResponse[AuthOutSchema], operation_id="authorize")
+class ApiResponse:
+    pass
+
+
+class AuthOutSchema:
+    pass
+
+
+class AuthInSchema:
+    pass
+
+
+@router.get("index", response=ApiResponse[AuthOutSchema], operation_id="main")
 def main_handler(
     request: HttpRequest,
-    schema: AuthInSchema,
+    schema: FiltersProductsSchema,
+    pagination_in: Query[PaginationIn],
 ) -> ApiResponse[AuthOutSchema]:
-    container = get_container()
-    service = container.resolve(BaseAuthService)
+    """Загрузка главной страницы."""
+    container = init_container()
 
-    service.authorize(schema.phone)
+    mediator: Mediator = container.resolve(Mediator)
 
-    return ApiResponse(
-        data=AuthOutSchema(
-            message=f"Code is sent to: {schema.phone}",
-        ),
-    )
+    try:
+        flower = await mediator.handle_command()
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.message},
+        )
+
+    return flower
 
 
 @router.get("favorites", response=ApiResponse[AuthOutSchema], operation_id="authorize")
