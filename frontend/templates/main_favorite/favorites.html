@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load carts_packet %}
+
+{% get_packets request as packet %}
+
+{% block title %}
+    <title>
+      Избранное
+    </title>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'js/favorite.js' %}"></script>
+  <script src="{% static 'js/packet/add_to_packet.js' %}"></script>
+{% endblock %}
+
+{% block links_css %}
+  <link rel="stylesheet" href="{% static 'css/main/favorites.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container_modal_popup_packet" id="modal_packet_popup">
+        {% include 'modal_packet.html' %}
+    </div>
+
+<div class="main_container" style="background-image: url('{% static 'icons/background.jpg' %}')">
+  <h2 class="header_second_favorites">Список избранного</h2>
+  <div class="heart_block main_heart">
+    <button style="color: red;">&#9825;</button>
+    {% with products|length as list_length %}
+      <span class="count_favorites_product">{{list_length}}</span>
+    {% endwith %}
+  </div>
+
+  {% for product in products %}
+  <div class="carts_product">
+    <div class="heart_block">
+      {% if product.discount %}
+        <div class="discount">Скидка -{{product.discount}}%</div>
+          <button onclick="favorite_data('{{user.username}}', '{{product.id_product}}')"
+                  class="btn_heart_favorite" style="color: red">&#9825;
+          </button>
+        </div>
+      {% else %}
+        <div class="discount"></div>
+          <button onclick="favorite_data('{{user.username}}', '{{product.id_product}}')"
+                  class="btn_heart_favorite" style="color: red;">&#9825;
+          </button>
+        </div>
+      {% endif %}
+    <div class="image_product">
+      <img src="{{ product.image.url }}" alt="" style="width: 230px; height: 230px">
+      <div class="block_data_of_product">
+        <span class="data_product_name"><a href="{% url 'carts_products:product' product.slug %}">{{ product.name }}</a></span>
+        {% if product.discount %}
+          <span class="data_product_discount">{{ product.price }}</span>
+        {% else %}
+          <span class="data_product_discount"></span>
+        {% endif %}
+        {% if product.discount %}
+          <span class="data_product_price" style="color: red">{{ product.sell_price }}</span>
+        {% else %}
+          <span class="data_product_price">{{ product.price }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="btn_to_packet">
+      {% csrf_token %}
+        <button class="btn btn-outline-primary button_to_packet add_packet_product"
+        data-product-id="{{ product.pk }}">
+          В Корзину
+        </button>
+    </div>
+  </div>
+
+  {% endfor %}
+</div>
+{% endblock %}

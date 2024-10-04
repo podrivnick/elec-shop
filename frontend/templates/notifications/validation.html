@@ -1,0 +1,9 @@
+{% load static %}
+
+{% if form.non_field_errors %}
+<div class="errorBlock_validation_position">
+    <div class="errorBlock_validation" role="alert">
+        <p>{{form.non_field_errors}}</p>
+    </div>
+</div>
+{% endif %}

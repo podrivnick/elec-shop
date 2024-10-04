@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load carts_packet %}
+
+{% get_packets request as packet %}
+
+{% block title %}
+<title>
+    Главная
+</title>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/favorite.js' %}"></script>
+    <script src="{% static 'js/packet/add_to_packet.js' %}"></script>
+{% endblock %}
+
+{% block links_css %}
+<link rel="stylesheet" href="{% static 'css/main/pagination.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-block" style="background-image: url('{% static 'icons/background.jpg' %}')">
+    <div class="container_modal_popup_packet" id="modal_packet_popup">
+        {% include 'modal_packet.html' %}
+    </div>
+    <main class="main-index">
+        <div class="block_carts_products">
+                    {% if not is_search_failed %}
+                        {% for product in products %}
+                        <div class="products">
+                            {% if product.discount %}
+                                <div class="header_carts">
+                                    <div class="discount">Скидка -{{ product.discount }}%</div>
+                                    <div class="heart">
+                                        {% csrf_token %}
+                                        <button onclick="favorite_data('{{user.username}}', '{{ product.id_product }}')"
+                                            {% if product.id_product in favorites %} style="color: red" {% endif %}
+                                            class="btn_heart_favorite">&#9825;
+                                        </button>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="heart">
+                                    {% csrf_token %}
+                                    <button onclick="favorite_data('{{user.username}}', '{{ product.id_product }}', )"
+                                    {% if product.id_product in favorites %} style="color: red" {% endif %}
+                                    class="btn_heart_favorite">&#9825;
+                                    </button>
+                                </div>
+                            {% endif %}
+                            <img src="{{ product.image.url }}"
+                                 alt="..." class="cart_product" style="width: 300px; height: 230px">
+                            <div class="data_product">
+                                {% autoescape off %}
+                                    <span class="name_product">
+                                        <a href="{% url 'carts_products:product' product.slug %}">
+                                        {% autoescape off %}
+                                            {% if product.headline %}
+                                            {{product.headline}}
+                                            {% else %}
+                                            {{ product.name }}
+                                            {% endif %}
+                                        {% endautoescape %}
+                                        </a>
+                                        <span class="seller_on_cart_product">Продавец: сайт</span>
+                                    </span>
+                                {% endautoescape %}
+                                {% if product.discount %}
+                                    <span class="price_reckon_discount">{{ product.price }}</span>
+                                {% else %}
+                                    <span class="price_reckon_discount"></span>
+                                {% endif %}
+
+                                {% if product.discount %}
+                                    <span class="price" style="color:red">{{ product.sell_price }}$</span>
+                                {% else %}
+                                    <span class="price">{{ product.price }}$</span>
+                                {% endif %}
+                            </div>
+                            <div class="buy_products">
+                                {% csrf_token %}
+                                <button class="btn btn-outline-primary add_packet_product"
+                                     data-product-id="{{ product.pk }}">В Корзину
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <h2 class="search_failed">Ничего не найдено</h2>
+                    {% endif %}
+                </div>
+        <div class="border"></div>
+        <div class="block_setting_reflections_products">
+                    <form action="{% if request.GET.q %}{% url 'main_favorite:category_equipped' slug_url %}{% endif %}" class="form_search_index" role="search" method="get">
+                        <label for="id_search">Поиск:</label>
+                        <input type="text" id="id_search" placeholder="Введите название или id товара" name="search"
+                               class="block_input_search_">
+                        <button class="submit_search btn btn-search" type="submit" style="line-height: 1.1;">Найти</button>
+                    </form>
+                    <br>
+                    <br>
+                    <br>
+                    <div class="filter_and_catalog">
+                        <div class="catalog">
+                            <button class="catalog_btn">
+                              <div class="icon_catalog">
+                                <div class="grid-container">
+                                  <div class="circle"></div>
+                                  <div class="circle2"></div>
+                                  <div class="circle"></div>
+                                  <div class="circle"></div>
+                                </div>
+                              </div>
+                            </button>
+                            <div class="main_catalog_form visible_popup_catalog">
+                                {% for category in categories %}
+                                    {% if category.slug == 'all' %}
+                                        <a href="{% url 'main_favorite:index' %}" class="catalog_links">{{ category.category }}</a>
+                                    {% else %}
+                                        <a href="{% url 'main_favorite:category_equipped' category.slug %}" class="catalog_links">{{ category.category }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
+                        </div>
+                        <div class="filter">
+                            <div class="block_btn_filter">
+                                <button class="btn btn-filter">
+                                    Фильтры
+                                </button>
+                            </div>
+                            <br>
+                            <div class="container_filters visible_popup_catalog">
+                                <div class="close_filters">
+                                    <button class="close_filters_btn">X</button>
+                                </div>
+
+                                <div class="filters">
+                                    <form action="{% if request.GET.q %}{% url 'main_favorite:category_equipped' slug_url %}{% endif %}" method="get">
+                                        <div class="block-filter">
+                                            <label for="id_available_product">В наличии</label>
+                                            <input type="checkbox" name="available" id="id_available_product" value="on_available"
+                                            {% if request.GET.available == 'on_available' %}checked{% endif %}>
+                                        </div>
+
+                                        <div class="block-filter">
+                                            <label for="id_has_discount">По скидке</label>
+                                            <input type="checkbox" id="id_has_discount" name="discount" value="on_discount"
+                                            {% if request.GET.discount == 'on_discount' %}checked{% endif %}>
+                                        </div>
+
+                                        <span>Сортировать:</span>
+                                        <div class="block-filter">
+                                            <label for="id_default">По умолчанию</label>
+                                            <input type="radio" id="id_default" name="sorting" value="default"
+                                            {% if not request.GET.sorting or request.GET.sorting == 'default' %}checked{% endif %}>
+                                        </div>
+
+                                        <div class="block-filter">
+                                            <label for="id_cheap_to_high">От дешевых к дорогим</label>
+                                            <input type="radio" id="id_cheap_to_high" name="sorting" value="price"
+                                            {% if request.GET.sorting == 'price' %}checked{% endif %}>
+                                        </div>
+
+                                        <div class="block-filter last">
+                                            <label for="id_high_to_cheap">От дорогих к дешевым</label>
+                                            <input type="radio" id="id_high_to_cheap" name="sorting" value="-price"
+                                            {% if request.GET.sorting == '-price' %}checked{% endif %}>
+                                        </div>
+
+                                        <button class="btn btn_submit_filters">Применить</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+   </main>
+</div>
+    {% block navbar %}
+        {% include 'main_favorite/mechanizm/pagination.html' %}
+    {% endblock %}
+{% endblock %}

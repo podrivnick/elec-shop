@@ -1,0 +1,225 @@
+.main_page_finalize{
+    display: flex;
+    justify-content: space-evenly;
+}
+.finalize_dis_none_packet{
+    display: none;
+}
+.output_price_finalize_product{
+    width: 400px;
+    height: 300px;
+    border-radius: 5px;
+    border: 1px black solid;
+    padding: 8px;
+    background-color: white;
+    margin: 20px;
+}
+input.invalid {
+    border: 1px solid red;
+}
+.price_output_with_discount{
+    font-weight: bold;
+    font-size: 20px;
+}
+.data_product{
+    display: flex;
+    justify-content: space-between;
+}
+.data_transportation{
+    display: flex;
+    justify-content: space-between;
+}
+.info_transportation{
+    min-width: 90px;
+    font-size: 18px;
+}
+.data_output_price{
+    display: flex;
+    justify-content: space-between;
+}
+.data_output_price span{
+    font-weight: bold;
+    font-size: 24px;
+}
+.btn_output_price_{
+    display: flex;
+    justify-content: flex-end;
+    margin: 12px;
+}
+.block_contact_data_on_buy{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.form_input_contact_data{
+    border-radius: 5px;
+    width: 340px;
+    height: 25px;
+    margin: 10px;
+}
+.seller_data {
+    display: flex;
+    align-items: center;
+}
+.count_product_price {
+    display: contents;
+}
+.order_on_buy{
+    width: 700px;
+    border-radius: 5px;
+    border: 1px black solid;
+}
+.order_on_buy{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.price_output_in_buy{
+    font-weight: bold;
+}
+.order_on_buy_img_name{
+    display: flex;
+    align-items: center;
+}
+.transportation_info{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+.transportation_info span{
+    font-weight: bold;
+}
+.block_contact_data_on_buy .transportation_info{
+    align-items: start;
+}
+.header_tree_finalize{
+    font-size: 23px;
+}
+.finalize_data_product {
+    background-color: #ffd0d0;
+    margin: 20px;
+    padding: 10px;
+    border-radius: 10px;
+}
+.header_one_finalize{
+    font-size: 30px;
+    margin: 10px;
+}
+.order_on_buy{
+    padding: 8px;
+}
+
+
+
+@media (max-width: 1020px) {
+    .main_page_finalize{
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 740px) {
+    .order_on_buy{
+        flex-direction: column;
+        width: 530px;
+    }
+    span.price_output_in_buy {
+        margin: 0px 0px 0px 70px;
+    }
+    .finalize_data_product{
+        width: 550px;
+    }
+}
+
+@media (max-width: 570px) {
+    .order_on_buy{
+        width: 430px;
+    }
+    .finalize_data_product{
+        width: 450px;
+    }
+    .header_one_finalize{
+        margin: 20px;
+    }
+}
+
+@media (max-width: 470px) {
+    .order_on_buy{
+        width: 367px;
+    }
+    .finalize_data_product{
+        width: 384px;
+    }
+}
+
+@media (max-width: 420px) {
+    .output_price_finalize_product{
+        width: 350px;
+    }
+    .order_on_buy_img_name{
+        flex-direction: column;
+    }
+    .order_on_buy{
+        width: 350px;
+    }
+    .finalize_data_product{
+        width: 360px;
+    }
+}
+
+@media (max-width: 380px) {
+    .output_price_finalize_product{
+        width: 324px;
+    }
+    .order_on_buy{
+        width: 310px;
+    }
+    .finalize_data_product{
+        width: 324px;
+    }
+    .form_input_contact_data{
+        width: 210px;
+    }
+}
+
+@media (max-width: 345px) {
+    .output_price_finalize_product{
+        width: 290px;
+    }
+    .order_on_buy{
+        width: 280px;
+    }
+    .finalize_data_product{
+        width: 290px;
+    }
+}
+
+@media (max-width: 312px) {
+    .output_price_finalize_product{
+        width: 265px;
+    }
+    .order_on_buy{
+        width: 260px;
+        padding: 0px 0px 10px 0px
+    }
+    .finalize_data_product{
+        width: 265px;
+    }
+}
+
+@media (max-width: 312px) {
+    .output_price_finalize_product{
+        width: 235px;
+    }
+    .order_on_buy{
+        width: 222px;
+    }
+    .finalize_data_product{
+        width: 235px;
+    }
+    .order_on_buy_img_name {
+        flex-direction: column;
+        margin: 0px 0px 4px 0px;
+    }
+}
