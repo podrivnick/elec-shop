@@ -4,8 +4,8 @@ from dataclasses import (
 )
 
 from src.domain.flowers.entities.flower import (
-    BaseCategoriesService,
     BaseFavoriteProductsIdsService,
+    BaseFavoriteProductsService,
     BaseProductsService,
     Flower,
 )
@@ -15,33 +15,32 @@ from core.infrastructure.mediator.handlers.commands import CommandHandler
 
 
 @dataclass(frozen=True)
-class MainPageCommand(BaseCommands):
+class FavoritePageCommand(BaseCommands):
     flower: str | None = field(default=None)
 
 
 @dataclass(frozen=True)
-class MainPageCommandHandler(CommandHandler[MainPageCommand, Flower]):
-    categories_service: BaseCategoriesService
+class FavoritePageCommandHandler(CommandHandler[FavoritePageCommand, Flower]):
+    favorite_products_service: BaseFavoriteProductsService
     favorite_products_service_ids: BaseFavoriteProductsIdsService
     products_service: BaseProductsService
 
     def handle(
         self,
-        command: MainPageCommand,
+        command: FavoritePageCommand,
     ) -> Flower:
-        favorite_products_ids = None
         if command.is_authenticated:
-            favorite_products_ids = (
+            favorite_products = (
                 self.favorite_products_service_ids.get_favorite_products_ids(
                     command.username,
                 )
             )  # INFO: only ids of all products which mark as favorite
 
-        categories = (
-            self.categories_service.get_all_products_categories()
-        )  # INFO: just all categories of products
         products = self.products_service.get_filtered_products(
             command.filters,
         )  # INFO: should work even without filters
+        favorite_products = self.favorite_products_service.get_favorite_products(
+            command.products,
+        )  # INFO: products which in favorite of user
 
-        return favorite_products_ids, categories, products
+        return favorite_products, favorite_products, products

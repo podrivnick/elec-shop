@@ -1,4 +1,5 @@
 from django.http import HttpRequest
+from django.shortcuts import render
 
 from ninja import (
     Query,
@@ -7,11 +8,11 @@ from ninja import (
 
 from core.api.filters import PaginationIn
 from core.api.v1.main.schemas import FiltersProductsSchema
-from core.apps.customers.services.auth import BaseAuthService
+from core.apps.main.use_cases.favorite import FavoritePageCommand
+from core.apps.main.use_cases.main import MainPageCommand
 from core.infrastructure.di.main import init_container
 from core.infrastructure.exceptions.base import BaseAppException
 from core.infrastructure.mediator.mediator import Mediator
-from core.project.containers import get_container
 
 
 router = Router(tags=["Main Page"])
@@ -41,13 +42,15 @@ def main_handler(
     mediator: Mediator = container.resolve(Mediator)
 
     try:
-        flower = await mediator.handle_command()
+        context = await mediator.handle_command(
+            MainPageCommand(),
+        )
     except BaseAppException as exception:
         raise ValueError(
             detail={"error": exception.message},
         )
 
-    return flower
+    return render(request, "main_favorite/index.html", context)
 
 
 @router.get("favorites", response=ApiResponse[AuthOutSchema], operation_id="authorize")
@@ -55,16 +58,21 @@ def favorite_handler(
     request: HttpRequest,
     schema: AuthInSchema,
 ) -> ApiResponse[AuthOutSchema]:
-    container = get_container()
-    service = container.resolve(BaseAuthService)
+    """Загрузка страницы с товарами находящимися в избранном."""
+    container = init_container()
 
-    service.authorize(schema.phone)
+    mediator: Mediator = container.resolve(Mediator)
 
-    return ApiResponse(
-        data=AuthOutSchema(
-            message=f"Code is sent to: {schema.phone}",
-        ),
-    )
+    try:
+        context = await mediator.handle_command(
+            FavoritePageCommand(),
+        )
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.message},
+        )
+
+    return render(request, "main_favorite/favorites.html", context)
 
 
 @router.post(
@@ -76,16 +84,21 @@ def update_favorite_handler(
     request: HttpRequest,
     schema: AuthInSchema,
 ) -> ApiResponse[AuthOutSchema]:
-    container = get_container()
-    service = container.resolve(BaseAuthService)
+    """Загрузка страницы с товарами находящимися в избранном."""
+    container = init_container()
 
-    service.authorize(schema.phone)
+    mediator: Mediator = container.resolve(Mediator)
 
-    return ApiResponse(
-        data=AuthOutSchema(
-            message=f"Code is sent to: {schema.phone}",
-        ),
-    )
+    try:
+        context = await mediator.handle_command(
+            FavoritePageCommand(),
+        )
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.message},
+        )
+
+    return render(request, "main_favorite/favorites.html", context)
 
 
 @router.get("faq", response=ApiResponse[AuthOutSchema], operation_id="informatio")
@@ -93,13 +106,18 @@ def faq_handler(
     request: HttpRequest,
     schema: AuthInSchema,
 ) -> ApiResponse[AuthOutSchema]:
-    container = get_container()
-    service = container.resolve(BaseAuthService)
+    """Загрузка страницы с товарами находящимися в избранном."""
+    container = init_container()
 
-    service.authorize(schema.phone)
+    mediator: Mediator = container.resolve(Mediator)
 
-    return ApiResponse(
-        data=AuthOutSchema(
-            message=f"Code is sent to: {schema.phone}",
-        ),
-    )
+    try:
+        context = await mediator.handle_command(
+            FavoritePageCommand(),
+        )
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.message},
+        )
+
+    return render(request, "main_favorite/favorites.html", context)
