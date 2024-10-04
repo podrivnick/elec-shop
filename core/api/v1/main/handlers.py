@@ -27,14 +27,6 @@ class ApiResponse:
     pass
 
 
-class AuthOutSchema:
-    pass
-
-
-class AuthInSchema:
-    pass
-
-
 @router.get("index", operation_id="index")
 def main_handler(
     request: HttpRequest,

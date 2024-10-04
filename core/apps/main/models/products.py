@@ -1,6 +1,7 @@
 from django.db import models
 
 from core.apps.common.models import TimeBaseModel
+from core.apps.main.entities.product import ProductEntity
 
 
 class Products(TimeBaseModel):
@@ -22,6 +23,21 @@ class Products(TimeBaseModel):
         blank=True,
     )
     id_product = models.DecimalField(decimal_places=0, max_digits=7, null=True)
+
+    def to_entity(self) -> ProductEntity:
+        return ProductEntity(
+            id_product=self.id_product,
+            name=self.name,
+            description=self.description,
+            slug=self.slug,
+            image=self.image,
+            discount=self.discount,
+            price=self.price,
+            count_product=self.count_product,
+            category=self.category,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
 
     def sell_price(self):
         if self.discount:
