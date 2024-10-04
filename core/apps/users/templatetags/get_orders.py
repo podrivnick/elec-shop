@@ -1,6 +1,6 @@
 from django import template
 
-from orders.models import OrderItem
+from core.apps.orders.models import OrderItem
 
 
 register = template.Library()

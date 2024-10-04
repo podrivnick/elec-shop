@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from main_favorite.models import Products
+from core.apps.main.models.products import Products
 
 
 class Opinions(models.Model):

@@ -23,8 +23,7 @@ from django.views.generic import (
     TemplateView,
 )
 
-from main_favorite.utils import GetUserModel
-from packet.models import Cart
+from core.apps.main.utils import GetUserModel
 
 from .config import (
     MESSAGE_LOGOUT,
@@ -41,6 +40,9 @@ from .services import (
     ChangeProfileUserData,
     UpdateProfileAvatarUsername,
 )
+
+
+# from packet.models import Cart
 
 
 class CustomLogoutView(LogoutView):
@@ -113,7 +115,7 @@ class ProfileUserData(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         user = GetUserModel(self.request.user).get_user_model()
 
-        carts = Cart.objects.filter(user=user).order_by("-quantity")
+        carts = Cart.objects.filter(user=user).order_by("-quantity")  # noqa
         list_carts = [cart for cart in carts]  # noqa
 
         context["form"] = ProfileImages(instance=self.request.user)

@@ -7,7 +7,10 @@ from ninja import (
 )
 
 from core.api.filters import PaginationIn
-from core.api.v1.main.schemas import FiltersProductsSchema
+from core.api.v1.main.schemas import (
+    FiltersProductsSchema,
+    ProductIdSchema,
+)
 from core.apps.main.use_cases.favorite import FavoritePageCommand
 from core.apps.main.use_cases.info import InformationPageCommand
 from core.apps.main.use_cases.main import MainPageCommand
@@ -17,7 +20,7 @@ from core.infrastructure.exceptions.base import BaseAppException
 from core.infrastructure.mediator.mediator import Mediator
 
 
-router = Router(tags=["Main Page"])
+router = Router(tags=["main"])
 
 
 class ApiResponse:
@@ -32,19 +35,19 @@ class AuthInSchema:
     pass
 
 
-@router.get("index", response=ApiResponse[AuthOutSchema], operation_id="main")
+@router.get("index", operation_id="index")
 def main_handler(
     request: HttpRequest,
     schema: FiltersProductsSchema,
     pagination_in: Query[PaginationIn],
-) -> ApiResponse[AuthOutSchema]:
+):
     """API: загрузка главной страницы."""
     container = init_container()
 
     mediator: Mediator = container.resolve(Mediator)
 
     try:
-        context = await mediator.handle_command(
+        context = mediator.handle_command(
             MainPageCommand(),
         )
     except BaseAppException as exception:
@@ -55,18 +58,17 @@ def main_handler(
     return render(request, "main_favorite/index.html", context)
 
 
-@router.get("favorites", response=ApiResponse[AuthOutSchema], operation_id="authorize")
+@router.get("favorites", operation_id="favorites")
 def favorite_handler(
     request: HttpRequest,
-    schema: AuthInSchema,
-) -> ApiResponse[AuthOutSchema]:
+):
     """API: загрузка страницы с товарами находящимися в избранном."""
     container = init_container()
 
     mediator: Mediator = container.resolve(Mediator)
 
     try:
-        context = await mediator.handle_command(
+        context = mediator.handle_command(
             FavoritePageCommand(),
         )
     except BaseAppException as exception:
@@ -78,21 +80,20 @@ def favorite_handler(
 
 
 @router.post(
-    "update_favorite",
-    response=ApiResponse[AuthOutSchema],
-    operation_id="authorize",
+    "save_favorite",
+    operation_id="save_favorite",
 )
 def update_favorite_handler(
     request: HttpRequest,
-    schema: AuthInSchema,
-) -> ApiResponse[AuthOutSchema]:
+    schema: ProductIdSchema,
+):
     """API: обновление списка товаров находящихся в избранном."""
     container = init_container()
 
     mediator: Mediator = container.resolve(Mediator)
 
     try:
-        context = await mediator.handle_command(
+        context = mediator.handle_command(
             UpdateFavoritePageCommand(),
         )
     except BaseAppException as exception:
@@ -103,18 +104,17 @@ def update_favorite_handler(
     return ApiResponse(context)
 
 
-@router.get("faq", response=ApiResponse[AuthOutSchema], operation_id="informatio")
+@router.get("information", operation_id="information")
 def faq_handler(
     request: HttpRequest,
-    schema: AuthInSchema,
-) -> ApiResponse[AuthOutSchema]:
+):
     """API: загрузка страницы с общей информацией."""
     container = init_container()
 
     mediator: Mediator = container.resolve(Mediator)
 
     try:
-        context = await mediator.handle_command(
+        context = mediator.handle_command(
             InformationPageCommand(),
         )
     except BaseAppException as exception:

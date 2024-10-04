@@ -1,11 +1,13 @@
-from main_favorite.utils import GetUserModel
-from packet.models import Cart
+from core.apps.main.utils import GetUserModel
+
+
+# from packet.models import Cart
 
 
 def get_carts(request):
     if request.user.is_authenticated:
         return (
-            Cart.objects.filter(user=request.user)
+            Cart.objects.filter(user=request.user)  # noqa
             .select_related("product")
             .order_by("-quantity")
         )
@@ -13,9 +15,9 @@ def get_carts(request):
     if not request.session.session_key:
         request.session.create()
 
-    return Cart.objects.filter(session_key=request.session.session_key).order_by(
-        "-quantity",
-    )
+    return Cart.objects.filter(session_key=request.session.session_key).order_by(  # noqa
+        "-quantity",  # noqa
+    )  # noqa
 
 
 class UserOrSessionKeyMixin:

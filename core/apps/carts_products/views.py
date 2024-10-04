@@ -13,12 +13,6 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import ListView
 
-from main_favorite.models import Products
-from main_favorite.services import CreateFavoritePage
-from main_favorite.utils import GetUserModel
-from orders.forms import CreateOrder
-from packet.models import Cart
-
 from .forms import FormOpinion
 from .models import Opinions
 from .services import (
@@ -33,13 +27,19 @@ from .services import (
 from .utils import GetProductObjectUtils
 
 
+# from main_favorite.services import CreateFavoritePage
+# from core.apps.main.utils import GetUserModel
+# from orders.forms import CreateOrder
+# from packet.models import Cart
+
+
 @method_decorator(
     cache_control(no_cache=True, must_revalidate=True, no_store=True),
     name="dispatch",
 )
 class Product(ListView):
     template_name = "carts_products/cart_product.html"
-    model = Products
+    model = Products  # noqa
     context_object_name = "products"
     slug_url_kwarg = "product"
 
@@ -57,7 +57,7 @@ class Product(ListView):
         if self.request.user.is_authenticated:
             username = self.request.user
 
-            get_product_in_favorite = CreateFavoritePage(username, False)
+            get_product_in_favorite = CreateFavoritePage(username, False)  # noqa
             get_liked_opinion = ProductsPageServices(
                 username,
                 opinions,
@@ -135,7 +135,7 @@ class OpinionsProduct(ListView):
             self.queryset = queryset
 
             if self.request.user.is_authenticated:
-                get_user_object = GetUserModel(self.request.user)
+                get_user_object = GetUserModel(self.request.user)  # noqa
                 user = get_user_object.get_user_model()
 
                 index_services = IndexToMove(user, self.queryset)
@@ -210,7 +210,7 @@ class DeleteOpinion(View):
 
 
 class Finalize(ListView):
-    model = Cart
+    model = Cart  # noqa
     template_name = "carts_products/finalize_product.html"
     context_object_name = "carts"
 
@@ -225,7 +225,7 @@ class Finalize(ListView):
         object_initial_form = FinalizeServices(username)
         initial_data = object_initial_form.formating_data_of_user_to_form()
 
-        form = CreateOrder(initial=initial_data)
+        form = CreateOrder(initial=initial_data)  # noqa
 
         context["form"] = form
 

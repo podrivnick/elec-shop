@@ -1,6 +1,6 @@
 from django.db.models import Sum
 
-from main_favorite.models import Products
+from core.apps.main.models.products import Products
 
 from .models import Cart
 

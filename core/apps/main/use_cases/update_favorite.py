@@ -3,14 +3,16 @@ from dataclasses import (
     field,
 )
 
-from src.domain.flowers.entities.flower import (
-    BaseChangerFavoriteService,
-    BaseFavoriteProductsExistService,
-    Flower,
-)
-
 from core.infrastructure.mediator.base import BaseCommands
 from core.infrastructure.mediator.handlers.commands import CommandHandler
+
+
+class BaseChangerFavoriteService:
+    pass
+
+
+class BaseFavoriteProductsExistService:
+    pass
 
 
 @dataclass(frozen=True)
@@ -20,7 +22,7 @@ class UpdateFavoritePageCommand(BaseCommands):
 
 @dataclass(frozen=True)
 class UpdateFavoritePageCommandHandler(
-    CommandHandler[UpdateFavoritePageCommand, Flower],
+    CommandHandler[UpdateFavoritePageCommand, str],
 ):
     product_in_favorite: BaseFavoriteProductsExistService
     add_or_delete_favorite: BaseChangerFavoriteService
@@ -28,7 +30,7 @@ class UpdateFavoritePageCommandHandler(
     def handle(
         self,
         command: UpdateFavoritePageCommand,
-    ) -> Flower:
+    ) -> None:
         if command.is_authenticated:
             is_product_in_favorite: bool = (
                 self.product_in_favorite.check_product_in_favorite(

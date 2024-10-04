@@ -3,13 +3,12 @@ from dataclasses import (
     field,
 )
 
-from src.domain.flowers.entities.flower import (
-    BaseFAQInformationService,
-    Flower,
-)
-
 from core.infrastructure.mediator.base import BaseCommands
 from core.infrastructure.mediator.handlers.commands import CommandHandler
+
+
+class BaseFAQInformationService:
+    pass
 
 
 @dataclass(frozen=True)
@@ -18,13 +17,13 @@ class InformationPageCommand(BaseCommands):
 
 
 @dataclass(frozen=True)
-class InformationPageCommandHandler(CommandHandler[InformationPageCommand, Flower]):
+class InformationPageCommandHandler(CommandHandler[InformationPageCommand, str]):
     information: BaseFAQInformationService
 
     def handle(
         self,
         command: InformationPageCommand,
-    ) -> Flower:
+    ) -> str:
         all_info = (
             self.information.get_all_information()
         )  # INFO: just return all information

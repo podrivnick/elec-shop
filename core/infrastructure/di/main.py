@@ -1,12 +1,17 @@
 from functools import lru_cache
 
 from punq import Container
-from src.application.arts.commands.arts import (
-    GetRandomArtCommand,
-    GetRandomArtCommandHandler,
+
+from core.apps.main.services.main import (
+    CategoriesService,
+    FavoriteProductsIdsService,
+    ProductsService,
 )
-from src.infrastructure.db.services import BaseArtMongoDBService
-from src.infrastructure.mediator.main import Mediator
+from core.apps.main.use_cases.main import (
+    MainPageCommand,
+    MainPageCommandHandler,
+)
+from core.infrastructure.mediator.mediator import Mediator
 
 
 @lru_cache(1)
@@ -18,20 +23,22 @@ def _initialize_container() -> Container:
     container = Container()
 
     # Handlers
-    container.register(GetRandomArtCommandHandler)
+    container.register(MainPageCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
 
         # command handlers
-        get_random_art_handler = GetRandomArtCommandHandler(
-            arts_service=container.resolve(BaseArtMongoDBService),
+        configure_main_page_handler = MainPageCommandHandler(
+            categories_service=CategoriesService(),
+            favorite_products_service_ids=FavoriteProductsIdsService(),
+            products_service=ProductsService(),
         )
 
         # commands
         mediator.register_command(
-            GetRandomArtCommand,
-            [get_random_art_handler],
+            MainPageCommand,
+            [configure_main_page_handler],
         )
 
         return mediator

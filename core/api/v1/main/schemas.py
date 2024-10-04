@@ -7,3 +7,7 @@ class FiltersProductsSchema(Schema):
     is_sorting: bool = None
     query: bool = None
     slug: bool = None
+
+
+class ProductIdSchema(Schema):
+    product_id: str

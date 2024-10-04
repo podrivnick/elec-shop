@@ -3,4 +3,5 @@ from django.apps import AppConfig
 
 class PacketConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "packet"
+    name = "core.apps.packet"
+    verbose_name = "Корзина"

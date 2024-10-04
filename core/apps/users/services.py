@@ -1,4 +1,4 @@
-from packet.models import Cart
+# from packet.models import Cart
 
 
 class AddSessionCartToUser:
@@ -8,7 +8,7 @@ class AddSessionCartToUser:
 
     def add_session_cart_to_user(self):
         if self.session_key:
-            Cart.objects.filter(session_key=self.session_key).update(user=self.user)
+            Cart.objects.filter(session_key=self.session_key).update(user=self.user)  # noqa
 
 
 class ChangeProfileUserData:

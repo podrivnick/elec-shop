@@ -22,19 +22,14 @@ from django.urls import (
     path,
 )
 
-from app import settings
+from core.project.settings import specific
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("core.api.urls")),
-    path("", include("main_favorite.urls", namespace="main")),
-    path("users/", include("users.urls", namespace="users")),
-    path("carts_products/", include("carts_products.urls", namespace="carts_products")),
-    path("packet/", include("packet.urls", namespace="packet")),
-    path("orders/", include("orders.urls", namespace="orders")),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_URL)
+if specific.DEBUG:
+    urlpatterns += static(specific.MEDIA_URL, document_root=specific.MEDIA_ROOT)
+    urlpatterns += static(specific.STATIC_URL, document_root=specific.STATIC_URL)

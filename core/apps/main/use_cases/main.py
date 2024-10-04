@@ -3,15 +3,20 @@ from dataclasses import (
     field,
 )
 
-from src.domain.flowers.entities.flower import (
-    BaseCategoriesService,
-    BaseFavoriteProductsIdsService,
-    BaseProductsService,
-    Flower,
-)
-
 from core.infrastructure.mediator.base import BaseCommands
 from core.infrastructure.mediator.handlers.commands import CommandHandler
+
+
+class BaseCategoriesService:
+    pass
+
+
+class BaseFavoriteProductsIdsService:
+    pass
+
+
+class BaseProductsService:
+    pass
 
 
 @dataclass(frozen=True)
@@ -20,7 +25,7 @@ class MainPageCommand(BaseCommands):
 
 
 @dataclass(frozen=True)
-class MainPageCommandHandler(CommandHandler[MainPageCommand, Flower]):
+class MainPageCommandHandler(CommandHandler[MainPageCommand, str]):
     categories_service: BaseCategoriesService
     favorite_products_service_ids: BaseFavoriteProductsIdsService
     products_service: BaseProductsService
@@ -28,7 +33,7 @@ class MainPageCommandHandler(CommandHandler[MainPageCommand, Flower]):
     def handle(
         self,
         command: MainPageCommand,
-    ) -> Flower:
+    ) -> None:
         favorite_products_ids = None
         if command.is_authenticated:
             favorite_products_ids = (

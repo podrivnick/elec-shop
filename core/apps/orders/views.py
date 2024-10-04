@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
 
-from main_favorite.utils import GetUserModel
+from core.apps.main.utils import GetUserModel
 
 from .config import SUCCESSFUL_ORDER
 from .exceptions import BaseOrderException

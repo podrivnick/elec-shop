@@ -8,8 +8,8 @@ from typing import (
 from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 
-from main_favorite.models import Products
-from main_favorite.utils import GetUserModel
+from core.apps.main.models.products import Products
+from core.apps.main.utils import GetUserModel
 
 from .config import data_form_finalize
 from .exceptions import *  # noqa

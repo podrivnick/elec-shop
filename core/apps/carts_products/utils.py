@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 
-from main_favorite.models import Products
+from core.apps.main.models.products import Products
 
 
 class GetProductObjectUtils:

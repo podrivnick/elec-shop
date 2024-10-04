@@ -49,10 +49,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     "core.apps.main.apps.MainConfig",
-    #     "carts_products", noqa
-    #     "users",
-    #     "orders",
-    #     "packet",
+    "core.apps.carts_products.apps.CartsProductsConfig",
+    "core.apps.users.apps.UsersConfig",
+    "core.apps.orders.apps.OrdersConfig",
+    "core.apps.packet.apps.PacketConfig",
+    "core.apps.common.apps.CommonConfig",
 ]
 
 MIDDLEWARE = [
@@ -66,12 +67,12 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = "app.urls"
+ROOT_URLCONF = "core.project.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [BASE_DIR / "frontend/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -84,7 +85,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "app.wsgi.application"
+WSGI_APPLICATION = "core.project.wsgi.application"
 
 sentry_sdk.init(
     dsn=env("SENTRY_DSN"),
