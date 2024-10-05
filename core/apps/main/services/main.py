@@ -1,10 +1,20 @@
 from dataclasses import dataclass
-from typing import Iterable
+from typing import (
+    Iterable,
+    List,
+)
 
 from core.api.filters import PaginationIn
 from core.api.v1.main.schemas import FiltersProductsSchema
-from core.apps.main.entities.product import ProductEntity
-from core.apps.main.models.products import Products as ProductsModel
+from core.apps.main.entities.product import (
+    CategoriesProduct,
+    ProductEntity,
+)
+from core.apps.main.models.favorites import Favorites
+from core.apps.main.models.products import (
+    CategoriesProduct as CategoriesProductModel,
+    Products as ProductsModel,
+)
 from core.apps.main.services.base import (
     BaseCategoriesService,
     BaseFavoriteProductsIdsService,
@@ -15,20 +25,25 @@ from core.apps.main.utils.main import q_search
 
 @dataclass
 class CategoriesService(BaseCategoriesService):
-    def get_all_products_categories(self) -> None:
-        print("s")
+    def get_all_products_categories(self) -> Iterable[CategoriesProduct]:
+        categories = CategoriesProductModel.objects.all()
+
+        return [category.to_entity() for category in categories]
 
 
 @dataclass
 class FavoriteProductsIdsService(BaseFavoriteProductsIdsService):
-    def get_favorite_products_ids(self) -> None:
-        print("s")
+    def get_ids_products_in_favorite(self, username: str) -> List:
+        favorites = Favorites.objects.filter(user__username=username)
+        products_id = [item.product_id for item in favorites]
+
+        return products_id
 
 
 @dataclass
 class ProductsService(BaseProductsService):
     def get_all_products(self) -> None:
-        self.products = ProductsModel.object.all()
+        self.products = ProductsModel.objects.all()
 
     def get_filtered_products(
         self,
@@ -37,20 +52,20 @@ class ProductsService(BaseProductsService):
     ) -> tuple[bool, Iterable[ProductEntity]]:
         is_search_failed = False
 
-        if self.is_available:
+        if filters.is_available:
             self.products = self.products.filter(count_product__gt=0)
 
-        if self.is_discount:
+        if filters.is_discount:
             self.products = self.products.filter(discount__gt=0)
 
-        if self.is_sorting and self.is_sorting != "default":
-            self.products = self.products.order_by(self.is_sorting)
+        if filters.is_sorting and filters.is_sorting != "default":
+            self.products = self.products.order_by(filters.is_sorting)
 
-        if self.slug and self.slug != "all":
-            self.products = self.products.filter(category__slug=self.slug)
+        if filters.slug and filters.slug != "all":
+            self.products = self.products.filter(category__slug=filters.slug)
 
-        if self.query:
-            self.products = q_search(self.query, self.products)
+        if filters.query:
+            self.products = q_search(filters.query, self.products)
 
             if not len(self.products):
                 is_search_failed = True

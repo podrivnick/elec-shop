@@ -23,7 +23,7 @@ from django.views.generic import (
     TemplateView,
 )
 
-from core.apps.main.utils import GetUserModel
+from core.apps.main.utils.main import GetUserModel
 
 from .config import (
     MESSAGE_LOGOUT,

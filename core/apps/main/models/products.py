@@ -1,7 +1,10 @@
 from django.db import models
 
 from core.apps.common.models import TimeBaseModel
-from core.apps.main.entities.product import ProductEntity
+from core.apps.main.entities.product import (
+    CategoriesProduct,
+    ProductEntity,
+)
 
 
 class Products(TimeBaseModel):
@@ -18,7 +21,7 @@ class Products(TimeBaseModel):
     price = models.DecimalField(decimal_places=2, max_digits=10, default=0.00)
     count_product = models.PositiveIntegerField(default=0, verbose_name="Количество")
     category = models.ForeignKey(
-        "Categories_Product",
+        "CategoriesProduct",
         on_delete=models.PROTECT,
         blank=True,
     )
@@ -45,7 +48,7 @@ class Products(TimeBaseModel):
         return self.price
 
     def __str__(self):
-        return self.title
+        return self.name
 
     class Meta:
         db_table = "products"
@@ -57,8 +60,14 @@ class CategoriesProduct(TimeBaseModel):
     category = models.CharField(max_length=40, unique=True)
     slug = models.SlugField(unique=True, max_length=40, null=True)
 
+    def to_entity(self) -> CategoriesProduct:
+        return CategoriesProduct(
+            category=self.category,
+            slug=self.slug,
+        )
+
     def __str__(self):
-        return self.title
+        return self.category
 
     class Meta:
         db_table = "category"

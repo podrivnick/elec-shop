@@ -15,3 +15,9 @@ class ProductEntity:
     category: str
     created_at: datetime
     updated_at: datetime
+
+
+@dataclass
+class CategoriesProduct:
+    category: str
+    slug: str

@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 
 from core.apps.main.models.products import Products
-from core.apps.main.utils import GetUserModel
+from core.apps.main.utils.main import GetUserModel
 
 from .config import data_form_finalize
 from .exceptions import *  # noqa

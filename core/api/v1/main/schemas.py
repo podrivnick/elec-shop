@@ -1,12 +1,14 @@
+from typing import Optional
+
 from ninja import Schema
 
 
 class FiltersProductsSchema(Schema):
-    is_available: bool = None
-    is_discount: bool = None
-    is_sorting: bool = None
-    query: bool = None
-    slug: bool = None
+    is_available: Optional[bool] = None
+    is_discount: Optional[bool] = None
+    is_sorting: Optional[bool] = None
+    query: Optional[str] = None
+    slug: Optional[str] = "all"
 
 
 class ProductIdSchema(Schema):

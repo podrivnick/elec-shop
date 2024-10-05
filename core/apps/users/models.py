@@ -1,4 +1,8 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import (
+    AbstractUser,
+    Group,
+    Permission,
+)
 from django.db import models
 
 
@@ -16,11 +20,22 @@ class User(AbstractUser):
         verbose_name="Телефон",
         default=0,
     )
-    age = models.IntegerField(null=True, blank=True, verbose_name="Возраст", default=0)
+
+    # Переопределение полей с уникальными именами для related_name
+    groups = models.ManyToManyField(
+        Group,
+        related_name="custom_user_groups",  # Уникальное имя обратной связи
+        blank=True,
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name="custom_user_permissions",  # Уникальное имя обратной связи
+        blank=True,
+    )
 
     class Meta:
         db_table = "user"
-        verbose_name = "Пользователя"
+        verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
 
     def __str__(self):

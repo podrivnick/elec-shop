@@ -144,10 +144,10 @@ MEDIA_URL = "/media/"
 
 MEDIA_ROOT = "media"
 
-STATIC_URL = "static/"
+STATIC_URL = "frontend/static/"
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    BASE_DIR / "frontend/static",
 ]
 STATIC_ROOT = "staticfiles"
 # Static files (CSS, JavaScript, Images)

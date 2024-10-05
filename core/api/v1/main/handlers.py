@@ -27,30 +27,36 @@ class ApiResponse:
     pass
 
 
-@router.get("index", operation_id="index")
-def main_handler(
+@router.get("index", url_name="index")
+def index(
     request: HttpRequest,
-    schema: FiltersProductsSchema,
+    filters: Query[FiltersProductsSchema],
     pagination_in: Query[PaginationIn],
 ):
     """API: загрузка главной страницы."""
     container = init_container()
-
     mediator: Mediator = container.resolve(Mediator)
+
+    is_authenticated = request.user.is_authenticated
 
     try:
         context = mediator.handle_command(
-            MainPageCommand(),
+            MainPageCommand(
+                is_authenticated=is_authenticated,
+                username=request.user.username,
+                filters=filters,
+                pagination=pagination_in,
+            ),
         )
     except BaseAppException as exception:
         raise ValueError(
             detail={"error": exception.message},
         )
 
-    return render(request, "main_favorite/index.html", context)
+    return render(request, "main_favorite/index.html", context[0])
 
 
-@router.get("favorites", operation_id="favorites")
+@router.get("favorites", url_name="favorites")
 def favorite_handler(
     request: HttpRequest,
 ):
@@ -73,11 +79,11 @@ def favorite_handler(
 
 @router.post(
     "save_favorite",
-    operation_id="save_favorite",
+    url_name="save_favorite",
 )
 def update_favorite_handler(
     request: HttpRequest,
-    schema: ProductIdSchema,
+    product_id: ProductIdSchema,
 ):
     """API: обновление списка товаров находящихся в избранном."""
     container = init_container()
@@ -96,7 +102,7 @@ def update_favorite_handler(
     return ApiResponse(context)
 
 
-@router.get("information", operation_id="information")
+@router.get("information", url_name="information")
 def faq_handler(
     request: HttpRequest,
 ):

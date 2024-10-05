@@ -23,24 +23,24 @@
     <div class="main-header">
             <header class="header-main">
                 <div class="logo">
-                    <a href="{% url 'main:index' %}">
+                    <a href="{% url 'v1:index' %}">
                         <img src="{% static 'icons/logo.png' %}" alt="inter" style="height: 100px; width: 240px">
                     </a>
                 </div>
                 <nav class="navbar-header">
                     <ul class="navbar_ul">
                         <li class="menu-list-profile dis_none show_only_mobile">
-                            <a href='{% url "main:information" %}' class="links_profile_navbar">
+                            <a href='{% url "v1:information" %}' class="links_profile_navbar">
                                 Информация
                             </a>
                         </li>
                         <li class="menu-list-profile dis_none show_only_mobile">
-                            <a href="{% url 'main:favorites' %}" class="links_profile_navbar">
+                            <a href="{% url 'v1:favorites' %}" class="links_profile_navbar">
                                 Избранное
                             </a>
                         </li>
                         <li class="navbar_links main_link">
-                            <a href="{% url 'main:index' %}"> Главная </a>
+                            <a href="{% url 'v1:index' %}"> Главная </a>
                         </li>
 
                         {% if not user.is_authenticated %}
@@ -79,12 +79,12 @@
                                 </li>
 
                                 <li class="menu-list-profile">
-                                    <a href="{% url 'main:favorites' %}" class="links_profile_navbar">
+                                    <a href="{% url 'v1:favorites' %}" class="links_profile_navbar">
                                         Избранное
                                     </a>
                                 </li>
                                 <li class="menu-list-profile">
-                                    <a href='{% url "main:information" %}' class="links_profile_navbar">
+                                    <a href='{% url "v1:information" %}' class="links_profile_navbar">
                                         Информация
                                     </a>
                                 </li>

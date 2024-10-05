@@ -1,7 +1,5 @@
-from core.apps.main.utils import GetUserModel
-
-
-# from packet.models import Cart
+from core.apps.main.utils.main import GetUserModel
+from core.apps.packet.models import Cart
 
 
 def get_carts(request):
