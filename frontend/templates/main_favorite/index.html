@@ -91,7 +91,7 @@
                 </div>
         <div class="border"></div>
         <div class="block_setting_reflections_products">
-                    <form action="{% if request.GET.q %}{% url 'api:v1:index' slug_url %}{% endif %}" class="form_search_index" role="search" method="get">
+                    <form action="{% if request.GET.q %}{% url 'v1:index' slug_url %}{% endif %}" class="form_search_index" role="search" method="get">
                         <label for="id_search">Поиск:</label>
                         <input type="text" id="id_search" placeholder="Введите название или id товара" name="search"
                                class="block_input_search_">
@@ -115,9 +115,9 @@
                             <div class="main_catalog_form visible_popup_catalog">
                                 {% for category in categories %}
                                     {% if category.slug == 'all' %}
-                                        <a href="{% url 'api:v1:index' category.slug %}" class="catalog_links">{{ category.category }}</a>
+                                        <a href="{% url 'v1:index' category.slug %}" class="catalog_links">{{ category.category }}</a>
                                     {% else %}
-                                        <a href="{% url 'api:v1:index' category.slug %}" class="catalog_links">{{ category.category }}</a>
+                                        <a href="{% url 'v1:index' category.slug %}" class="catalog_links">{{ category.category }}</a>
                                     {% endif %}
                                 {% endfor %}
                             </div>
@@ -136,7 +136,7 @@
                                 </div>
 
                                 <div class="filters">
-                                    <form action="{% if request.GET.q %}{% url 'api:v1:index' slug_url %}{% endif %}" method="get">
+                                    <form action="{% if request.GET.q %}{% url 'v1:index' slug_url %}{% endif %}" method="get">
                                         <div class="block-filter">
                                             <label for="id_available_product">В наличии</label>
                                             <input type="checkbox" name="available" id="id_available_product" value="on_available"

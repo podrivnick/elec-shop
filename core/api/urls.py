@@ -7,7 +7,11 @@ from core.api.schemas import PingResponseSchema
 from core.api.v1.urls import router as v1_router
 
 
-api = NinjaAPI(urls_namespace="v1")
+api = NinjaAPI(
+    urls_namespace="v1",
+    openapi_url="/v1/openapi.json",
+    docs_url="/v1/docs/",
+)
 
 
 @api.get("/ping", response=PingResponseSchema)
@@ -17,7 +21,6 @@ def ping(request: HttpRequest) -> PingResponseSchema:
 
 api.add_router("v1/", v1_router)
 
-app_name = "v1"
 
 urlpatterns = [
     path("", api.urls),

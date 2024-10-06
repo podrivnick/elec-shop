@@ -1,0 +1,260 @@
+.profile{
+    display: flex;
+    justify-content: space-around;
+}
+.container_left_avatar{
+    margin: 10px;
+}
+.container_right_data_user{
+    margin: 10px;
+}
+.username_data{
+    margin: 10px;
+    padding: 7px;
+    border-radius: 5%;
+
+}
+.container_left_avatar{
+    width: 290px;
+    height: 250px;
+    background-color: #6cb0ad;
+    border-radius: 10px;
+    border: 2px solid #000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    word-wrap: break-word;
+    max-width: 100%;
+    position: relative;
+}
+.container_right_data_user{
+  width: 290px;
+  background-color: #6cb0ad;
+  border-radius: 10px;
+    border: 2px solid #000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    word-wrap: break-word;
+    max-width: 100%;
+    position: relative;
+}
+.container_data_user label{
+    width: 100%;
+}
+
+.container_border_left{
+    width: 250px;
+    background-color: #250e0e;
+}
+.container_border_right{
+    width: 250px;
+    background-color: #250e0e;
+}
+
+.chenger_reflections_products{
+    background-color: #ecc7c7;
+    width: 150px;
+    height: 35px;
+    transform: perspective(.5em) rotateX(5deg);
+}
+.chenger_reflections_products button{
+    border: none;
+    background: none;
+    box-shadow: none;
+    outline: none;
+    width: 150px;
+    height: 35px;
+}
+.data_of_products{
+    display: flex;
+    padding: 20px;
+}
+.chenger_reflections_products{
+    font-size: 18px;
+    text-align: center;
+}
+.chenger_reflections_products.taken{
+    border: 2px black solid;
+}
+
+.container_products{
+    min-height: 500px;
+    border-radius: 10px;
+    border: 2px solid #000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    padding: 10px;
+}
+
+.carts_on_sell{
+    display: flex;
+    height: 200px;
+    max-width: 1000px;
+    background-color: #77a1ce;
+    border-radius: 10px;
+    align-items: center;
+}
+.data_cart_product{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    float: left;
+}
+.data_cart_product span{
+    padding: 5px;
+    font-size: 18px;
+}
+.carts_on_sell img {
+    float: left;
+}
+.status{
+    display: flex;
+    align-items: flex-end;
+    float: right;
+    height: 90px;
+    padding: 4px;
+    align-content: stretch;
+    justify-content: space-between;
+    flex-direction: column;
+}
+.status span{
+    padding: 5px;
+}
+.btn_save_new_data_user{
+    float: right;
+}
+.carts_on_sell{
+    margin: 12px;
+    border: 2px #ab3cdf solid;
+}
+.output_price_product {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    float: left;
+}
+.output_price_product span{
+    padding: 37px;
+    font-size: 22px;
+}
+.block_btn_buy_all_packet{
+    height: 180px;
+}
+.finalize_dis_none_packet{
+    display: none;
+}
+
+
+@media (max-width: 1052px) {
+    .carts_on_sell{
+        max-width: 1000px;
+    }
+}
+
+
+@media (max-width: 735px) {
+    .carts_on_sell{
+        align-items: center;
+    }
+    .output_price_product span{
+        padding: 3px;
+    }
+    .block_cart_product_packet_data.profile{
+        max-width: none ;
+    }
+}
+
+@media (max-width: 665px) {
+    .carts_on_sell{
+        height: 620px;
+        flex-direction: column;
+    }
+    .img_product_profile{
+        width: 500px !important;
+        height: 400px !important;
+    }
+}
+
+@media (max-width: 567px) {
+    .img_product_profile{
+        width: 350px !important;
+        height: 310px !important;
+    }
+}
+@media (max-width: 550px) {
+    .profile {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 490px) {
+    .chenger_reflections_products{
+        width: 105px;
+    }
+    .chenger_reflections_products button{
+        width: 105px;
+    }
+}
+
+@media (max-width: 400px) {
+    .img_product_profile{
+        width: 300px !important;
+        height: 260px !important;
+    }
+}
+
+@media (max-width: 350px) {
+    .img_product_profile{
+        width: 240px !important;
+        height: 200px !important;
+    }
+    .data_of_products {
+        padding: 2px;
+    }
+}
+
+@media (max-width: 335px) {
+    .chenger_reflections_products button{
+        width: 80px;
+    }
+    .chenger_reflections_products.taken{
+        width: 80px;
+    }
+    .container_left_avatar{
+        width: 250px;
+    }
+    .container_right_data_user{
+        width: 250px;
+    }
+}
+@media (max-width: 318px) {
+    .chenger_reflections_products button{
+        width: 67px;
+    }
+    .chenger_reflections_products.taken{
+        width: 67px;
+    }
+    .container_left_avatar{
+        width: 220px;
+    }
+    .container_right_data_user{
+        width: 220px;
+    }
+    .data_added_packet{
+        margin: 0px 5px 0px 0px;
+    }
+    .btn_delete_product_from_packet{
+        margin: 12px 6px 20px 0px !important;
+    }
+    .block__packet__delete {
+        margin: 0px 13px 0px 0px;
+    }
+}

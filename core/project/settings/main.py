@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     "django_extensions",
+    "ninja",
     "core.apps.main.apps.MainConfig",
     "core.apps.carts_products.apps.CartsProductsConfig",
     "core.apps.users.apps.UsersConfig",

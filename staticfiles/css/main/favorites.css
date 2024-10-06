@@ -1,0 +1,116 @@
+.main_container{
+    display: flex;
+    min-height: 500px;
+    border-radius: 10px;
+    border: 2px solid #000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    padding: 10px;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.carts_product{
+    display: flex;
+    width: 280px;
+    margin: 50px;
+    border: 2px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #efaeae;
+    transition: border-color 1s ease;
+    flex-direction: column;
+    flex-wrap: wrap;
+    pointer-events: initial;
+}
+.carts_product:hover{
+    border-radius: 8px;
+    transition: all 1.2s ease 0.5s;
+    width: 270px;
+    height: 110%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.94);
+    border: 0;
+    pointer-events: initial;
+}
+.heart_block button{
+    border: none;
+    background: none;
+    box-shadow: none;
+    outline: none;
+    position: relative;
+    font-size: 30px;
+    float: right;
+}
+.count_favorites_product{
+    color: white;
+    font-size: 5px;
+}
+.data_product_name{
+    font-size: 18px;
+    padding: 10px;
+}
+.data_product_discount{
+    text-decoration: line-through;
+}
+.data_product_price{
+    font-size: 20px;
+}
+.block_data_of_product{
+    display: flex;
+    flex-direction: column;
+}
+
+.image_product {
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    flex-wrap: wrap;
+}
+.heart_block.main_heart{
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+}
+.heart_block.main_heart button{
+    display: flex;
+    height: 25px;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.count_favorites_product{
+    font-size: 14px;
+}
+.btn_to_packet{
+    display: flex;
+    justify-content: flex-end;
+    margin: 5px;
+}
+.data_product_discount{
+    height: 20px;
+}
+.header_second_favorites{
+    color: white;
+    font-size: 26px;
+}
+
+
+@media (max-width: 1470px) {
+    .main_container{
+            display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        flex-direction: row;
+        max-height: none;
+    }
+}
+
+
+@media (max-width: 300px) {
+    .carts_product{
+        margin: 5px 0px 20px 0px;
+    }
+}

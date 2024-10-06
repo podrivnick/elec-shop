@@ -27,7 +27,7 @@ from core.project.settings import specific
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include("core.api.urls", namespace="api")),
+    path("api/", include("core.api.urls")),
 ]
 
 if specific.DEBUG:
