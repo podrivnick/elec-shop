@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Optional
 
 
 @dataclass
@@ -15,6 +16,8 @@ class ProductEntity:
     category: str
     created_at: datetime
     updated_at: datetime
+    headline: Optional[str] = ""
+    bodyline: Optional[str] = ""
 
     def sell_price(self):
         if self.discount:

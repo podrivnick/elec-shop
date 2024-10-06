@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.db import models
 
 from core.apps.common.models import TimeBaseModel
@@ -27,6 +29,9 @@ class Products(TimeBaseModel):
     )
     id_product = models.DecimalField(decimal_places=0, max_digits=7, null=True)
 
+    headline: Optional[str] = ""
+    bodyline: Optional[str] = ""
+
     class Meta:
         db_table = "products"
         verbose_name = "Товары"
@@ -45,6 +50,8 @@ class Products(TimeBaseModel):
             category=self.category,
             created_at=self.created_at,
             updated_at=self.updated_at,
+            headline=self.headline,
+            bodyline=self.bodyline,
         )
 
     def __str__(self):

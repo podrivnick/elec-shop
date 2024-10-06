@@ -4,11 +4,10 @@ from ninja import Schema
 
 
 class FiltersProductsSchema(Schema):
-    is_available: Optional[bool] = None
-    is_discount: Optional[bool] = None
-    is_sorting: Optional[bool] = None
-    query: Optional[str] = None
-    # category_slug: Optional[str] = "all"
+    available: Optional[str] = None
+    discount: Optional[str] = None
+    sorting: Optional[str] = "default"
+    search: Optional[str] = None
 
 
 class ProductIdSchema(Schema):

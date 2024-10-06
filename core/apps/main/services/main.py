@@ -53,20 +53,20 @@ class ProductsService(BaseProductsService):
     ) -> tuple[bool, Iterable[ProductEntity]]:
         is_search_failed = False
 
-        if filters.is_available:
+        if filters.available:
             self.products = self.products.filter(count_product__gt=0)
 
-        if filters.is_discount:
+        if filters.discount:
             self.products = self.products.filter(discount__gt=0)
 
-        if filters.is_sorting and filters.is_sorting != "default":
-            self.products = self.products.order_by(filters.is_sorting)
+        if filters.sorting and filters.sorting != "default":
+            self.products = self.products.order_by(filters.sorting)
 
         if category_slug and category_slug != "all":
             self.products = self.products.filter(category__slug=category_slug)
 
-        if filters.query:
-            self.products = q_search(filters.query, self.products)
+        if filters.search:
+            self.products = q_search(filters.search, self.products)
 
             if not len(self.products):
                 is_search_failed = True
