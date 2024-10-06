@@ -27,6 +27,11 @@ class Products(TimeBaseModel):
     )
     id_product = models.DecimalField(decimal_places=0, max_digits=7, null=True)
 
+    class Meta:
+        db_table = "products"
+        verbose_name = "Товары"
+        ordering = ("id",)
+
     def to_entity(self) -> ProductEntity:
         return ProductEntity(
             id_product=self.id_product,
@@ -42,18 +47,8 @@ class Products(TimeBaseModel):
             updated_at=self.updated_at,
         )
 
-    def sell_price(self):
-        if self.discount:
-            return round(self.price - self.price * self.discount / 100, 2)
-        return self.price
-
     def __str__(self):
         return self.name
-
-    class Meta:
-        db_table = "products"
-        verbose_name = "Товары"
-        ordering = ("id",)
 
 
 class CategoriesProduct(TimeBaseModel):
