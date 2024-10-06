@@ -49,6 +49,7 @@ class ProductsService(BaseProductsService):
         self,
         filters: FiltersProductsSchema,
         pagination: PaginationIn,
+        category_slug: str,
     ) -> tuple[bool, Iterable[ProductEntity]]:
         is_search_failed = False
 
@@ -61,8 +62,8 @@ class ProductsService(BaseProductsService):
         if filters.is_sorting and filters.is_sorting != "default":
             self.products = self.products.order_by(filters.is_sorting)
 
-        if filters.slug and filters.slug != "all":
-            self.products = self.products.filter(category__slug=filters.slug)
+        if category_slug and category_slug != "all":
+            self.products = self.products.filter(category__slug=category_slug)
 
         if filters.query:
             self.products = q_search(filters.query, self.products)

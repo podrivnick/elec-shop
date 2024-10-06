@@ -32,7 +32,7 @@
                  style="width: 110px; height: 110px; border-radius: 50%">
             {% endif %}
         </div>
-        <form action="{% url 'users:profile' %}" method="post" enctype="multipart/form-data" >
+        <!-- <form action="{% url 'users:profile' %}" method="post" enctype="multipart/form-data" >
             {% csrf_token %}
             <input type="hidden" name="old_username" value="{{ request.user.username }}">
             <input type="file" name="avatar" accept="image/*">
@@ -75,7 +75,7 @@
                 <button class="btn_save_new_data_user btn_submit_filters btn" type="submit">Сохранить</button>
             </div>
         </form>
-    </div>
+    </div> -->
 </div>
   <div class="data_of_products_merge">
     <div class="data_of_products">

@@ -109,7 +109,6 @@ class RegisterUser(CreateView):
 
 class ProfileUserData(LoginRequiredMixin, TemplateView):
     template_name = "users/profile.html"
-    success_url = reverse_lazy("users:profile")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -165,8 +164,6 @@ class ProfileUserData(LoginRequiredMixin, TemplateView):
                 self.request,
                 f"{MESSAGE_UPDATED_AVATAR_OR_USERNAME}{self.request.user}",
             )
-
-            return redirect("users:profile")
 
         return self.render_to_response(self.get_context_data(form=form))
 

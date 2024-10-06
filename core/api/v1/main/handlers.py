@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.http import HttpRequest
 from django.shortcuts import render
 
@@ -27,11 +29,12 @@ class ApiResponse:
     pass
 
 
-@router.get("index", url_name="index")
+@router.get("/index/{category_slug}", url_name="index")
 def index(
     request: HttpRequest,
     filters: Query[FiltersProductsSchema],
     pagination_in: Query[PaginationIn],
+    category_slug: Optional[str],
 ):
     """API: загрузка главной страницы."""
     container = init_container()
@@ -46,6 +49,7 @@ def index(
                 username=request.user.username,
                 filters=filters,
                 pagination=pagination_in,
+                category_slug=category_slug,
             ),
         )
     except BaseAppException as exception:
@@ -57,7 +61,7 @@ def index(
 
 
 @router.get("favorites", url_name="favorites")
-def favorite_handler(
+def favorites(
     request: HttpRequest,
 ):
     """API: загрузка страницы с товарами находящимися в избранном."""
@@ -81,7 +85,7 @@ def favorite_handler(
     "save_favorite",
     url_name="save_favorite",
 )
-def update_favorite_handler(
+def save_favorite(
     request: HttpRequest,
     product_id: ProductIdSchema,
 ):
@@ -103,7 +107,7 @@ def update_favorite_handler(
 
 
 @router.get("information", url_name="information")
-def faq_handler(
+def information(
     request: HttpRequest,
 ):
     """API: загрузка страницы с общей информацией."""

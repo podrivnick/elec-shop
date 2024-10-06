@@ -8,7 +8,7 @@ class FiltersProductsSchema(Schema):
     is_discount: Optional[bool] = None
     is_sorting: Optional[bool] = None
     query: Optional[str] = None
-    slug: Optional[str] = "all"
+    # category_slug: Optional[str] = "all"
 
 
 class ProductIdSchema(Schema):

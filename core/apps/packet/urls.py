@@ -3,7 +3,7 @@ from django.urls import path
 from packet import views
 
 
-app_name = "packet"
+# app_name = "packet"
 
 urlpatterns = [
     path(

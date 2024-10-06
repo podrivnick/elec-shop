@@ -3,7 +3,7 @@ from django.urls import path
 from carts_products import views
 
 
-app_name = "carts_products"
+# app_name = "carts_products"
 
 urlpatterns = [
     path("save_opinion", views.SaveOpinion.as_view(), name="save_opinion"),

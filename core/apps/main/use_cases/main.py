@@ -22,6 +22,7 @@ class MainPageCommand(BaseCommands):
     username: str | None = field(default=None)
     filters: FiltersProductsSchema | None = field(default=None)
     pagination: PaginationIn | None = field(default=None)
+    category_slug: str | None = field(default="all")
 
 
 @dataclass(frozen=True)
@@ -51,6 +52,7 @@ class MainPageCommandHandler(CommandHandler[MainPageCommand, str]):
         is_search_failed, products = self.products_service.get_filtered_products(
             command.filters,
             command.pagination,
+            command.category_slug,
         )  # INFO: should work even without filters
 
         context = convert_to_context_dict(

@@ -22,7 +22,7 @@
 <div class="main_login" style="background-image: url('{% static 'icons/background.jpg' %}')">
     {% include 'notifications/validation.html' %}
   <div class="block_entering_profile login">
-    <form action="{% url 'users:login' %}" class="block_login_form" method="post">
+    <!-- <form action=" class="block_login_form" method="post">
       {% csrf_token %}
         {% if request.GET.next %}
            <input type="hidden" name="next" value={{request.GET.next}}>
@@ -49,10 +49,10 @@
                required>
       </div>
       <div class="input_block_login block_login">
-          <a href="#">Забыл пароль</a><a href="{% url 'users:registration' %}">|Создать аккаунт</a>
+          <a href="#">Забыл пароль</a><a href="{">|Создать аккаунт</a>
         <button class="registration_btn btn btn-outline-primary" id="login_form_submit" type="submit">Войти</button>
       </div>
-    </form>
+    </form> -->
   </div>
 </div>
 
