@@ -83,6 +83,7 @@ skip_gitignore=true
 balanced_wrapping=true
 force_grid_wrap=2
 src_paths=["core", ]
+skip = ["core/infrastructure/di/main.py"]
 skip_glob=[
     ".git",
     ".idea",
@@ -90,7 +91,7 @@ skip_glob=[
     "venv",
     ".venv",
 ]
-known_django=["django","rest_framework"]
+known_django=["django","ninja"]
 known_first_party=["core"]
 sections=[
     "FUTURE",

@@ -7,8 +7,11 @@ from typing import Dict
 from core.api.v1.main.schemas import FiltersProductsSchema
 from core.apps.common.utils.context import convert_to_context_dict
 from core.apps.main.services.base import (
-    BaseCategoriesService,
+    BaseAllProductsService,
     BaseFavoriteProductsIdsService,
+)
+from core.apps.main.services.main.base import (
+    BaseCategoriesService,
     BaseProductsService,
 )
 from core.infrastructure.mediator.base import BaseCommands
@@ -26,15 +29,16 @@ class MainPageCommand(BaseCommands):
 
 @dataclass(frozen=True)
 class MainPageCommandHandler(CommandHandler[MainPageCommand, str]):
-    categories_service: BaseCategoriesService
     favorite_products_service_ids: BaseFavoriteProductsIdsService
+    get_all_products_service: BaseAllProductsService
+    categories_service: BaseCategoriesService
     products_service: BaseProductsService
 
     def handle(
         self,
         command: MainPageCommand,
     ) -> Dict:
-        self.products_service.get_all_products()
+        products = self.get_all_products_service.get_all_products()
         favorite_products_ids = None
 
         if command.is_authenticated:
@@ -47,8 +51,9 @@ class MainPageCommandHandler(CommandHandler[MainPageCommand, str]):
         categories = self.categories_service.get_all_products_categories()
 
         is_search_failed, products = self.products_service.get_filtered_products(
-            command.filters,
-            command.category_slug,
+            products=products,
+            filters=command.filters,
+            category_slug=command.category_slug,
         )
 
         paginated_response = self.products_service.paginate_products(
@@ -57,7 +62,7 @@ class MainPageCommandHandler(CommandHandler[MainPageCommand, str]):
         )
 
         context = convert_to_context_dict(
-            favorite_products_ids=favorite_products_ids,
+            favorites=favorite_products_ids,
             categories=categories,
             is_search_failed=is_search_failed,
             products=paginated_response,

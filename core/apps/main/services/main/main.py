@@ -2,33 +2,31 @@ from dataclasses import dataclass
 from typing import (
     Iterable,
     List,
-    QuerySet,
     Tuple,
 )
 
 from django.core.paginator import Paginator
+from django.db.models import QuerySet
 
 from core.api.v1.main.schemas import FiltersProductsSchema
 from core.apps.main.entities.product import (
     CategoriesProduct,
     ProductEntity,
 )
-from core.apps.main.models.favorites import Favorites
 from core.apps.main.models.products import (
     CategoriesProduct as CategoriesProductModel,
     Products as ProductsModel,
 )
 from core.apps.main.schemas.main import PaginatedProductsResponse
-from core.apps.main.services.base import (
+from core.apps.main.services.main.base import (
     BaseCategoriesService,
-    BaseFavoriteProductsIdsService,
     BaseProductsService,
 )
 from core.apps.main.utils.main import q_search
 
 
 @dataclass
-class CategoriesService(BaseCategoriesService):
+class ORMCategoriesService(BaseCategoriesService):
     def get_all_products_categories(self) -> Iterable[CategoriesProduct]:
         categories = CategoriesProductModel.objects.all()
 
@@ -36,21 +34,10 @@ class CategoriesService(BaseCategoriesService):
 
 
 @dataclass
-class FavoriteProductsIdsService(BaseFavoriteProductsIdsService):
-    def get_ids_products_in_favorite(self, username: str) -> List:
-        favorites = Favorites.objects.filter(user__username=username)
-        products_id = [item.product_id for item in favorites]
-
-        return products_id
-
-
-@dataclass
 class ORMProductsService(BaseProductsService):
-    def get_all_products(self) -> QuerySet[ProductsModel]:
-        self.products = ProductsModel.objects.all()
-
     def get_filtered_products(
         self,
+        products: QuerySet[ProductsModel],
         filters: FiltersProductsSchema,
         category_slug: str,
     ) -> Tuple[bool, Iterable[ProductEntity]]:
@@ -59,24 +46,24 @@ class ORMProductsService(BaseProductsService):
         is_search_failed = False
 
         if filters.available:
-            self.products = self.products.filter(count_product__gt=0)
+            products = products.filter(count_product__gt=0)
 
         if filters.discount:
-            self.products = self.products.filter(discount__gt=0)
+            products = products.filter(discount__gt=0)
 
         if filters.sorting and filters.sorting != "default":
-            self.products = self.products.order_by(filters.sorting)
+            products = products.order_by(filters.sorting)
 
         if category_slug and category_slug != "all":
-            self.products = self.products.filter(category__slug=category_slug)
+            products = products.filter(category__slug=category_slug)
 
         if filters.search:
-            self.products = q_search(filters.search, self.products)
+            products = q_search(filters.search, products)
 
-            if not len(self.products):
+            if not len(products):
                 is_search_failed = True
 
-        return is_search_failed, [product.to_entity() for product in self.products]
+        return is_search_failed, [product.to_entity() for product in products]
 
     def paginate_products(
         self,

@@ -2,7 +2,6 @@ from typing import Optional
 
 from django.http import HttpRequest
 from django.shortcuts import render
-
 from ninja import (
     Query,
     Router,
@@ -64,25 +63,32 @@ def index(
     return render(request, "main_favorite/index.html", context[0])
 
 
-@router.get("favorites", url_name="favorites")
+@router.get(
+    "favorites",
+    url_name="favorites",
+)
 def favorites(
     request: HttpRequest,
 ):
     """API: загрузка страницы с товарами находящимися в избранном."""
     container = init_container()
-
     mediator: Mediator = container.resolve(Mediator)
+
+    is_authenticated = request.user.is_authenticated
 
     try:
         context = mediator.handle_command(
-            FavoritePageCommand(),
+            FavoritePageCommand(
+                is_authenticated=is_authenticated,
+                username=request.user.username,
+            ),
         )
     except BaseAppException as exception:
         raise ValueError(
             detail={"error": exception.message},
         )
 
-    return render(request, "main_favorite/favorites.html", context)
+    return render(request, "main_favorite/favorites.html", context[0])
 
 
 @router.post(
