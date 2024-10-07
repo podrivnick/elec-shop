@@ -2,8 +2,13 @@ from dataclasses import (
     dataclass,
     field,
 )
+from typing import (
+    Dict,
+    List,
+)
 
 from core.apps.common.utils.context import convert_to_context_dict
+from core.apps.main.entities.product import ProductEntity
 from core.apps.main.services.base import (
     BaseAllProductsService,
     BaseFavoriteProductsIdsService,
@@ -28,26 +33,23 @@ class FavoritePageCommandHandler(CommandHandler[FavoritePageCommand, str]):
     def handle(
         self,
         command: FavoritePageCommand,
-    ) -> str:
-        if command.is_authenticated:
-            favorite_products_ids = (
-                self.favorite_products_service_ids.get_ids_products_in_favorite(
-                    command.username,
-                )
-            )
-            if favorite_products_ids:
-                products = self.get_all_products_service.get_all_products()
-
-                products = self.products_service.get_filtered_products_by_favorite_ids(
-                    products=products,
-                    ids_products_in_favorite=favorite_products_ids,
-                )
-                context = convert_to_context_dict(
-                    products=products,
-                )
-
-                return context
-            else:
-                return []
-        else:
+    ) -> Dict[str, List[ProductEntity]]:
+        if not command.is_authenticated:
             return []
+
+        favorite_products_ids = (
+            self.favorite_products_service_ids.get_ids_products_in_favorite(
+                command.username,
+            )
+        )
+
+        if not favorite_products_ids:
+            return []
+
+        products = self.get_all_products_service.get_all_products()
+        filtered_products = self.products_service.get_filtered_products_by_favorite_ids(
+            products=products,
+            ids_products_in_favorite=favorite_products_ids,
+        )
+
+        return convert_to_context_dict(products=filtered_products)

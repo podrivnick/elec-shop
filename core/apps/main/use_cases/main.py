@@ -2,7 +2,10 @@ from dataclasses import (
     dataclass,
     field,
 )
-from typing import Dict
+from typing import (
+    Any,
+    Dict,
+)
 
 from core.api.v1.main.schemas import FiltersProductsSchema
 from core.apps.common.utils.context import convert_to_context_dict
@@ -37,7 +40,7 @@ class MainPageCommandHandler(CommandHandler[MainPageCommand, str]):
     def handle(
         self,
         command: MainPageCommand,
-    ) -> Dict:
+    ) -> Dict[str, Any]:
         products = self.get_all_products_service.get_all_products()
         favorite_products_ids = None
 

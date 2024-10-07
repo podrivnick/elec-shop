@@ -7,6 +7,10 @@ from ninja import (
     Router,
 )
 
+from core.api.v1.main.dto.extractors import (
+    extract_favorite_page_dto,
+    extract_main_page_dto,
+)
 from core.api.v1.main.schemas import (
     FiltersProductsSchema,
     MainPageResponseSchema,
@@ -42,17 +46,20 @@ def index(
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
 
-    page_number = request.GET.get("page")
-    is_authenticated = request.user.is_authenticated
+    main_page_dto = extract_main_page_dto(
+        request=request,
+        filters=filters,
+        category_slug=category_slug,
+    )
 
     try:
         context = mediator.handle_command(
             MainPageCommand(
-                is_authenticated=is_authenticated,
-                username=request.user.username,
-                filters=filters,
-                page_number=page_number,
-                category_slug=category_slug,
+                is_authenticated=main_page_dto.is_authenticated,
+                username=main_page_dto.username,
+                filters=main_page_dto.filters,
+                page_number=main_page_dto.page_number,
+                category_slug=main_page_dto.category_slug,
             ),
         )
     except BaseAppException as exception:
@@ -74,13 +81,15 @@ def favorites(
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
 
-    is_authenticated = request.user.is_authenticated
+    favorite_page_dto = extract_favorite_page_dto(
+        request=request,
+    )
 
     try:
         context = mediator.handle_command(
             FavoritePageCommand(
-                is_authenticated=is_authenticated,
-                username=request.user.username,
+                is_authenticated=favorite_page_dto.is_authenticated,
+                username=favorite_page_dto.username,
             ),
         )
     except BaseAppException as exception:
