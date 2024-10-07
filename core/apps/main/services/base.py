@@ -36,3 +36,7 @@ class BaseProductsService(ABC):
     @abstractmethod
     def get_all_products(self):
         raise NotImplementedError()
+
+    @abstractmethod
+    def paginate_products(self):
+        raise NotImplementedError()

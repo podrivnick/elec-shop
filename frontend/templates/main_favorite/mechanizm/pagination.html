@@ -1,38 +1,39 @@
 {% load products_tags %}
+{% load range_tags %}
 
-<nav class="pagination__navbar">
+<nav class="pagination__navbar"></nav>
     <ul class="pagination__lister">
 
-        {% if page_obj.has_previous %}
+        {% if products.has_previous %}
         <li class="__active__pagination">
             <a href="?{% change_params page=1 %}">&laquo; 1</a>
         </li>
         <li class="__active__pagination">
-            <a href="?{% change_params page=page_obj.previous_page_number %}" style="width: 80px">&laquo; Назад</a>
+            <a href="?{% change_params page=products.current_page|add:-1 %}" style="width: 80px">&laquo; Назад</a>
         </li>
         {% endif %}
 
-        {% for p in paginator.page_range %}
-            {% if page_obj.number == p %}
+        {% for p in products.total_pages|times %}
+            {% if products.current_page == p %}
                 <li class="pagination__li_navbar">
-                  <a style="text-align: center" href="?{% change_params page=p %}">{{ p }}</a>
+                    <a style="text-align: center" href="?{% change_params page=p %}">{{ p }}</a>
                 </li>
             {% else %}
-             {% if p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
-              <li class="pagination__li_navbar">
-                  <a href="?{% change_params page=p %}" style="text-align: center">{{ p }}</a>
-              </li>
-             {% endif %}
+                {% if p >= products.current_page|add:-2 and p <= products.current_page|add:2 %}
+                <li class="pagination__li_navbar">
+                    <a href="?{% change_params page=p %}" style="text-align: center">{{ p }}</a>
+                </li>
+                {% endif %}
             {% endif %}
         {% endfor %}
 
-        {% if page_obj.has_next %}
-            <li class="pagination__li_navbar">
-                <a href="?{% change_params page=page_obj.next_page_number %}" style="text-align: center; width: 110px">Следующая &raquo;</a>
-            </li>
-            <li class="pagination__li_navbar">
-                <a href="?{% change_params page=page_obj.paginator.num_pages %}">last &raquo;</a>
-            </li>
+        {% if products.has_next %}
+        <li class="pagination__li_navbar">
+            <a href="?{% change_params page=products.current_page|add:1 %}" style="text-align: center; width: 110px">Следующая &raquo;</a>
+        </li>
+        <li class="pagination__li_navbar">
+            <a href="?{% change_params page=products.total_pages %}">last &raquo;</a>
+        </li>
         {% endif %}
     </ul>
 </nav>

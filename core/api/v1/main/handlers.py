@@ -8,9 +8,9 @@ from ninja import (
     Router,
 )
 
-from core.api.filters import PaginationIn
 from core.api.v1.main.schemas import (
     FiltersProductsSchema,
+    MainPageResponseSchema,
     ProductIdSchema,
 )
 from core.apps.main.use_cases.favorite import FavoritePageCommand
@@ -29,17 +29,21 @@ class ApiResponse:
     pass
 
 
-@router.get("/index/{category_slug}", url_name="index")
+@router.get(
+    "/index/{category_slug}",
+    url_name="index",
+    response=MainPageResponseSchema,
+)
 def index(
     request: HttpRequest,
     filters: Query[FiltersProductsSchema],
-    pagination_in: Query[PaginationIn],
     category_slug: Optional[str],
 ):
     """API: загрузка главной страницы."""
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
 
+    page_number = request.GET.get("page")
     is_authenticated = request.user.is_authenticated
 
     try:
@@ -48,7 +52,7 @@ def index(
                 is_authenticated=is_authenticated,
                 username=request.user.username,
                 filters=filters,
-                pagination=pagination_in,
+                page_number=page_number,
                 category_slug=category_slug,
             ),
         )

@@ -5,7 +5,7 @@ from punq import Container
 from core.apps.main.services.main import (
     CategoriesService,
     FavoriteProductsIdsService,
-    ProductsService,
+    ORMProductsService,
 )
 from core.apps.main.use_cases.main import (
     MainPageCommand,
@@ -32,7 +32,7 @@ def _initialize_container() -> Container:
         configure_main_page_handler = MainPageCommandHandler(
             categories_service=CategoriesService(),
             favorite_products_service_ids=FavoriteProductsIdsService(),
-            products_service=ProductsService(),
+            products_service=ORMProductsService(),
         )
 
         # commands

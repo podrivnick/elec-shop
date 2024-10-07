@@ -27,7 +27,7 @@
     <main class="main-index">
         <div class="block_carts_products">
                     {% if not is_search_failed %}
-                        {% for product in products %}
+                        {% for product in products.items %}
                         <div class="products">
                             {% if product.discount %}
                                 <div class="header_carts">

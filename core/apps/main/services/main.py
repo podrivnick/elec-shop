@@ -2,9 +2,12 @@ from dataclasses import dataclass
 from typing import (
     Iterable,
     List,
+    QuerySet,
+    Tuple,
 )
 
-from core.api.filters import PaginationIn
+from django.core.paginator import Paginator
+
 from core.api.v1.main.schemas import FiltersProductsSchema
 from core.apps.main.entities.product import (
     CategoriesProduct,
@@ -15,6 +18,7 @@ from core.apps.main.models.products import (
     CategoriesProduct as CategoriesProductModel,
     Products as ProductsModel,
 )
+from core.apps.main.schemas.main import PaginatedProductsResponse
 from core.apps.main.services.base import (
     BaseCategoriesService,
     BaseFavoriteProductsIdsService,
@@ -41,16 +45,17 @@ class FavoriteProductsIdsService(BaseFavoriteProductsIdsService):
 
 
 @dataclass
-class ProductsService(BaseProductsService):
-    def get_all_products(self) -> None:
+class ORMProductsService(BaseProductsService):
+    def get_all_products(self) -> QuerySet[ProductsModel]:
         self.products = ProductsModel.objects.all()
 
     def get_filtered_products(
         self,
         filters: FiltersProductsSchema,
-        pagination: PaginationIn,
         category_slug: str,
-    ) -> tuple[bool, Iterable[ProductEntity]]:
+    ) -> Tuple[bool, Iterable[ProductEntity]]:
+        """Filtering Products + Search."""
+
         is_search_failed = False
 
         if filters.available:
@@ -71,8 +76,24 @@ class ProductsService(BaseProductsService):
             if not len(self.products):
                 is_search_failed = True
 
-        self.products = self.products.filter()[
-            pagination.offset : pagination.offset + pagination.limit
-        ]
-
         return is_search_failed, [product.to_entity() for product in self.products]
+
+    def paginate_products(
+        self,
+        page_number: int,
+        products: List[ProductEntity],
+    ) -> PaginatedProductsResponse:
+        """Convert Product to Paginator."""
+
+        paginator = Paginator(products, 6)
+        page_obj = paginator.get_page(page_number)
+
+        paginated_response = PaginatedProductsResponse(
+            items=page_obj.object_list,
+            current_page=page_obj.number,
+            total_pages=paginator.num_pages,
+            has_next=page_obj.has_next(),
+            has_previous=page_obj.has_previous(),
+        )
+
+        return paginated_response
