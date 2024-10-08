@@ -1,8 +1,9 @@
-import json
 from typing import Optional
 
 from django.http import HttpRequest
 from ninja import Query
+
+import orjson
 
 from core.api.v1.main.dto.base import (
     DTOFavoritePageAPI,
@@ -48,7 +49,7 @@ def extract_save_favorite_dto(
     is_authenticated = request.user.is_authenticated
     username = request.user.username if is_authenticated else None
 
-    json_request_data = json.loads(request.body)
+    json_request_data = orjson.loads(request.body)
     product_id = json_request_data["data"][1]
 
     return DTOUpdateFavoriteProduct(

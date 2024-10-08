@@ -114,16 +114,16 @@ def save_favorite(
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
 
-    save_favorite_request = extract_save_favorite_dto(
+    save_favorite_request_dto = extract_save_favorite_dto(
         request=request,
     )
 
     try:
         mediator.handle_command(
             UpdateFavoritePageCommand(
-                is_authenticated=save_favorite_request.is_authenticated,
-                product_id=save_favorite_request.product_id,
-                username=save_favorite_request.username,
+                is_authenticated=save_favorite_request_dto.is_authenticated,
+                product_id=save_favorite_request_dto.product_id,
+                username=save_favorite_request_dto.username,
             ),
         )
     except BaseAppException as exception:
