@@ -2,13 +2,9 @@ from dataclasses import (
     dataclass,
     field,
 )
-from typing import (
-    Any,
-    Dict,
-)
 
+from core.api.v1.main.dto.responses import DTOResponseIndexAPI
 from core.api.v1.main.schemas import FiltersProductsSchema
-from core.apps.common.utils.context import convert_to_context_dict
 from core.apps.main.services.base import (
     BaseAllProductsService,
     BaseFavoriteProductsIdsService,
@@ -40,7 +36,7 @@ class MainPageCommandHandler(CommandHandler[MainPageCommand, str]):
     def handle(
         self,
         command: MainPageCommand,
-    ) -> Dict[str, Any]:
+    ) -> DTOResponseIndexAPI:
         products = self.get_all_products_service.get_all_products()
         favorite_products_ids = None
 
@@ -64,11 +60,9 @@ class MainPageCommandHandler(CommandHandler[MainPageCommand, str]):
             products=products,
         )
 
-        context = convert_to_context_dict(
+        return DTOResponseIndexAPI(
             favorites=favorite_products_ids,
             categories=categories,
             is_search_failed=is_search_failed,
             products=paginated_response,
         )
-
-        return context

@@ -2,6 +2,7 @@ from typing import Optional
 
 from django.http import (
     HttpRequest,
+    HttpResponse,
     JsonResponse,
 )
 from django.shortcuts import render
@@ -10,11 +11,14 @@ from ninja import (
     Router,
 )
 
+from core.api.schemas import SuccessResponse
 from core.api.v1.main.dto.extractors import (
     extract_favorite_page_dto,
     extract_main_page_dto,
     extract_save_favorite_dto,
 )
+from core.api.v1.main.dto.responses import DTOResponseIndexAPI
+from core.api.v1.main.renderers import render_index
 from core.api.v1.main.schemas import (
     FiltersProductsSchema,
     MainPageResponseSchema,
@@ -31,10 +35,6 @@ from core.infrastructure.mediator.mediator import Mediator
 router = Router(tags=["main"])
 
 
-class ApiResponse:
-    pass
-
-
 @router.get(
     "/index/{category_slug}",
     url_name="index",
@@ -44,7 +44,7 @@ def index(
     request: HttpRequest,
     filters: Query[FiltersProductsSchema],
     category_slug: Optional[str],
-):
+) -> HttpResponse:
     """API: загрузка главной страницы."""
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
@@ -56,7 +56,7 @@ def index(
     )
 
     try:
-        context = mediator.handle_command(
+        dto_response_index_api: DTOResponseIndexAPI = mediator.handle_command(
             MainPageCommand(
                 is_authenticated=main_page_dto.is_authenticated,
                 username=main_page_dto.username,
@@ -64,13 +64,17 @@ def index(
                 page_number=main_page_dto.page_number,
                 category_slug=main_page_dto.category_slug,
             ),
-        )
+        )[0]
     except BaseAppException as exception:
         raise ValueError(
             detail={"error": exception.message},
         )
 
-    return render(request, "main_favorite/index.html", context[0])
+    return render_index(
+        request=request,
+        response=SuccessResponse(result=dto_response_index_api),
+        template="main_favorite/index.html",
+    )
 
 
 @router.get(
