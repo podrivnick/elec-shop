@@ -140,7 +140,6 @@ def information(
 ):
     """API: загрузка страницы с общей информацией."""
     container = init_container()
-
     mediator: Mediator = container.resolve(Mediator)
 
     try:
@@ -152,4 +151,4 @@ def information(
             detail={"error": exception.message},
         )
 
-    return render(request, "main_favorite/information.html", context)
+    return render(request, "main_favorite/information.html", context[0])

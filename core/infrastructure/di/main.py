@@ -3,6 +3,10 @@ from core.apps.main.use_cases.update_favorite import (
     UpdateFavoritePageCommand,
     UpdateFavoritePageCommandHandler,
 )
+from core.apps.main.use_cases.info import (
+    InformationPageCommand,
+    InformationPageCommandHandler,
+)
 from punq import Container
 from core.apps.common.services.main import ORMQueryGetUserModelService
 from core.apps.main.services.favorites.favorites import (
@@ -24,6 +28,7 @@ from core.apps.main.use_cases.main import (
     MainPageCommand,
     MainPageCommandHandler,
 )
+from core.apps.main.services.information.main import ORMQueryFAQInformationService
 from core.infrastructure.mediator.mediator import Mediator
 from core.apps.main.services.update_favorite.main import (
     ORMCommandUpdateFavoriteProductsService,
@@ -43,6 +48,7 @@ def _initialize_container() -> Container:
     container.register(MainPageCommandHandler)
     container.register(FavoritePageCommandHandler)
     container.register(UpdateFavoritePageCommandHandler)
+    container.register(InformationPageCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -67,6 +73,10 @@ def _initialize_container() -> Container:
             command_update_favorite_product_service=ORMCommandUpdateFavoriteProductsService(),
         )
 
+        configure_information_page_handler = InformationPageCommandHandler(
+            query_get_all_information=ORMQueryFAQInformationService(),
+        )
+
         # commands
         mediator.register_command(
             MainPageCommand,
@@ -81,6 +91,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             UpdateFavoritePageCommand,
             [configure_update_favorite_products_handler],
+        )
+
+        mediator.register_command(
+            InformationPageCommand,
+            [configure_information_page_handler],
         )
 
         return mediator
