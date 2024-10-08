@@ -6,7 +6,7 @@ function favorite_data(user, product) {
 
   const data_favorite =  [user, product]
   console.log(data_favorite)
-  fetch('/save_favorite', {
+  fetch('/api/v1/save_favorite', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

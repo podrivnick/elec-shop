@@ -1,6 +1,9 @@
 from typing import Optional
 
-from django.http import HttpRequest
+from django.http import (
+    HttpRequest,
+    JsonResponse,
+)
 from django.shortcuts import render
 from ninja import (
     Query,
@@ -10,11 +13,11 @@ from ninja import (
 from core.api.v1.main.dto.extractors import (
     extract_favorite_page_dto,
     extract_main_page_dto,
+    extract_save_favorite_dto,
 )
 from core.api.v1.main.schemas import (
     FiltersProductsSchema,
     MainPageResponseSchema,
-    ProductIdSchema,
 )
 from core.apps.main.use_cases.favorite import FavoritePageCommand
 from core.apps.main.use_cases.info import InformationPageCommand
@@ -106,23 +109,29 @@ def favorites(
 )
 def save_favorite(
     request: HttpRequest,
-    product_id: ProductIdSchema,
 ):
     """API: обновление списка товаров находящихся в избранном."""
     container = init_container()
-
     mediator: Mediator = container.resolve(Mediator)
 
+    save_favorite_request = extract_save_favorite_dto(
+        request=request,
+    )
+
     try:
-        context = mediator.handle_command(
-            UpdateFavoritePageCommand(),
+        mediator.handle_command(
+            UpdateFavoritePageCommand(
+                is_authenticated=save_favorite_request.is_authenticated,
+                product_id=save_favorite_request.product_id,
+                username=save_favorite_request.username,
+            ),
         )
     except BaseAppException as exception:
         raise ValueError(
             detail={"error": exception.message},
         )
 
-    return ApiResponse(context)
+    return JsonResponse({"message": "Данные успешно сохранены"})
 
 
 @router.get("information", url_name="information")

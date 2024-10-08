@@ -26,3 +26,10 @@ class DTOMainPageAPI(BaseDTOAPI):
 class DTOFavoritePageAPI(BaseDTOAPI):
     username: str | None = field(default=None)
     is_authenticated: bool = field(default=False)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOUpdateFavoriteProduct(BaseDTOAPI):
+    product_id: int
+    is_authenticated: bool = field(default=False)
+    username: str | None = field(default=None)

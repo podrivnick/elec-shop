@@ -3,48 +3,52 @@ from dataclasses import (
     field,
 )
 
+from core.apps.common.services.base import BaseQueryGetUserModelService
+from core.apps.main.services.update_favorite.base import (
+    BaseCommandUpdateFavoriteProductsService,
+    BaseQueryUpdateFavoriteProductsService,
+)
 from core.infrastructure.mediator.base import BaseCommands
 from core.infrastructure.mediator.handlers.commands import CommandHandler
 
 
-class BaseChangerFavoriteService:
-    pass
-
-
-class BaseFavoriteProductsExistService:
-    pass
-
-
 @dataclass(frozen=True)
 class UpdateFavoritePageCommand(BaseCommands):
-    flower: str | None = field(default=None)
+    product_id: int
+    is_authenticated: str | None = field(default=None)
+    username: str | None = field(default=None)
 
 
 @dataclass(frozen=True)
 class UpdateFavoritePageCommandHandler(
     CommandHandler[UpdateFavoritePageCommand, str],
 ):
-    product_in_favorite: BaseFavoriteProductsExistService
-    add_or_delete_favorite: BaseChangerFavoriteService
+    query_get_user_model_by_username: BaseQueryGetUserModelService
+    query_update_favorite_product_service: BaseQueryUpdateFavoriteProductsService
+    command_update_favorite_product_service: BaseCommandUpdateFavoriteProductsService
 
     def handle(
         self,
         command: UpdateFavoritePageCommand,
     ) -> None:
-        if command.is_authenticated:
-            is_product_in_favorite: bool = (
-                self.product_in_favorite.check_product_in_favorite(
-                    command.username,
-                    command.product_id,
-                )
-            )  # INFO: varafication product in favorite by usernane and product id
+        if not command.is_authenticated:
+            return
 
-            add_product_to_favorite_or_delete_from_favorite = (
-                self.add_or_delete_favorite.add_product_to_favorite_or_delete(
-                    is_product_in_favorite,
-                    command.username,
-                    command.product_id,
-                )
-            )  # INFO: depends of is_product_in_favorite delete or create favorite
+        is_product_in_favorite = self.query_update_favorite_product_service.check_product_in_favorite_is_exist(
+            username=command.username,
+            product_id=command.product_id,
+        )
 
-            return add_product_to_favorite_or_delete_from_favorite
+        if is_product_in_favorite:
+            self.command_update_favorite_product_service.delete_product_from_favorite(
+                username=command.username,
+                product_id=command.product_id,
+            )
+        else:
+            user = self.query_get_user_model_by_username.get_usermodel_by_username(
+                username=command.username,
+            )
+            self.command_update_favorite_product_service.add_product_to_favorite(
+                user=user,
+                product_id=command.product_id,
+            )

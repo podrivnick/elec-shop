@@ -1,7 +1,10 @@
 from functools import lru_cache
-
+from core.apps.main.use_cases.update_favorite import (
+    UpdateFavoritePageCommand,
+    UpdateFavoritePageCommandHandler,
+)
 from punq import Container
-
+from core.apps.common.services.main import ORMQueryGetUserModelService
 from core.apps.main.services.favorites.favorites import (
     ORMFavoriteProductsIdsFilterService,
 )
@@ -22,6 +25,10 @@ from core.apps.main.use_cases.main import (
     MainPageCommandHandler,
 )
 from core.infrastructure.mediator.mediator import Mediator
+from core.apps.main.services.update_favorite.main import (
+    ORMCommandUpdateFavoriteProductsService,
+    ORMQueryUpdateFavoriteProductsService,
+)
 
 
 @lru_cache(1)
@@ -35,6 +42,7 @@ def _initialize_container() -> Container:
     # Handlers
     container.register(MainPageCommandHandler)
     container.register(FavoritePageCommandHandler)
+    container.register(UpdateFavoritePageCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -53,6 +61,12 @@ def _initialize_container() -> Container:
             products_service=ORMFavoriteProductsIdsFilterService(),
         )
 
+        configure_update_favorite_products_handler = UpdateFavoritePageCommandHandler(
+            query_get_user_model_by_username=ORMQueryGetUserModelService(),
+            query_update_favorite_product_service=ORMQueryUpdateFavoriteProductsService(),
+            command_update_favorite_product_service=ORMCommandUpdateFavoriteProductsService(),
+        )
+
         # commands
         mediator.register_command(
             MainPageCommand,
@@ -62,6 +76,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             FavoritePageCommand,
             [configure_favorite_page_handler],
+        )
+
+        mediator.register_command(
+            UpdateFavoritePageCommand,
+            [configure_update_favorite_products_handler],
         )
 
         return mediator
