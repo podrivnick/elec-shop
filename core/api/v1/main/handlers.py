@@ -5,7 +5,6 @@ from django.http import (
     HttpResponse,
     JsonResponse,
 )
-from django.shortcuts import render
 from ninja import (
     Query,
     Router,
@@ -17,8 +16,17 @@ from core.api.v1.main.dto.extractors import (
     extract_main_page_dto,
     extract_save_favorite_dto,
 )
-from core.api.v1.main.dto.responses import DTOResponseIndexAPI
-from core.api.v1.main.renderers import render_index
+from core.api.v1.main.dto.responses import (
+    DTOResponseFavoriteAPI,
+    DTOResponseIndexAPI,
+    DTOResponseInformationAPI,
+)
+from core.api.v1.main.renderers import (
+    render_favorites,
+    render_index,
+    render_information,
+    render_update_favorite,
+)
 from core.api.v1.main.schemas import (
     FiltersProductsSchema,
     MainPageResponseSchema,
@@ -83,7 +91,7 @@ def index(
 )
 def favorites(
     request: HttpRequest,
-):
+) -> HttpResponse:
     """API: загрузка страницы с товарами находящимися в избранном."""
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
@@ -93,18 +101,22 @@ def favorites(
     )
 
     try:
-        context = mediator.handle_command(
+        dto_response_favorite_api: DTOResponseFavoriteAPI = mediator.handle_command(
             FavoritePageCommand(
                 is_authenticated=favorite_page_dto.is_authenticated,
                 username=favorite_page_dto.username,
             ),
-        )
+        )[0]
     except BaseAppException as exception:
         raise ValueError(
             detail={"error": exception.message},
         )
 
-    return render(request, "main_favorite/favorites.html", context[0])
+    return render_favorites(
+        request=request,
+        response=SuccessResponse(result=dto_response_favorite_api),
+        template="main_favorite/favorites.html",
+    )
 
 
 @router.post(
@@ -113,7 +125,7 @@ def favorites(
 )
 def save_favorite(
     request: HttpRequest,
-):
+) -> JsonResponse:
     """API: обновление списка товаров находящихся в избранном."""
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
@@ -135,24 +147,33 @@ def save_favorite(
             detail={"error": exception.message},
         )
 
-    return JsonResponse({"message": "Данные успешно сохранены"})
+    return render_update_favorite(
+        request=request,
+        response=SuccessResponse(result="Данные успешно сохранены"),
+    )
 
 
 @router.get("information", url_name="information")
 def information(
     request: HttpRequest,
-):
+) -> HttpResponse:
     """API: загрузка страницы с общей информацией."""
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
 
     try:
-        context = mediator.handle_command(
-            InformationPageCommand(),
+        dto_response_information_api: DTOResponseInformationAPI = (
+            mediator.handle_command(
+                InformationPageCommand(),
+            )[0]
         )
     except BaseAppException as exception:
         raise ValueError(
             detail={"error": exception.message},
         )
 
-    return render(request, "main_favorite/information.html", context[0])
+    return render_information(
+        request=request,
+        response=SuccessResponse(result=dto_response_information_api),
+        template="main_favorite/information.html",
+    )

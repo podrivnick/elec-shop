@@ -44,4 +44,4 @@ class FailureResponse(Response, Generic[TException]):
 
 @dataclass(frozen=True, eq=False)
 class Template:
-    template: str | None = field(default=None)
+    template: str | None = field(default_factory="", kw_only=True)

@@ -1,11 +1,6 @@
 from dataclasses import dataclass
-from typing import (
-    Dict,
-    List,
-)
 
-from core.apps.common.utils.context import convert_to_context_dict
-from core.apps.main.entities.information import InformationEntity
+from core.api.v1.main.dto.responses import DTOResponseInformationAPI
 from core.apps.main.services.information.base import BaseQueryFAQInformationService
 from core.infrastructure.mediator.base import BaseCommands
 from core.infrastructure.mediator.handlers.commands import CommandHandler
@@ -25,11 +20,9 @@ class InformationPageCommandHandler(
     def handle(
         self,
         command: InformationPageCommand,
-    ) -> Dict[str, List[InformationEntity]]:
+    ) -> DTOResponseInformationAPI:
         all_info = self.query_get_all_information.get_all_information()
 
-        context = convert_to_context_dict(
+        return DTOResponseInformationAPI(
             info=all_info[0].text_info,
         )
-
-        return context

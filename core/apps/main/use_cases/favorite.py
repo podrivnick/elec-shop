@@ -2,13 +2,8 @@ from dataclasses import (
     dataclass,
     field,
 )
-from typing import (
-    Dict,
-    List,
-)
 
-from core.apps.common.utils.context import convert_to_context_dict
-from core.apps.main.entities.product import ProductEntity
+from core.api.v1.main.dto.responses import DTOResponseFavoriteAPI
 from core.apps.main.services.base import (
     BaseAllProductsService,
     BaseFavoriteProductsIdsService,
@@ -33,9 +28,11 @@ class FavoritePageCommandHandler(CommandHandler[FavoritePageCommand, str]):
     def handle(
         self,
         command: FavoritePageCommand,
-    ) -> Dict[str, List[ProductEntity]]:
+    ) -> DTOResponseFavoriteAPI:
         if not command.is_authenticated:
-            return []
+            return DTOResponseFavoriteAPI(
+                products=[],
+            )
 
         favorite_products_ids = (
             self.favorite_products_service_ids.get_ids_products_in_favorite(
@@ -44,7 +41,9 @@ class FavoritePageCommandHandler(CommandHandler[FavoritePageCommand, str]):
         )
 
         if not favorite_products_ids:
-            return []
+            return DTOResponseFavoriteAPI(
+                products=[],
+            )
 
         products = self.get_all_products_service.get_all_products()
         filtered_products = self.products_service.get_filtered_products_by_favorite_ids(
@@ -52,4 +51,6 @@ class FavoritePageCommandHandler(CommandHandler[FavoritePageCommand, str]):
             ids_products_in_favorite=favorite_products_ids,
         )
 
-        return convert_to_context_dict(products=filtered_products)
+        return DTOResponseFavoriteAPI(
+            products=filtered_products,
+        )
