@@ -41,11 +41,11 @@ flake8-eradicate = "^1.5.0"
 dlint = "^0.15.0"
 faker = "^27.0.0"
 pytest-django = "^4.8.0"
-pytest = "^8.3.2"
 factory-boy = "^3.3.0"
 drf-spectacular = "^0.27.2"
 sentry-sdk = "^2.13.0"
 django-extensions = "^3.2.3"
+pytest = "^8.3.3"
 
 [build-system]
 requires = ["poetry-core"]
