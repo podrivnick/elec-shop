@@ -1,0 +1,40 @@
+name: ShopTest
+
+on:
+  workflow_call:
+
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+
+    - name: Install Docker Compose
+      run: |
+        sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+
+    - name: Build all containers
+      run: |
+          docker-compose -f docker_compose/app.yaml \
+                         -f docker_compose/postgres.yaml \
+                         -f docker_compose/backup.yaml \
+                         --env-file .env.example up -d
+
+    - name: Stop services
+      run: |
+          docker-compose -f docker_compose/app.yaml \
+                         -f docker_compose/postgres.yaml \
+                         -f docker_compose/backup.yaml \
+                         down
