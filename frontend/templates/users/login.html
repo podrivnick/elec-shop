@@ -25,7 +25,7 @@
     <!-- <form action=" class="block_login_form" method="post">
       {% csrf_token %}
         {% if request.GET.next %}
-           <input type="hidden" name="next" value={{request.GET.next}}>
+          <input type="hidden" name="next" value={{request.GET.next}}>
         {% endif %}
       <h1 class="header_authorisation">Авторизация</h1>
 
@@ -33,20 +33,20 @@
         <label for="id_username">Login: </label>
         <input type="text" id="id_username" placeholder="Введите логин" name="username"
         value="{% if form.username.value %} {{form.username.value}} {% endif %}"
-               required>
+              required>
       </div>
 
       <div class="input_block_login">
         <label for="id_email">Email: </label>
         <input type="email" id="id_email" placeholder="Введите email" name="email"
         value="{% if form.email.value %} {{form.email.value}} {% endif %}"
-               required>
+              required>
       </div>
 
       <div class="input_block_login">
         <label for="id_password">Password: </label>
         <input type="password" id="id_password" placeholder="Введите пароль" name="password"
-               required>
+              required>
       </div>
       <div class="input_block_login block_login">
           <a href="#">Забыл пароль</a><a href="{">|Создать аккаунт</a>

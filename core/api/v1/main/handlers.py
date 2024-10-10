@@ -153,7 +153,10 @@ def save_favorite(
     )
 
 
-@router.get("information", url_name="information")
+@router.get(
+    "information",
+    url_name="information",
+)
 def information(
     request: HttpRequest,
 ) -> HttpResponse:

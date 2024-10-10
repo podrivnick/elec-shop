@@ -21,15 +21,14 @@ class User(AbstractUser):
         default=0,
     )
 
-    # Переопределение полей с уникальными именами для related_name
     groups = models.ManyToManyField(
         Group,
-        related_name="custom_user_groups",  # Уникальное имя обратной связи
+        related_name="custom_user_groups",
         blank=True,
     )
     user_permissions = models.ManyToManyField(
         Permission,
-        related_name="custom_user_permissions",  # Уникальное имя обратной связи
+        related_name="custom_user_permissions",
         blank=True,
     )
 

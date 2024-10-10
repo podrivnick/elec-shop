@@ -5,12 +5,8 @@ from dataclasses import (
 
 from ninja import Query
 
+from core.api.v1.base_dto import BaseDTOAPI
 from core.api.v1.main.schemas import FiltersProductsSchema
-
-
-@dataclass(frozen=True, eq=False)
-class BaseDTOAPI:
-    pass
 
 
 @dataclass(frozen=True, eq=False)
