@@ -84,7 +84,7 @@ skip_gitignore=true
 balanced_wrapping=true
 force_grid_wrap=2
 src_paths=["core", ]
-skip = ["core/infrastructure/di/main.py"]
+skip = ["core/infrastructure/di/main.py", "tests/unit/use_cases/integration_test/main_app/test_favorite_integration.py"]
 skip_glob=[
     ".git",
     ".idea",
