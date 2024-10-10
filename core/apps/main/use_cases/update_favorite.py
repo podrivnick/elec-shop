@@ -3,7 +3,15 @@ from dataclasses import (
     field,
 )
 
+from core.apps.common.exceptions.main import (
+    AuthenticationError,
+    UserNotFoundError,
+)
 from core.apps.common.services.base import BaseQueryGetUserModelService
+from core.apps.main.exceptions.main import (
+    DatabaseFavoriteError,
+    FavoriteProductError,
+)
 from core.apps.main.services.update_favorite.base import (
     BaseCommandUpdateFavoriteProductsService,
     BaseQueryUpdateFavoriteProductsService,
@@ -32,23 +40,37 @@ class UpdateFavoritePageCommandHandler(
         command: UpdateFavoritePageCommand,
     ) -> None:
         if not command.is_authenticated:
-            return
+            raise AuthenticationError("User is not authenticated.")
 
-        is_product_in_favorite = self.query_update_favorite_product_service.check_product_in_favorite_is_exist(
-            username=command.username,
-            product_id=command.product_id,
-        )
+        try:
+            is_product_in_favorite = self.query_update_favorite_product_service.check_product_in_favorite_is_exist(
+                username=command.username,
+                product_id=command.product_id,
+            )
+        except Exception as e:
+            raise DatabaseFavoriteError("Error checking product in favorites.") from e
 
         if is_product_in_favorite:
-            self.command_update_favorite_product_service.delete_product_from_favorite(
-                username=command.username,
-                product_id=command.product_id,
-            )
+            try:
+                self.command_update_favorite_product_service.delete_product_from_favorite(
+                    username=command.username,
+                    product_id=command.product_id,
+                )
+            except Exception as e:
+                raise FavoriteProductError(
+                    "Error deleting product from favorites.",
+                ) from e
         else:
-            user = self.query_get_user_model_by_username.get_usermodel_by_username(
-                username=command.username,
-            )
-            self.command_update_favorite_product_service.add_product_to_favorite(
-                user=user,
-                product_id=command.product_id,
-            )
+            try:
+                user = self.query_get_user_model_by_username.get_usermodel_by_username(
+                    username=command.username,
+                )
+                if user is None:
+                    raise UserNotFoundError(f"User '{command.username}' not found.")
+
+                self.command_update_favorite_product_service.add_product_to_favorite(
+                    user=user,
+                    product_id=command.product_id,
+                )
+            except Exception as e:
+                raise FavoriteProductError("Error adding product to favorites.") from e

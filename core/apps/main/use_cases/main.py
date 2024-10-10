@@ -38,14 +38,15 @@ class MainPageCommandHandler(CommandHandler[MainPageCommand, str]):
         command: MainPageCommand,
     ) -> DTOResponseIndexAPI:
         products = self.get_all_products_service.get_all_products()
-        favorite_products_ids = None
 
-        if command.is_authenticated:
-            favorite_products_ids = (
-                self.favorite_products_service_ids.get_ids_products_in_favorite(
-                    command.username,
-                )
+        if not command.is_authenticated:
+            favorite_products_ids = None
+
+        favorite_products_ids = (
+            self.favorite_products_service_ids.get_ids_products_in_favorite(
+                command.username,
             )
+        )
 
         categories = self.categories_service.get_all_products_categories()
 

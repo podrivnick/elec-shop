@@ -21,7 +21,7 @@ from core.api.v1.main.dto.responses import (
     DTOResponseIndexAPI,
     DTOResponseInformationAPI,
 )
-from core.api.v1.main.renderers import (
+from core.api.v1.main.renders import (
     render_favorites,
     render_index,
     render_information,
