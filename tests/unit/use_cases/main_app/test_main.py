@@ -7,7 +7,7 @@ from core.apps.main.use_cases.main import (
 )
 
 
-def test_use_case_calls_correct_service():
+def test_use_case_main_calls_correct_service():
     # Mocks
     favorite_products_service_ids = Mock()
     get_all_products_service = Mock()
