@@ -6,10 +6,19 @@ from ninja import Router
 
 from core.api.schemas import SuccessResponse
 from core.api.v1.users.dto.base import DTOLoginPageAPI
-from core.api.v1.users.dto.extractors import extract_login_page_dto
+from core.api.v1.users.dto.extractors import (
+    extract_authenticate_dto,
+    extract_login_page_dto,
+)
 from core.api.v1.users.dto.responses import DTOResponseLoginAPI
-from core.api.v1.users.renders import render_login
-from core.apps.users.use_cases.login import LoginPageCommand
+from core.api.v1.users.renders import (
+    render_authenticate,
+    render_login,
+)
+from core.apps.users.use_cases.login import (
+    AuthenticatePageCommand,
+    LoginPageCommand,
+)
 from core.infrastructure.di.main import init_container
 from core.infrastructure.exceptions.base import BaseAppException
 from core.infrastructure.mediator.mediator import Mediator
@@ -51,35 +60,39 @@ def login_get(
     )
 
 
-# @router.post(
-#     "login_post",
-#     url_name="login_post",
-# )
-# def login_post(
-#     request: HttpRequest,
-# ) -> JsonResponse:
-#     """API: обновление списка товаров находящихся в избранном."""
-#     container = init_container()
-#     mediator: Mediator = container.resolve(Mediator)
+@router.post(
+    "login_post",
+    url_name="login_post",
+)
+def login_post(
+    request: HttpRequest,
+) -> HttpResponse:
+    """API: обновление списка товаров находящихся в избранном."""
+    container = init_container()
+    mediator: Mediator = container.resolve(Mediator)
 
-#     save_favorite_request_dto = extract_save_favorite_dto(
-#         request=request,
-#     )
+    authenticate_request_dto = extract_authenticate_dto(
+        request=request,
+    )
 
-#     try:
-#         mediator.handle_command(
-#             UpdateFavoritePageCommand(
-#                 is_authenticated=save_favorite_request_dto.is_authenticated,
-#                 product_id=save_favorite_request_dto.product_id,
-#                 username=save_favorite_request_dto.username,
-#             ),
-#         )
-#     except BaseAppException as exception:
-#         raise ValueError(
-#             detail={"error": exception.message},
-#         )
+    try:
+        mediator.handle_command(
+            AuthenticatePageCommand(
+                username=authenticate_request_dto.username,
+                email=authenticate_request_dto.email,
+                password=authenticate_request_dto.password,
+                session_key=authenticate_request_dto.session_key,
+                is_authenticated=authenticate_request_dto.is_authenticated,
+                request=request,
+            ),
+        )
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.exception},
+        )
 
-#     return render_update_favorite(
-#         request=request,
-#         response=SuccessResponse(result="Данные успешно сохранены"),
-#     )
+    return render_authenticate(
+        request=request,
+        response=SuccessResponse(result=authenticate_request_dto),
+        template="main_favorite/index.html",
+    )

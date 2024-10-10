@@ -3,6 +3,8 @@ from dataclasses import (
     field,
 )
 
+from django.http import HttpRequest
+
 from core.api.v1.base_dto import BaseDTOAPI
 
 
@@ -10,3 +12,13 @@ from core.api.v1.base_dto import BaseDTOAPI
 class DTOLoginPageAPI(BaseDTOAPI):
     username: str | None = field(default=None)
     is_authenticated: bool = field(default=False)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOAuthenticateAPI(BaseDTOAPI):
+    username: str | None = field(default=None)
+    email: str | None = field(default=None)
+    password: str | None = field(default=None)
+    session_key: str | bool = field(default=False)
+    is_authenticated: bool = field(default=False)
+    request: HttpRequest | None = field(default=None)

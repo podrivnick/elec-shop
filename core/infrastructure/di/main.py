@@ -34,6 +34,15 @@ from core.apps.main.services.update_favorite.main import (
     ORMCommandUpdateFavoriteProductsService,
     ORMQueryUpdateFavoriteProductsService,
 )
+from core.apps.users.use_cases.login import (
+    AuthenticatePageCommandHandler,
+    AuthenticatePageCommand,
+)
+from core.apps.users.services.login.main import (
+    ORMCommandVerificateUserService,
+    ORMCommandAuthenticateUserService,
+    ORMCommandAddPacketToUserBySessionKeyService,
+)
 from core.apps.users.use_cases.login import LoginPageCommand, LoginPageCommandHandler
 
 
@@ -51,6 +60,7 @@ def _initialize_container() -> Container:
     container.register(UpdateFavoritePageCommandHandler)
     container.register(InformationPageCommandHandler)
     container.register(LoginPageCommandHandler)
+    container.register(AuthenticatePageCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -83,6 +93,12 @@ def _initialize_container() -> Container:
         # user app
         configure_login_page_handler = LoginPageCommandHandler()
 
+        configure_authentice_handler = AuthenticatePageCommandHandler(
+            command_verificate_password_service=ORMCommandVerificateUserService(),
+            command_authenticate_user_service=ORMCommandAuthenticateUserService(),
+            command_add_packet_to_user_by_session_key=ORMCommandAddPacketToUserBySessionKeyService(),
+        )
+
         # commands
         # main app
         mediator.register_command(
@@ -109,6 +125,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             LoginPageCommand,
             [configure_login_page_handler],
+        )
+
+        mediator.register_command(
+            AuthenticatePageCommand,
+            [configure_authentice_handler],
         )
 
         return mediator
