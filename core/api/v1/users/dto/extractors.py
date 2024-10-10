@@ -3,6 +3,7 @@ from django.http import HttpRequest
 from core.api.v1.users.dto.base import (
     DTOAuthenticateAPI,
     DTOLoginPageAPI,
+    DTOLogoutPageAPI,
 )
 
 
@@ -33,5 +34,16 @@ def extract_authenticate_dto(
         password=password,
         is_authenticated=is_authenticated,
         session_key=session_key,
-        request=request,
+    )
+
+
+def extract_logout_dto(
+    request: HttpRequest,
+) -> DTOLogoutPageAPI:
+    is_authenticated = request.user.is_authenticated
+    username = request.POST.get("username", "")
+
+    return DTOLogoutPageAPI(
+        username=username,
+        is_authenticated=is_authenticated,
     )

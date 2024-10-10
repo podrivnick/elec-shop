@@ -86,9 +86,12 @@
                                         Информация
                                     </a>
                                 </li>
-                                <!-- <li class="menu-list-profile">
-
-                                </li> -->
+                                <li class="menu-list-profile">
+                                    <form id="logoutForm" method="post" action="{% url 'v1:logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="logout logout_link">Выйти -></button>
+                                    </form>
+                                </li>
                             {% endif %}
                             </ul>
                         </li>

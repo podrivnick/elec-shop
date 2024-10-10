@@ -9,16 +9,19 @@ from core.api.v1.users.dto.base import DTOLoginPageAPI
 from core.api.v1.users.dto.extractors import (
     extract_authenticate_dto,
     extract_login_page_dto,
+    extract_logout_dto,
 )
 from core.api.v1.users.dto.responses import DTOResponseLoginAPI
 from core.api.v1.users.renders import (
     render_authenticate,
     render_login,
+    render_logout,
 )
 from core.apps.users.use_cases.login import (
     AuthenticatePageCommand,
     LoginPageCommand,
 )
+from core.apps.users.use_cases.logout import LogoutCommand
 from core.infrastructure.di.main import init_container
 from core.infrastructure.exceptions.base import BaseAppException
 from core.infrastructure.mediator.mediator import Mediator
@@ -67,7 +70,7 @@ def login_get(
 def login_post(
     request: HttpRequest,
 ) -> HttpResponse:
-    """API: обновление списка товаров находящихся в избранном."""
+    """API: Аутентификации и Авторизации."""
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
 
@@ -94,5 +97,40 @@ def login_post(
     return render_authenticate(
         request=request,
         response=SuccessResponse(result=authenticate_request_dto),
+        template="main_favorite/index.html",
+    )
+
+
+@router.post(
+    "logout",
+    url_name="logout",
+)
+def logout(
+    request: HttpRequest,
+) -> HttpResponse:
+    """API: Выход с аккаунта."""
+    container = init_container()
+    mediator: Mediator = container.resolve(Mediator)
+
+    logout_request_dto = extract_logout_dto(
+        request=request,
+    )
+
+    try:
+        mediator.handle_command(
+            LogoutCommand(
+                username=logout_request_dto.username,
+                is_authenticated=logout_request_dto.is_authenticated,
+                request=request,
+            ),
+        )
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.exception},
+        )
+
+    return render_logout(
+        request=request,
+        response=SuccessResponse(result=logout_request_dto),
         template="main_favorite/index.html",
     )

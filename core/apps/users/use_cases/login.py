@@ -60,7 +60,7 @@ class AuthenticatePageCommandHandler(CommandHandler[AuthenticatePageCommand, str
         command: AuthenticatePageCommand,
     ) -> None:
         if command.is_authenticated:
-            return
+            raise AuthenticationError("User is authenticated.")
 
         user = self.command_verificate_password_service.verificate_password(
             request=command.request,
