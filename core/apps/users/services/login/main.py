@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate
 from django.http import HttpRequest
 
 from core.apps.packet.models import Cart
+from core.apps.users.entities.user import User as UserEntity
 from core.apps.users.models import User
 from core.apps.users.services.login.base import (
     BaseCommandAddPacketToUserBySessionKeyService,
@@ -18,10 +19,9 @@ class ORMCommandVerificateUserService(BaseCommandVerificateUserService):
     def verificate_password(
         self,
         request: HttpRequest,
-        username: str,
-        password: str,
+        user: UserEntity,
     ) -> User:
-        return authenticate(request, username=username, password=password)
+        return authenticate(request, username=user.username, password=user.password)
 
 
 @dataclass

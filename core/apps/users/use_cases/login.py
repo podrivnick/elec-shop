@@ -7,6 +7,8 @@ from django.http import HttpRequest
 
 from core.api.v1.users.dto.responses import DTOResponseLoginAPI
 from core.apps.common.exceptions.main import AuthenticationError
+from core.apps.users import value_objects as vo
+from core.apps.users.entities.user import User
 from core.apps.users.exceptions.main import (
     UserNotAuthenticatedError,
     UserNotVerifiedError,
@@ -62,13 +64,22 @@ class AuthenticatePageCommandHandler(CommandHandler[AuthenticatePageCommand, str
         if command.is_authenticated:
             raise AuthenticationError("User is authenticated.")
 
+        # value objects
+        username = vo.UserName(command.username)
+        password = vo.Password(command.password)
+
+        # entity
+        entity_user = User.create_user(
+            username=username,
+            password=password,
+        )
+
         user = self.command_verificate_password_service.verificate_password(
             request=command.request,
-            username=command.username,
-            password=command.password,
+            user=entity_user,
         )
         if user is None:
-            raise UserNotVerifiedError(f"User '{command.username}' not verified.")
+            raise UserNotVerifiedError(f"User '{entity_user.username}' not verified.")
 
         try:
             self.command_authenticate_user_service.login(
@@ -76,7 +87,7 @@ class AuthenticatePageCommandHandler(CommandHandler[AuthenticatePageCommand, str
                 request=command.request,
             )
         except Exception:
-            raise UserNotAuthenticatedError(f"{command.username} not authenticated")
+            raise UserNotAuthenticatedError(f"{entity_user.username} not authenticated")
 
         self.command_add_packet_to_user_by_session_key.add_packet_to_user_by_session_key(
             user=user,
