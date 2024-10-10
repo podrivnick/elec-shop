@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class BaseAppException(Exception):
     """Base class for app exceptions."""
 
@@ -13,7 +13,7 @@ class BaseAppException(Exception):
         return "Some Exception in App"
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class DomainException(BaseAppException):
     """Base class for domain exceptions."""
 

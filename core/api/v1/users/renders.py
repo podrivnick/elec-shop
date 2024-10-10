@@ -12,11 +12,12 @@ from core.api.schemas import (
     SuccessResponse,
     Template,
 )
-from core.api.v1.users.dto.base import (
-    DTOAuthenticateAPI,
-    DTOLogoutPageAPI,
+from core.api.v1.users.dto.responses import (
+    DTOResponseAuthenticateAPI,
+    DTOResponseLoginAPI,
+    DTOResponseLogoutPageAPI,
+    DTOResponseRegistrationAPI,
 )
-from core.api.v1.users.dto.responses import DTOResponseLoginAPI
 
 
 def render_login(
@@ -46,7 +47,7 @@ def render_login(
 
 def render_authenticate(
     request: HttpRequest,
-    response: SuccessResponse[DTOAuthenticateAPI],
+    response: SuccessResponse[DTOResponseAuthenticateAPI],
     template: Template,
 ) -> HttpResponse:
     """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
@@ -67,7 +68,7 @@ def render_authenticate(
 
 def render_logout(
     request: HttpRequest,
-    response: SuccessResponse[DTOLogoutPageAPI],
+    response: SuccessResponse[DTOResponseLogoutPageAPI],
     template: Template,
 ) -> HttpResponse:
     """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
@@ -87,3 +88,28 @@ def render_logout(
         )
 
         return HttpResponseRedirect(reverse("v1:index", args=["all"]))
+
+
+def render_registration(
+    request: HttpRequest,
+    response: SuccessResponse[DTOResponseRegistrationAPI],
+    template: Template,
+) -> HttpResponse:
+    """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
+    if request.headers.get("Content-Type") == "application/json":
+        return JsonResponse(
+            {
+                "status": response.status,
+                "result": {
+                    "form": response.result,
+                },
+            },
+        )
+    else:
+        return render(
+            request,
+            template,
+            {
+                "form": response.result,
+            },
+        )

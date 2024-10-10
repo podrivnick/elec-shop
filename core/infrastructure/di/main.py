@@ -44,6 +44,10 @@ from core.apps.users.services.login.main import (
     ORMCommandAuthenticateUserService,
     ORMCommandAddPacketToUserBySessionKeyService,
 )
+from core.apps.users.use_cases.registration import (
+    RegistrationPageCommand,
+    RegistrationPageCommandHandler,
+)
 from core.apps.users.use_cases.login import LoginPageCommand, LoginPageCommandHandler
 from core.apps.users.services.logout.main import ORMCommandLogoutUserService
 
@@ -64,6 +68,7 @@ def _initialize_container() -> Container:
     container.register(LoginPageCommandHandler)
     container.register(AuthenticatePageCommandHandler)
     container.register(LogoutCommandHandler)
+    container.register(RegistrationPageCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -106,6 +111,8 @@ def _initialize_container() -> Container:
             command_logout_user_service=ORMCommandLogoutUserService(),
         )
 
+        configure_registration_handler = RegistrationPageCommandHandler()
+
         # commands
         # main app
         mediator.register_command(
@@ -142,6 +149,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             LogoutCommand,
             [configure_logout_handler],
+        )
+
+        mediator.register_command(
+            RegistrationPageCommand,
+            [configure_registration_handler],
         )
 
         return mediator

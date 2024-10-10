@@ -5,7 +5,10 @@ from dataclasses import (
 
 from django.http import HttpRequest
 
-from core.api.v1.users.dto.responses import DTOResponseLoginAPI
+from core.api.v1.users.dto.responses import (
+    DTOResponseAuthenticateAPI,
+    DTOResponseLoginAPI,
+)
 from core.apps.common.exceptions.main import AuthenticationError
 from core.apps.users import value_objects as vo
 from core.apps.users.entities.user import User
@@ -60,7 +63,7 @@ class AuthenticatePageCommandHandler(CommandHandler[AuthenticatePageCommand, str
     def handle(
         self,
         command: AuthenticatePageCommand,
-    ) -> None:
+    ) -> DTOResponseAuthenticateAPI:
         if command.is_authenticated:
             raise AuthenticationError("User is authenticated.")
 
@@ -92,4 +95,8 @@ class AuthenticatePageCommandHandler(CommandHandler[AuthenticatePageCommand, str
         self.command_add_packet_to_user_by_session_key.add_packet_to_user_by_session_key(
             user=user,
             session_key=command.session_key,
+        )
+
+        return DTOResponseAuthenticateAPI(
+            username=entity_user.username,
         )

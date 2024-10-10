@@ -6,6 +6,7 @@ from typing import Optional
 
 from django.http import HttpRequest
 
+from core.api.v1.users.dto.responses import DTOResponseLogoutPageAPI
 from core.apps.common.exceptions.main import (
     AuthenticationError,
     LogoutUserError,
@@ -29,7 +30,7 @@ class LogoutCommandHandler(CommandHandler[LogoutCommand, str]):
     def handle(
         self,
         command: LogoutCommand,
-    ) -> None:
+    ) -> DTOResponseLogoutPageAPI:
         if not command.is_authenticated:
             raise AuthenticationError("User is not authenticated.")
 
@@ -39,3 +40,7 @@ class LogoutCommandHandler(CommandHandler[LogoutCommand, str]):
             )
         except Exception:
             raise LogoutUserError(f"User {command.username} not logouted")
+
+        return DTOResponseLogoutPageAPI(
+            username=command.username,
+        )

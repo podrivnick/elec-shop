@@ -13,12 +13,12 @@ MAX_LENGTH_PASSWORD = 32
 PASSWORD_PATTERN = re.compile(r"[A-Za-z][A-Za-z1-9_]+")
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class BasePasswordException(ValueError, DomainException):
     password: Optional[str] | None = field(default=None)
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class EmptyPasswordException(BasePasswordException):
     exception: Optional[str] | None = field(default="Empty password")
 
@@ -27,7 +27,7 @@ class EmptyPasswordException(BasePasswordException):
         return self.exception
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class TooLongPasswordException(BasePasswordException):
     exception: Optional[str] | None = field(default="Too long password")
 
@@ -36,7 +36,7 @@ class TooLongPasswordException(BasePasswordException):
         return self.exception
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class WrongPasswordException(BasePasswordException):
     exception: Optional[str] | None = field(default="Wrong password format")
 

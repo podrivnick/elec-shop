@@ -21,7 +21,7 @@
 
 <div class="main_login" style="background-image: url('{% static 'icons/background.jpg' %}')">
   <div class="block_entering_profile">
-    <!-- <form action="{% url 'users:registration' %}" class="block_form_registration" method="post"
+    <form action="{% url 'v1:registration_get' %}" class="block_form_registration" method="post"
     id="form_register_user_">
       {% csrf_token %}
       <h1 class="header_authorisation">Регистрация</h1>
@@ -76,7 +76,7 @@
       <div class="input_block_login">
         <button class="registration_btn btn btn-outline-primary" type="submit" id="btn_submit_form_registration">Регистрация</button>
       </div>
-    </form> -->
+    </form>
   </div>
 </div>
 {% endblock %}

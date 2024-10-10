@@ -7,7 +7,7 @@ from typing import Optional
 from core.infrastructure.exceptions.base import DomainException
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class DatabaseFavoriteError(DomainException):
     exception: Optional[str] = field(default="Error checking Favorite")
 
@@ -16,7 +16,7 @@ class DatabaseFavoriteError(DomainException):
         return self.exception
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class FavoriteProductError(DomainException):
     exception: Optional[str] = field(default="Error changing Favorite")
 

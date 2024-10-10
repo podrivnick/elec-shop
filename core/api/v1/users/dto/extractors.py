@@ -4,6 +4,7 @@ from core.api.v1.users.dto.base import (
     DTOAuthenticateAPI,
     DTOLoginPageAPI,
     DTOLogoutPageAPI,
+    DTORegistrationPageAPI,
 )
 
 
@@ -44,6 +45,18 @@ def extract_logout_dto(
     username = request.POST.get("username", "")
 
     return DTOLogoutPageAPI(
+        username=username,
+        is_authenticated=is_authenticated,
+    )
+
+
+def extract_registration_dto(
+    request: HttpRequest,
+) -> DTORegistrationPageAPI:
+    is_authenticated = request.user.is_authenticated
+    username = request.user.username if is_authenticated else None
+
+    return DTORegistrationPageAPI(
         username=username,
         is_authenticated=is_authenticated,
     )

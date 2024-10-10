@@ -7,7 +7,7 @@ from typing import Optional
 from core.infrastructure.exceptions.base import DomainException
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class UserNotVerifiedError(DomainException):
     exception: Optional[str] = field(default="User Not Verified")
 
@@ -16,7 +16,7 @@ class UserNotVerifiedError(DomainException):
         return self.exception
 
 
-@dataclass
+@dataclass(frozen=True, eq=False)
 class UserNotAuthenticatedError(DomainException):
     exception: Optional[str] = field(default="User Not Authenticated")
 

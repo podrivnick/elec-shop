@@ -7,7 +7,7 @@ from typing import Optional
 from core.infrastructure.exceptions.base import DomainException
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class AuthenticationError(DomainException):
     exception: Optional[str] | None = field(default="Authentication Error")
 
@@ -16,7 +16,7 @@ class AuthenticationError(DomainException):
         return self.exception
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class UserNotFoundError(DomainException):
     exception: Optional[str] | None = field(default="User not found")
 
@@ -25,7 +25,7 @@ class UserNotFoundError(DomainException):
         return self.exception
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class LogoutUserError(DomainException):
     exception: Optional[str] | None = field(default="User not logouted")
 

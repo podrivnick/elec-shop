@@ -13,11 +13,12 @@ MAX_USERNAME_LENGTH = 32
 USERNAME_PATTERN = re.compile(r"[A-Za-z][A-Za-z1-9_]+")
 
 
-@dataclass(eq=False)
+@dataclass(frozen=True, eq=False)
 class BaseUsernameException(ValueError, DomainException):
     username: Optional[str] | None = field(default=None)
 
 
+@dataclass(frozen=True, eq=False)
 class EmptyUsernameException(BaseUsernameException):
     exception: Optional[str] | None = field(default="Empty username")
 
@@ -26,6 +27,7 @@ class EmptyUsernameException(BaseUsernameException):
         return self.exception
 
 
+@dataclass(frozen=True, eq=False)
 class TooLongUsernameException(BaseUsernameException):
     exception: Optional[str] | None = field(default="Too long username")
 
@@ -34,6 +36,7 @@ class TooLongUsernameException(BaseUsernameException):
         return self.exception
 
 
+@dataclass(frozen=True, eq=False)
 class WrongUsernameFormatException(BaseUsernameException):
     exception: Optional[str] | None = field(default="Wrong username format")
 
@@ -42,7 +45,7 @@ class WrongUsernameFormatException(BaseUsernameException):
         return self.exception
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class UserName(ValueObject[str | None]):
     value: str | None
 

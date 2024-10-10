@@ -13,6 +13,12 @@ class DTOLoginPageAPI(BaseDTOAPI):
 
 
 @dataclass(frozen=True, eq=False)
+class DTORegistrationPageAPI(BaseDTOAPI):
+    username: str | None = field(default=None)
+    is_authenticated: bool = field(default=False)
+
+
+@dataclass(frozen=True, eq=False)
 class DTOAuthenticateAPI(BaseDTOAPI):
     username: str | None = field(default=None)
     email: str | None = field(default=None)
