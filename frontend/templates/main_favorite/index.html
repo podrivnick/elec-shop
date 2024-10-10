@@ -50,7 +50,7 @@
                                 </div>
                             {% endif %}
                             <img src="{{ product.image.url }}"
-                                 alt="..." class="cart_product" style="width: 300px; height: 230px">
+                                alt="..." class="cart_product" style="width: 300px; height: 230px">
                             <div class="data_product">
                                 {% autoescape off %}
                                     <span class="name_product">
@@ -81,7 +81,7 @@
                             <div class="buy_products">
                                 {% csrf_token %}
                                 <button class="btn btn-outline-primary add_packet_product"
-                                     data-product-id="{{ product.pk }}">В Корзину
+                                    data-product-id="{{ product.pk }}">В Корзину
                                 </button>
                             </div>
                         </div>
@@ -95,7 +95,7 @@
                     <form action="{% if request.GET.q %}{% url 'v1:index' slug_url %}{% endif %}" class="form_search_index" role="search" method="get">
                         <label for="id_search">Поиск:</label>
                         <input type="text" id="id_search" placeholder="Введите название или id товара" name="search"
-                               class="block_input_search_">
+                            class="block_input_search_">
                         <button class="submit_search btn btn-search" type="submit" style="line-height: 1.1;">Найти</button>
                     </form>
                     <br>

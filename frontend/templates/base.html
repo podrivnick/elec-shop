@@ -42,9 +42,9 @@
                         </li>
 
                         {% if not user.is_authenticated %}
-                        <!-- <li class="navbar_links">
-                            <a href="">Войти</a><a href="">|Регистрация</a>
-                        </li> -->
+                        <li class="navbar_links">
+                            <a href="{% url 'v1:login_get' %}">Войти</a><a href="#">|Регистрация</a>
+                        </li>
                         {% endif %}
                         <li class="navbar_links">
                             <button class="packet_btn finalize_dis_none_packet">

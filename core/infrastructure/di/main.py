@@ -34,6 +34,7 @@ from core.apps.main.services.update_favorite.main import (
     ORMCommandUpdateFavoriteProductsService,
     ORMQueryUpdateFavoriteProductsService,
 )
+from core.apps.users.use_cases.login import LoginPageCommand, LoginPageCommandHandler
 
 
 @lru_cache(1)
@@ -49,11 +50,13 @@ def _initialize_container() -> Container:
     container.register(FavoritePageCommandHandler)
     container.register(UpdateFavoritePageCommandHandler)
     container.register(InformationPageCommandHandler)
+    container.register(LoginPageCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
 
         # command handlers
+        # main app
         configure_main_page_handler = MainPageCommandHandler(
             favorite_products_service_ids=ORMFavoriteProductsIdsService(),
             get_all_products_service=ORMAllProductsService(),
@@ -77,7 +80,11 @@ def _initialize_container() -> Container:
             query_get_all_information=ORMQueryFAQInformationService(),
         )
 
+        # user app
+        configure_login_page_handler = LoginPageCommandHandler()
+
         # commands
+        # main app
         mediator.register_command(
             MainPageCommand,
             [configure_main_page_handler],
@@ -96,6 +103,12 @@ def _initialize_container() -> Container:
         mediator.register_command(
             InformationPageCommand,
             [configure_information_page_handler],
+        )
+
+        # user app
+        mediator.register_command(
+            LoginPageCommand,
+            [configure_login_page_handler],
         )
 
         return mediator
