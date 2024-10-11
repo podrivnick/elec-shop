@@ -21,7 +21,11 @@ class ORMCommandVerificateUserService(BaseCommandVerificateUserService):
         request: HttpRequest,
         user: UserEntity,
     ) -> User:
-        return authenticate(request, username=user.username, password=user.password)
+        return authenticate(
+            request,
+            username=user.username.to_raw(),
+            password=user.password.to_raw(),
+        )
 
 
 @dataclass

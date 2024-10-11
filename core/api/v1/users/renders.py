@@ -16,6 +16,7 @@ from core.api.v1.users.dto.responses import (
     DTOResponseAuthenticateAPI,
     DTOResponseLoginAPI,
     DTOResponseLogoutPageAPI,
+    DTOResponseRegisterAPI,
     DTOResponseRegistrationAPI,
 )
 
@@ -113,3 +114,24 @@ def render_registration(
                 "form": response.result,
             },
         )
+
+
+def render_register(
+    request: HttpRequest,
+    response: SuccessResponse[DTOResponseRegisterAPI],
+    template: Template,
+) -> HttpResponse:
+    """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
+    if request.headers.get("Content-Type") == "application/json":
+        return JsonResponse(
+            {
+                "status": response.status,
+                "result": {
+                    "username": response.result.username,
+                },
+            },
+        )
+    else:
+        messages.success(request, f"{response.result.username} u've created profile")
+
+        return HttpResponseRedirect(reverse("v1:index", args=["all"]))

@@ -75,7 +75,7 @@ def render_favorites(
 def render_update_favorite(
     request: HttpRequest,
     response: SuccessResponse,
-    template: Template,
+    template: Template = None,
 ) -> HttpResponse:
     """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
     if request.headers.get("Content-Type") == "application/json":

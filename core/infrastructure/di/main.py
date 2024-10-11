@@ -44,9 +44,17 @@ from core.apps.users.services.login.main import (
     ORMCommandAuthenticateUserService,
     ORMCommandAddPacketToUserBySessionKeyService,
 )
+from core.apps.users.services.registration.main import (
+    ORMQueryUserInNotExistService,
+    ORMCommandCreateUserService,
+)
 from core.apps.users.use_cases.registration import (
     RegistrationPageCommand,
     RegistrationPageCommandHandler,
+)
+from core.apps.users.use_cases.registration import (
+    RegisterCommandHandler,
+    RegisterCommand,
 )
 from core.apps.users.use_cases.login import LoginPageCommand, LoginPageCommandHandler
 from core.apps.users.services.logout.main import ORMCommandLogoutUserService
@@ -69,6 +77,7 @@ def _initialize_container() -> Container:
     container.register(AuthenticatePageCommandHandler)
     container.register(LogoutCommandHandler)
     container.register(RegistrationPageCommandHandler)
+    container.register(RegisterCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -113,6 +122,13 @@ def _initialize_container() -> Container:
 
         configure_registration_handler = RegistrationPageCommandHandler()
 
+        configure_register_handler = RegisterCommandHandler(
+            query_verificate_user_is_not_exist=ORMQueryUserInNotExistService(),
+            command_create_user_by_enter_data=ORMCommandCreateUserService(),
+            command_authenticate_user_service=ORMCommandAuthenticateUserService(),
+            command_add_packet_to_user_by_session_key=ORMCommandAddPacketToUserBySessionKeyService(),
+        )
+
         # commands
         # main app
         mediator.register_command(
@@ -154,6 +170,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             RegistrationPageCommand,
             [configure_registration_handler],
+        )
+
+        mediator.register_command(
+            RegisterCommand,
+            [configure_register_handler],
         )
 
         return mediator

@@ -2,6 +2,7 @@ from dataclasses import (
     dataclass,
     field,
 )
+from typing import Optional
 
 from core.api.v1.base_dto import BaseDTOAPI
 
@@ -30,4 +31,16 @@ class DTOAuthenticateAPI(BaseDTOAPI):
 @dataclass(frozen=True, eq=False)
 class DTOLogoutPageAPI(BaseDTOAPI):
     username: str | None = field(default=None)
+    is_authenticated: bool = field(default=False)
+
+
+@dataclass(frozen=True, eq=False)
+class DTORegisterAPI(BaseDTOAPI):
+    first_name: Optional[str] | None = field(default=None)
+    last_name: Optional[str] | None = field(default=None)
+    username: str | None = field(default=None)
+    email: str | None = field(default=None)
+    password1: str | None = field(default=None)
+    password2: str | None = field(default=None)
+    session_key: str | bool = field(default=False)
     is_authenticated: bool = field(default=False)

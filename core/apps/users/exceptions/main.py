@@ -23,3 +23,12 @@ class UserNotAuthenticatedError(DomainException):
     @property
     def message(self) -> Optional[str]:
         return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class UserPasswordsIsNotEqual(DomainException):
+    exception: Optional[str] = field(default="Passwords not equal")
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception

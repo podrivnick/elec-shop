@@ -7,24 +7,28 @@ from ninja import Router
 from core.api.schemas import SuccessResponse
 from core.api.v1.users.dto.base import (
     DTOLoginPageAPI,
+    DTORegisterAPI,
     DTORegistrationPageAPI,
 )
 from core.api.v1.users.dto.extractors import (
     extract_authenticate_dto,
     extract_login_page_dto,
     extract_logout_dto,
+    extract_register_dto,
     extract_registration_dto,
 )
 from core.api.v1.users.dto.responses import (
     DTOResponseAuthenticateAPI,
     DTOResponseLoginAPI,
     DTOResponseLogoutPageAPI,
+    DTOResponseRegisterAPI,
     DTOResponseRegistrationAPI,
 )
 from core.api.v1.users.renders import (
     render_authenticate,
     render_login,
     render_logout,
+    render_register,
     render_registration,
 )
 from core.apps.users.use_cases.login import (
@@ -32,7 +36,10 @@ from core.apps.users.use_cases.login import (
     LoginPageCommand,
 )
 from core.apps.users.use_cases.logout import LogoutCommand
-from core.apps.users.use_cases.registration import RegistrationPageCommand
+from core.apps.users.use_cases.registration import (
+    RegisterCommand,
+    RegistrationPageCommand,
+)
 from core.infrastructure.di.main import init_container
 from core.infrastructure.exceptions.base import BaseAppException
 from core.infrastructure.mediator.mediator import Mediator
@@ -181,4 +188,45 @@ def registration_get(
         request=request,
         response=SuccessResponse(result=dto_response_registration_api),
         template="users/registration.html",
+    )
+
+
+@router.post(
+    "register_post",
+    url_name="register_post",
+)
+def register_post(
+    request: HttpRequest,
+) -> HttpResponse:
+    """API: Регистрации в БД пользователя."""
+    container = init_container()
+    mediator: Mediator = container.resolve(Mediator)
+
+    register_request_dto: DTORegisterAPI = extract_register_dto(
+        request=request,
+    )
+
+    try:
+        dto_response_register_api: DTOResponseRegisterAPI = mediator.handle_command(
+            RegisterCommand(
+                first_name=register_request_dto.first_name,
+                last_name=register_request_dto.last_name,
+                username=register_request_dto.username,
+                email=register_request_dto.email,
+                password1=register_request_dto.password1,
+                password2=register_request_dto.password2,
+                session_key=register_request_dto.session_key,
+                is_authenticated=register_request_dto.is_authenticated,
+                request=request,
+            ),
+        )[0]
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.exception},
+        )
+
+    return render_register(
+        request=request,
+        response=SuccessResponse(result=dto_response_register_api),
+        template="main_favorite/index.html",
     )

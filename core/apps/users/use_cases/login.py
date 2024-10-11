@@ -82,7 +82,9 @@ class AuthenticatePageCommandHandler(CommandHandler[AuthenticatePageCommand, str
             user=entity_user,
         )
         if user is None:
-            raise UserNotVerifiedError(f"User '{entity_user.username}' not verified.")
+            raise UserNotVerifiedError(
+                f"User '{entity_user.username.to_raw()}' not verified.",
+            )
 
         try:
             self.command_authenticate_user_service.login(
@@ -90,7 +92,9 @@ class AuthenticatePageCommandHandler(CommandHandler[AuthenticatePageCommand, str
                 request=command.request,
             )
         except Exception:
-            raise UserNotAuthenticatedError(f"{entity_user.username} not authenticated")
+            raise UserNotAuthenticatedError(
+                f"{entity_user.username.to_raw()} not authenticated",
+            )
 
         self.command_add_packet_to_user_by_session_key.add_packet_to_user_by_session_key(
             user=user,
@@ -98,5 +102,5 @@ class AuthenticatePageCommandHandler(CommandHandler[AuthenticatePageCommand, str
         )
 
         return DTOResponseAuthenticateAPI(
-            username=entity_user.username,
+            username=entity_user.username.to_raw(),
         )

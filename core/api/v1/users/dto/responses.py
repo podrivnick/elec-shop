@@ -37,3 +37,8 @@ class DTOResponseRegistrationAPI(BaseDTOAPI):
     email: Optional[str] | None = field(default=None)
     password1: Optional[str] | None = field(default=None)
     password2: Optional[str] | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOResponseRegisterAPI(BaseDTOAPI):
+    username: Optional[str] | None = field(default=None)

@@ -4,6 +4,7 @@ from core.api.v1.users.dto.base import (
     DTOAuthenticateAPI,
     DTOLoginPageAPI,
     DTOLogoutPageAPI,
+    DTORegisterAPI,
     DTORegistrationPageAPI,
 )
 
@@ -58,5 +59,29 @@ def extract_registration_dto(
 
     return DTORegistrationPageAPI(
         username=username,
+        is_authenticated=is_authenticated,
+    )
+
+
+def extract_register_dto(
+    request: HttpRequest,
+) -> DTORegisterAPI:
+    is_authenticated = request.user.is_authenticated
+    first_name = request.POST.get("first_name", "")
+    last_name = request.POST.get("last_name", "")
+    username = request.POST.get("username", "")
+    email = request.POST.get("email", "")
+    password1 = request.POST.get("password1", "")
+    password2 = request.POST.get("password2", "")
+    session_key = request.session.session_key or False
+
+    return DTORegisterAPI(
+        first_name=first_name,
+        last_name=last_name,
+        username=username,
+        email=email,
+        password1=password1,
+        password2=password2,
+        session_key=session_key,
         is_authenticated=is_authenticated,
     )

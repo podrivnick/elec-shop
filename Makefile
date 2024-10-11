@@ -36,3 +36,7 @@ appbash:
 .PHONY: runtest
 runtest:
 	${EXEC} ${APP_CONTAINER} pytest
+
+.PHONY: migrate
+migrate:
+	${EXEC} ${APP_CONTAINER} python manage.py migrate
