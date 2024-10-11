@@ -4,6 +4,7 @@ from core.api.v1.users.dto.base import (
     DTOAuthenticateAPI,
     DTOLoginPageAPI,
     DTOLogoutPageAPI,
+    DTOProifleAPI,
     DTORegisterAPI,
     DTORegistrationPageAPI,
 )
@@ -84,4 +85,20 @@ def extract_register_dto(
         password2=password2,
         session_key=session_key,
         is_authenticated=is_authenticated,
+    )
+
+
+def extract_profile_dto(
+    request: HttpRequest,
+) -> DTOProifleAPI:
+    is_authenticated = request.user.is_authenticated
+    username = request.user.username if is_authenticated else None
+    referer = request.META.get("HTTP_REFERER")
+    user = request.user
+
+    return DTOProifleAPI(
+        username=username,
+        referer=referer,
+        is_authenticated=is_authenticated,
+        user=user,
     )

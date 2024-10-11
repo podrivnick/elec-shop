@@ -7,6 +7,7 @@ from ninja import Router
 from core.api.schemas import SuccessResponse
 from core.api.v1.users.dto.base import (
     DTOLoginPageAPI,
+    DTOProifleAPI,
     DTORegisterAPI,
     DTORegistrationPageAPI,
 )
@@ -14,6 +15,7 @@ from core.api.v1.users.dto.extractors import (
     extract_authenticate_dto,
     extract_login_page_dto,
     extract_logout_dto,
+    extract_profile_dto,
     extract_register_dto,
     extract_registration_dto,
 )
@@ -21,6 +23,7 @@ from core.api.v1.users.dto.responses import (
     DTOResponseAuthenticateAPI,
     DTOResponseLoginAPI,
     DTOResponseLogoutPageAPI,
+    DTOResponseProfileAPI,
     DTOResponseRegisterAPI,
     DTOResponseRegistrationAPI,
 )
@@ -28,6 +31,7 @@ from core.api.v1.users.renders import (
     render_authenticate,
     render_login,
     render_logout,
+    render_profile,
     render_register,
     render_registration,
 )
@@ -36,6 +40,7 @@ from core.apps.users.use_cases.login import (
     LoginPageCommand,
 )
 from core.apps.users.use_cases.logout import LogoutCommand
+from core.apps.users.use_cases.profile import ProfilePageCommand
 from core.apps.users.use_cases.registration import (
     RegisterCommand,
     RegistrationPageCommand,
@@ -229,4 +234,40 @@ def register_post(
         request=request,
         response=SuccessResponse(result=dto_response_register_api),
         template="main_favorite/index.html",
+    )
+
+
+@router.get(
+    "profile",
+    url_name="profile_get",
+)
+def profile_get(
+    request: HttpRequest,
+) -> HttpResponse:
+    """API: Загрузка странцы Профиля."""
+    container = init_container()
+    mediator: Mediator = container.resolve(Mediator)
+
+    profile_page_dto: DTOProifleAPI = extract_profile_dto(
+        request=request,
+    )
+
+    try:
+        dto_response_profile_api: DTOResponseProfileAPI = mediator.handle_command(
+            ProfilePageCommand(
+                username=profile_page_dto.username,
+                referer=profile_page_dto.referer,
+                is_authenticated=profile_page_dto.is_authenticated,
+                user=profile_page_dto.user,
+            ),
+        )[0]
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.exception},
+        )
+
+    return render_profile(
+        request=request,
+        response=SuccessResponse(result=dto_response_profile_api),
+        template="users/profile.html",
     )

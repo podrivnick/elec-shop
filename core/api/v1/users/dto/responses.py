@@ -2,9 +2,14 @@ from dataclasses import (
     dataclass,
     field,
 )
-from typing import Optional
+from typing import (
+    List,
+    Optional,
+)
 
 from core.api.v1.main.dto.base import BaseDTOAPI
+from core.apps.packet.entities.cart import CartEntity
+from core.apps.users.schemas.user_profile import ProfileDataSchema
 
 
 @dataclass(frozen=True, eq=False)
@@ -42,3 +47,10 @@ class DTOResponseRegistrationAPI(BaseDTOAPI):
 @dataclass(frozen=True, eq=False)
 class DTOResponseRegisterAPI(BaseDTOAPI):
     username: Optional[str] | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOResponseProfileAPI(BaseDTOAPI):
+    form: ProfileDataSchema | None = field(default=None)
+    is_packet: Optional[bool] = field(default=True)
+    packet: List[CartEntity] | None = field(default=None)

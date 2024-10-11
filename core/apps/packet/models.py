@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 from core.apps.main.models.products import Products
+from core.apps.packet.entities.cart import CartEntity
 
 
 class CartQueryset(models.QuerySet):
@@ -40,6 +41,15 @@ class Cart(models.Model):
         verbose_name_plural = "Корзина"
 
     objects = CartQueryset().as_manager()
+
+    def to_entity(self) -> CartEntity:
+        return CartEntity(
+            user=self.user,
+            product=self.product,
+            quantity=self.quantity,
+            session_key=self.session_key,
+            created_timestamp=self.created_timestamp,
+        )
 
     def products_price(self):
         return round(self.product.sell_price() * self.quantity, 2)

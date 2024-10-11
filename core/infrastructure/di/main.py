@@ -58,6 +58,11 @@ from core.apps.users.use_cases.registration import (
 )
 from core.apps.users.use_cases.login import LoginPageCommand, LoginPageCommandHandler
 from core.apps.users.services.logout.main import ORMCommandLogoutUserService
+from core.apps.users.use_cases.profile import (
+    ProfilePageCommand,
+    ProfilePageCommandHandler,
+)
+from core.apps.users.services.profile.main import ORMQueryFilterCartsByUserService
 
 
 @lru_cache(1)
@@ -78,6 +83,7 @@ def _initialize_container() -> Container:
     container.register(LogoutCommandHandler)
     container.register(RegistrationPageCommandHandler)
     container.register(RegisterCommandHandler)
+    container.register(ProfilePageCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -129,6 +135,10 @@ def _initialize_container() -> Container:
             command_add_packet_to_user_by_session_key=ORMCommandAddPacketToUserBySessionKeyService(),
         )
 
+        configure_profile_page_handler = ProfilePageCommandHandler(
+            query_filter_carts_by_user=ORMQueryFilterCartsByUserService(),
+        )
+
         # commands
         # main app
         mediator.register_command(
@@ -175,6 +185,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             RegisterCommand,
             [configure_register_handler],
+        )
+
+        mediator.register_command(
+            ProfilePageCommand,
+            [configure_profile_page_handler],
         )
 
         return mediator

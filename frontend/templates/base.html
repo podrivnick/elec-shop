@@ -49,10 +49,10 @@
                         <li class="navbar_links">
                             <button class="packet_btn finalize_dis_none_packet">
                                 <picture>
-                                  <source media="(max-width: 768px)" srcset="{% static 'icons/white_packet.png' %}">
-                                  <source media="(min-width: 769px)" srcset="{% static 'icons/free-icon-shopping-cart-of-checkered-design-34627.png' %}">
-                                  <img src="{% static 'icons/free-icon-shopping-cart-of-checkered-design-34627.png' %}"
-                                     style="width: 22px; height: 22px" alt="icon" class="img_packet__navbar">
+                                <source media="(max-width: 768px)" srcset="{% static 'icons/white_packet.png' %}">
+                                <source media="(min-width: 769px)" srcset="{% static 'icons/free-icon-shopping-cart-of-checkered-design-34627.png' %}">
+                                <img src="{% static 'icons/free-icon-shopping-cart-of-checkered-design-34627.png' %}"
+                                    style="width: 22px; height: 22px" alt="icon" class="img_packet__navbar">
                                 </picture>
 
                                 <span class="count-item-basket" id="total_price_all_packet">{{packet.total_quantity}}</span>
@@ -60,18 +60,18 @@
                         </li>
                         <li class="navbar_links_profile">
                             {% if user.is_authenticated %}
-                            <!-- <a href=">
+                            <a href="{% url 'v1:profile_get' %}">
                                 {% if not user.image %}
                                 <img src="{% static 'icons/1640528661_1-abrakadabra-fun-p-serii-chelovek-na-avu-1.png' %}"
-                                     style="width: 45px; height: 45px" class="avatar-img" alt="...">
+                                    style="width: 45px; height: 45px" class="avatar-img" alt="...">
                                 {% else %}
                                 <img src="{{ user.image.url }}"
-                                     style="width: 45px; height: 45px" class="avatar-img" alt="...">
+                                    style="width: 45px; height: 45px" class="avatar-img" alt="...">
                                 {% endif %}
-                            </a> -->
+                            </a>
                             <ul class="menu-sub-list">
                                 <li class="menu-list-profile">
-                                    <a href="#" class="links_profile_navbar">
+                                    <a href="{% url 'v1:profile_get' %}" class="links_profile_navbar">
                                         {{user.username}}
                                     </a>
                                 </li>

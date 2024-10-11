@@ -26,13 +26,13 @@
         <div class="avatar">
             {% if not user.image %}
             <img src="{% static 'icons/1640528661_1-abrakadabra-fun-p-serii-chelovek-na-avu-1.png' %}" alt="..."
-                 style="width: 110px; height: 110px; border-radius: 50%">
+                style="width: 110px; height: 110px; border-radius: 50%">
             {% else %}
             <img src="{{ user.image.url }}" alt="{{ form.image.url }}"
-                 style="width: 110px; height: 110px; border-radius: 50%">
+                style="width: 110px; height: 110px; border-radius: 50%">
             {% endif %}
         </div>
-        <!-- <form action="{% url 'users:profile' %}" method="post" enctype="multipart/form-data" >
+        <form action="{% url 'v1:profile_get' %}" method="post" enctype="multipart/form-data" >
             {% csrf_token %}
             <input type="hidden" name="old_username" value="{{ request.user.username }}">
             <input type="file" name="avatar" accept="image/*">
@@ -45,7 +45,7 @@
         </form>
     </div>
     <div class="container_right_data_user">
-        <form action="{% url 'users:profile' %}" method="get">
+        <form action="{% url 'v1:profile_get' %}" method="get">
             <div class="container_data_user">
                 <label for="id_first_name">First name: </label>
                 <input id="id_first_name" type="text" name="first_name" class="username_data" placeholder="Введите новое имя"
@@ -75,9 +75,9 @@
                 <button class="btn_save_new_data_user btn_submit_filters btn" type="submit">Сохранить</button>
             </div>
         </form>
-    </div> -->
+    </div>
 </div>
-  <div class="data_of_products_merge">
+<div class="data_of_products_merge">
     <div class="data_of_products">
         <div class="chenger_reflections_products taken">
             {% csrf_token %}

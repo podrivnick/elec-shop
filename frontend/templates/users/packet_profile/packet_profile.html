@@ -43,8 +43,8 @@
                         {% csrf_token %}
                         <button class="btn_delete_product_from_packet"
                                 data-cart-id="{{ cart.pk }}">
-                          <img src="{% static 'icons/free-icon-recycle-bin-container-12960.png' %}"
-                              alt="recycle" style="width: 16px; height: 18px;">
+                        <img src="{% static 'icons/free-icon-recycle-bin-container-12960.png' %}"
+                            alt="recycle" style="width: 16px; height: 18px;">
                         </button>
                     </div>
                 </div>
@@ -53,6 +53,6 @@
             {% endfor %}
             <div class="block_btn_buy_all_packet">
                 <button class="btn btn_buy_all_packet btn_submit_packet">
-                    <a href="{% url 'carts_products:finalize_product' %}">Оформить заказ</a>
+                    <a href="#">Оформить заказ</a>
                 </button>
             </div>

@@ -4,6 +4,8 @@ from dataclasses import (
 )
 from typing import Optional
 
+from django.utils.functional import SimpleLazyObject
+
 from core.api.v1.base_dto import BaseDTOAPI
 
 
@@ -43,4 +45,12 @@ class DTORegisterAPI(BaseDTOAPI):
     password1: str | None = field(default=None)
     password2: str | None = field(default=None)
     session_key: str | bool = field(default=False)
+    is_authenticated: bool = field(default=False)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOProifleAPI(BaseDTOAPI):
+    user: SimpleLazyObject
+    username: Optional[str] | None = field(default=None)
+    referer: Optional[str] | None = field(default=None)
     is_authenticated: bool = field(default=False)

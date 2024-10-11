@@ -34,3 +34,8 @@ class ValueObject(BaseValueObject, ABC, Generic[V]):
 @dataclass(frozen=True, eq=False)
 class Entity(ABC):
     pass
+
+
+@dataclass(frozen=True, eq=False)
+class ModelEntity(ABC):
+    pass
