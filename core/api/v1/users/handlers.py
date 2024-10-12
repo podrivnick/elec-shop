@@ -259,6 +259,7 @@ def profile_get(
                 referer=profile_page_dto.referer,
                 is_authenticated=profile_page_dto.is_authenticated,
                 user=profile_page_dto.user,
+                updated_information=profile_page_dto.updated_information,
             ),
         )[0]
     except BaseAppException as exception:

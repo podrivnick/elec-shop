@@ -3,6 +3,7 @@ from dataclasses import (
     field,
 )
 from typing import (
+    Dict,
     List,
     Optional,
 )
@@ -11,10 +12,15 @@ from django.utils.functional import SimpleLazyObject
 
 from core.api.v1.users.dto.responses import DTOResponseProfileAPI
 from core.apps.common.exceptions.main import AuthenticationError
+from core.apps.common.services.base import BaseQueryGetUserModelService
 from core.apps.packet.entities.cart import CartEntity
 from core.apps.users import value_objects as vo
 from core.apps.users.schemas.user_profile import ProfileDataSchema
-from core.apps.users.services.profile.base import BaseQueryFilterCartsByUserService
+from core.apps.users.services.profile.base import (
+    BaseCommandSetUpdatedInformationOfUserService,
+    BaseQueryFilterCartsByUserService,
+    BaseQueryValidateNewDataService,
+)
 from core.infrastructure.mediator.base import BaseCommands
 from core.infrastructure.mediator.handlers.commands import CommandHandler
 
@@ -25,11 +31,17 @@ class ProfilePageCommand(BaseCommands):
     is_authenticated: bool = field(default=False)
     referer: Optional[str] | None = field(default=None)
     username: Optional[str] | None = field(default=None)
+    updated_information: Optional[Dict] | None = field(default=None)
 
 
 @dataclass(frozen=True)
 class ProfilePageCommandHandler(CommandHandler[ProfilePageCommand, str]):
     query_filter_carts_by_user: BaseQueryFilterCartsByUserService
+    query_validate_new_information: BaseQueryValidateNewDataService
+    query_get_user_model: BaseQueryGetUserModelService
+    command_set_updated_information_of_user: (
+        BaseCommandSetUpdatedInformationOfUserService
+    )
 
     def handle(
         self,
@@ -41,9 +53,29 @@ class ProfilePageCommandHandler(CommandHandler[ProfilePageCommand, str]):
         # value objects
         username = vo.UserName(command.username)
 
+        if command.updated_information:
+            user_model = self.query_get_user_model.get_usermodel_by_username(
+                username=username.to_raw(),
+            )
+            if not user_model:
+                raise ValueError("Some Error In Server")
+
+            updated_data = (
+                self.query_validate_new_information.validate_new_information_user(
+                    user=user_model,
+                    new_data=command.updated_information,
+                )
+            )
+            if updated_data:
+                self.command_set_updated_information_of_user.set_information_user(
+                    user=user_model,
+                    updated_information=updated_data,
+                )
+
         packet: List[CartEntity] = self.query_filter_carts_by_user.get_carts_user(
             username=username,
         )
+
         form = ProfileDataSchema(
             first_name=command.user.first_name,
             last_name=command.user.last_name,
@@ -51,6 +83,7 @@ class ProfilePageCommandHandler(CommandHandler[ProfilePageCommand, str]):
             email=command.user.email,
             phone=command.user.phone,
             image=command.user.image,
+            age=command.user.age,
         )
 
         return DTOResponseProfileAPI(

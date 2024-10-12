@@ -96,9 +96,12 @@ def extract_profile_dto(
     referer = request.META.get("HTTP_REFERER")
     user = request.user
 
+    updated_information = request.GET.dict() or None
+
     return DTOProifleAPI(
         username=username,
         referer=referer,
         is_authenticated=is_authenticated,
         user=user,
+        updated_information=updated_information,
     )

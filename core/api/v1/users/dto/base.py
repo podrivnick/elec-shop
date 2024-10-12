@@ -2,7 +2,10 @@ from dataclasses import (
     dataclass,
     field,
 )
-from typing import Optional
+from typing import (
+    Dict,
+    Optional,
+)
 
 from django.utils.functional import SimpleLazyObject
 
@@ -54,3 +57,4 @@ class DTOProifleAPI(BaseDTOAPI):
     username: Optional[str] | None = field(default=None)
     referer: Optional[str] | None = field(default=None)
     is_authenticated: bool = field(default=False)
+    updated_information: Optional[Dict] | None = field(default=None)

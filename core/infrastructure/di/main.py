@@ -7,6 +7,10 @@ from core.apps.main.use_cases.info import (
     InformationPageCommand,
     InformationPageCommandHandler,
 )
+from core.apps.users.services.profile.main import QueryValidateNewDataService
+from core.apps.users.services.profile.main import (
+    ORMCommandSetUpdatedInformationOfUserService,
+)
 from punq import Container
 from core.apps.common.services.main import ORMQueryGetUserModelService
 from core.apps.main.services.favorites.favorites import (
@@ -137,6 +141,9 @@ def _initialize_container() -> Container:
 
         configure_profile_page_handler = ProfilePageCommandHandler(
             query_filter_carts_by_user=ORMQueryFilterCartsByUserService(),
+            query_validate_new_information=QueryValidateNewDataService(),
+            query_get_user_model=ORMQueryGetUserModelService(),
+            command_set_updated_information_of_user=ORMCommandSetUpdatedInformationOfUserService(),
         )
 
         # commands

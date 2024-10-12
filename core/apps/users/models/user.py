@@ -3,6 +3,10 @@ from django.contrib.auth.models import (
     Group,
     Permission,
 )
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+)
 from django.db import models
 
 
@@ -19,6 +23,11 @@ class User(AbstractUser):
         blank=True,
         verbose_name="Телефон",
         default=0,
+    )
+    age = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Возраст",
+        validators=[MinValueValidator(16), MaxValueValidator(90)],
     )
 
     groups = models.ManyToManyField(

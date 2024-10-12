@@ -15,3 +15,4 @@ class ProfileDataSchema(Schema):
     email: Optional[str] | None = field(default=None)
     phone: Optional[str] | None = field(default=None)
     image: Optional[str] | None = field(default=None)
+    age: Optional[int] | None = field(default=0)

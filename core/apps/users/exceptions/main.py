@@ -32,3 +32,12 @@ class UserPasswordsIsNotEqual(DomainException):
     @property
     def message(self) -> Optional[str]:
         return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class UserUpdatedDataNotValidated(DomainException):
+    exception: Optional[str] = field(default="Invalid New Information")
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception
