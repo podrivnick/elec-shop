@@ -54,3 +54,4 @@ class DTOResponseProfileAPI(BaseDTOAPI):
     form: ProfileDataSchema | None = field(default=None)
     is_packet: Optional[bool] = field(default=True)
     packet: List[CartEntity] | None = field(default=None)
+    referer: Optional[str] | None = field(default=None)

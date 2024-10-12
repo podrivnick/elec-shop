@@ -93,10 +93,10 @@ def extract_profile_dto(
 ) -> DTOProifleAPI:
     is_authenticated = request.user.is_authenticated
     username = request.user.username if is_authenticated else None
-    referer = request.META.get("HTTP_REFERER")
     user = request.user
 
     updated_information = request.GET.dict() or None
+    referer = request.META.get("HTTP_REFERER") if updated_information else None
 
     return DTOProifleAPI(
         username=username,

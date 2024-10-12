@@ -28,7 +28,7 @@
             <img src="{% static 'icons/1640528661_1-abrakadabra-fun-p-serii-chelovek-na-avu-1.png' %}" alt="..."
                 style="width: 110px; height: 110px; border-radius: 50%">
             {% else %}
-            <img src="{{ user.image.url }}" alt="{{ form.image.url }}"
+            <img src="{{ user.image.url }}" alt="{{ form.image }}"
                 style="width: 110px; height: 110px; border-radius: 50%">
             {% endif %}
         </div>
@@ -38,7 +38,7 @@
             <input type="file" name="avatar" accept="image/*">
             <label for="id_username">Login: </label>
             <input id="id_username" type="text" name="username" class="username_data" placeholder="Введите новый логин"
-            value="{{form.username.value}}">
+            value="{{form.username}}">
             <div class="block_btn_save_new_data_user">
                 <button class="btn_save_new_data_user btn_submit_filters btn" type="submit">Сохранить</button>
             </div>
@@ -49,27 +49,27 @@
             <div class="container_data_user">
                 <label for="id_first_name">First name: </label>
                 <input id="id_first_name" type="text" name="first_name" class="username_data" placeholder="Введите новое имя"
-                {% if form.initial.first_name  %} value="{{ form.initial.first_name }}" {% endif %}>
+                {% if form.first_name  %} value="{{ form.first_name }}" {% endif %}>
             </div>
             <div class="container_data_user">
                 <label for="id_last_name">Last name: </label>
                 <input id="id_last_name" type="text" name="last_name" class="username_data" placeholder="Введите новую фамилию"
-                {% if form.initial.last_name  %} value="{{ form.initial.last_name }}" {% endif %}>
+                {% if form.last_name  %} value="{{ form.last_name }}" {% endif %}>
             </div>
             <div class="container_data_user">
                 <label for="id_email">Current Email:</label>
                 <input id="id_email" type="email" name="email" class="username_data" placeholder="Введите новый email"
-                {% if form.initial.email  %} value="{{ form.initial.email }}" {% endif %}>
+                {% if form.email  %} value="{{ form.email }}" {% endif %}>
             </div>
             <div class="container_data_user">
                 <label for="id_phone">Current Phone:</label>
                 <input id="id_phone" type="text" name="phone" class="username_data" placeholder="Введите новый телефон"
-                {% if form.initial.phone and form.initial.phone|length > 4 %} value="{{form.initial.phone}}" {% endif %}>
+                {% if form.phone and form.phone|length > 4 %} value="{{form.phone}}" {% endif %}>
             </div>
             <div class="container_data_user">
                 <label for="id_age">Current Age:</label>
                 <input id="id_age" type="text" name="age" class="username_data" placeholder="Введите новый возраст"
-                {% if form.initial.age  %} value="{{form.initial.age}}" {% endif %}>
+                {% if form.age  %} value="{{form.age}}" {% endif %}>
             </div>
             <div class="block_btn_save_new_data_user">
                 <button class="btn_save_new_data_user btn_submit_filters btn" type="submit">Сохранить</button>

@@ -5,7 +5,10 @@ from django.http import (
     HttpResponseRedirect,
     JsonResponse,
 )
-from django.shortcuts import render
+from django.shortcuts import (
+    redirect,
+    render,
+)
 from django.urls import reverse
 
 from core.api.schemas import (
@@ -20,6 +23,7 @@ from core.api.v1.users.dto.responses import (
     DTOResponseRegisterAPI,
     DTOResponseRegistrationAPI,
 )
+from core.apps.users.config.config import MESSAGE_UPDATE_PROFILE
 
 
 def render_login(
@@ -156,6 +160,9 @@ def render_profile(
             },
         )
     else:
+        if response.result.referer is not None:
+            messages.success(request, MESSAGE_UPDATE_PROFILE)
+            return redirect(response.result.referer)
         return render(
             request,
             template,

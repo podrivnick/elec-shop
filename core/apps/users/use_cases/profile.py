@@ -89,4 +89,5 @@ class ProfilePageCommandHandler(CommandHandler[ProfilePageCommand, str]):
         return DTOResponseProfileAPI(
             packet=packet,
             form=form,
+            referer=command.referer,
         )
