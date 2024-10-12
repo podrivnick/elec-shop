@@ -201,3 +201,24 @@ def render_profile(
             template,
             {},
         )
+
+
+def render_change_tab(
+    request: HttpRequest,
+    response: SuccessResponse[DTOProifleAPI],
+    template: Template = None,
+) -> HttpResponse:
+    """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
+    if request.headers.get("Content-Type") == "application/json":
+        return JsonResponse(
+            {
+                "message": "packet has updated",
+                "carts_items_user": response.result,
+            },
+        )
+    else:
+        return render(
+            request,
+            template,
+            {},
+        )

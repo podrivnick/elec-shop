@@ -68,3 +68,9 @@ class DTOProifleAPI(BaseDTOAPI):
     is_authenticated: bool = field(default=False)
     updated_data: Optional[ProfileDataSchema] | None = field(default=None)
     referer: Optional[str] | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOChangeTabAPI(BaseDTOAPI):
+    is_authenticated: bool = field(default=False)
+    is_packet: Optional[str] | None = field(default=None)

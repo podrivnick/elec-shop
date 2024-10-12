@@ -8,7 +8,10 @@ from typing import (
     Optional,
 )
 
+from django.http import HttpRequest
+from django.template.loader import render_to_string
 from django.utils.functional import SimpleLazyObject
+from django.utils.safestring import SafeString
 
 from core.api.v1.users.dto.responses import DTOResponseProfileAPI
 from core.apps.common.exceptions.main import AuthenticationError
@@ -137,3 +140,35 @@ class ProfileCommandHandler(CommandHandler[ProfileCommand, str]):
                     user=user_model,
                     updated_information=updated_information,
                 )
+
+
+@dataclass(frozen=True)
+class ChangeTabCommand(BaseCommands):
+    is_authenticated: bool = field(default=False)
+    is_packet: Optional[str] | None = field(default=None)
+    request: HttpRequest | None = field(default=None)
+
+
+@dataclass(frozen=True)
+class ChangeTabCommandHandler(CommandHandler[ChangeTabCommand, str]):
+    def handle(
+        self,
+        command: ChangeTabCommand,
+    ) -> SafeString:
+        if not command.is_authenticated:
+            raise AuthenticationError("User is not authenticated.")
+
+        if command.is_packet == "order":
+            carts_items_user = render_to_string(
+                "users/packet_profile/orders_profile.html",
+                {"is_packet": False},
+                request=command.request,
+            )
+        else:
+            carts_items_user = render_to_string(
+                "users/packet_profile/packet_profile.html",
+                {"is_packet": True},
+                request=command.request,
+            )
+
+        return carts_items_user

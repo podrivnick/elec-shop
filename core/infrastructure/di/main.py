@@ -69,6 +69,7 @@ from core.apps.users.use_cases.profile import (
     ProfileCommandHandler,
 )
 from core.apps.users.services.profile.main import ORMQueryFilterCartsByUserService
+from core.apps.users.use_cases.profile import ChangeTabCommandHandler, ChangeTabCommand
 
 
 @lru_cache(1)
@@ -91,6 +92,7 @@ def _initialize_container() -> Container:
     container.register(RegisterCommandHandler)
     container.register(ProfilePageCommandHandler)
     container.register(ProfileCommandHandler)
+    container.register(ChangeTabCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -155,6 +157,8 @@ def _initialize_container() -> Container:
             command_set_updated_information_of_user=ORMCommandSetUpdatedInformationOfUserService(),
         )
 
+        configure_change_tab_handler = ChangeTabCommandHandler()
+
         # commands
         # main app
         mediator.register_command(
@@ -211,6 +215,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             ProfileCommand,
             [configure_profile_handler],
+        )
+
+        mediator.register_command(
+            ChangeTabCommand,
+            [configure_change_tab_handler],
         )
 
         return mediator

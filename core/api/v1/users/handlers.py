@@ -6,6 +6,7 @@ from ninja import Router
 
 from core.api.schemas import SuccessResponse
 from core.api.v1.users.dto.base import (
+    DTOChangeTabAPI,
     DTOLoginPageAPI,
     DTOProifleAPI,
     DTORegisterAPI,
@@ -13,6 +14,7 @@ from core.api.v1.users.dto.base import (
 )
 from core.api.v1.users.dto.extractors import (
     extract_authenticate_dto,
+    extract_change_tag_dto,
     extract_login_page_dto,
     extract_logout_dto,
     extract_profile_dto,
@@ -30,6 +32,7 @@ from core.api.v1.users.dto.responses import (
 )
 from core.api.v1.users.renders import (
     render_authenticate,
+    render_change_tab,
     render_login,
     render_logout,
     render_profile,
@@ -43,6 +46,7 @@ from core.apps.users.use_cases.login import (
 )
 from core.apps.users.use_cases.logout import LogoutCommand
 from core.apps.users.use_cases.profile import (
+    ChangeTabCommand,
     ProfileCommand,
     ProfilePageCommand,
 )
@@ -315,42 +319,36 @@ def profile_post(
     )
 
 
-# @router.post(
-#     "register_post",
-#     url_name="register_post",
-# )
-# def register_post(
-#     request: HttpRequest,
-# ) -> HttpResponse:
-#     """API: Регистрации в БД пользователя."""
-#     container = init_container()
-#     mediator: Mediator = container.resolve(Mediator)
+@router.post(
+    "change_tab",
+    url_name="change_tab",
+)
+def change_tab(
+    request: HttpRequest,
+) -> HttpResponse:
+    """API: Смена Вкладки Заказов и Корзины."""
+    container = init_container()
+    mediator: Mediator = container.resolve(Mediator)
 
-#     register_request_dto: DTORegisterAPI = extract_register_dto(
-#         request=request,
-#     )
+    change_tab_request_dto: DTOChangeTabAPI = extract_change_tag_dto(
+        request=request,
+    )
 
-#     try:
-#         dto_response_register_api: DTOResponseRegisterAPI = mediator.handle_command(
-#             RegisterCommand(
-#                 first_name=register_request_dto.first_name,
-#                 last_name=register_request_dto.last_name,
-#                 username=register_request_dto.username,
-#                 email=register_request_dto.email,
-#                 password1=register_request_dto.password1,
-#                 password2=register_request_dto.password2,
-#                 session_key=register_request_dto.session_key,
-#                 is_authenticated=register_request_dto.is_authenticated,
-#                 request=request,
-#             ),
-#         )[0]
-#     except BaseAppException as exception:
-#         raise ValueError(
-#             detail={"error": exception.exception},
-#         )
+    try:
+        dto_response_change_tab_api = mediator.handle_command(
+            ChangeTabCommand(
+                is_authenticated=change_tab_request_dto.is_authenticated,
+                is_packet=change_tab_request_dto.is_packet,
+                request=request,
+            ),
+        )[0]
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.exception},
+        )
 
-#     return render_register(
-#         request=request,
-#         response=SuccessResponse(result=dto_response_register_api),
-#         template="main_favorite/index.html",
-#     )
+    return render_change_tab(
+        request=request,
+        response=SuccessResponse(result=dto_response_change_tab_api),
+        template="users/profile.html",
+    )

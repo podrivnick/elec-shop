@@ -8,7 +8,7 @@ $('.toggle_btn__profile').on('click', function (e) {
         console.log('df')
         $.ajax({
             type: "POST",
-            url: "/users/change_below_profile/",  // Укажите URL для обработки запроса на сервере
+            url: "/api/v1/user/change_tab",
             data: {
                 is_packet: is_packet,
                 csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val(),

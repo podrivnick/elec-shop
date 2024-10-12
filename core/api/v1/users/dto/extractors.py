@@ -2,6 +2,7 @@ from django.http import HttpRequest
 
 from core.api.v1.users.dto.base import (
     DTOAuthenticateAPI,
+    DTOChangeTabAPI,
     DTOLoginPageAPI,
     DTOLogoutPageAPI,
     DTOProifleAPI,
@@ -133,4 +134,16 @@ def extract_profile_dto(
             image=updated_image_avatar,
             username=updated_username,
         ),
+    )
+
+
+def extract_change_tag_dto(
+    request: HttpRequest,
+) -> DTOChangeTabAPI:
+    is_authenticated = request.user.is_authenticated
+    is_packet = request.POST.get("is_packet")
+
+    return DTOChangeTabAPI(
+        is_authenticated=is_authenticated,
+        is_packet=is_packet,
     )
