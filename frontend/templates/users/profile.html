@@ -21,7 +21,7 @@
 
 {% block content %}
 <div class="page_profile" style="background-image: url('{% static 'icons/background.jpg' %}')">
-  <div class="profile">
+    <div class="profile">
     <div class="container_left_avatar">
         <div class="avatar">
             {% if not user.image %}
@@ -32,7 +32,7 @@
                 style="width: 110px; height: 110px; border-radius: 50%">
             {% endif %}
         </div>
-        <form action="{% url 'v1:profile_get' %}" method="post" enctype="multipart/form-data" >
+        <form action="{% url 'v1:profile_post' %}" method="post" enctype="multipart/form-data" >
             {% csrf_token %}
             <input type="hidden" name="old_username" value="{{ request.user.username }}">
             <input type="file" name="avatar" accept="image/*">

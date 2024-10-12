@@ -65,6 +65,8 @@ from core.apps.users.services.logout.main import ORMCommandLogoutUserService
 from core.apps.users.use_cases.profile import (
     ProfilePageCommand,
     ProfilePageCommandHandler,
+    ProfileCommand,
+    ProfileCommandHandler,
 )
 from core.apps.users.services.profile.main import ORMQueryFilterCartsByUserService
 
@@ -88,6 +90,7 @@ def _initialize_container() -> Container:
     container.register(RegistrationPageCommandHandler)
     container.register(RegisterCommandHandler)
     container.register(ProfilePageCommandHandler)
+    container.register(ProfileCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -146,6 +149,12 @@ def _initialize_container() -> Container:
             command_set_updated_information_of_user=ORMCommandSetUpdatedInformationOfUserService(),
         )
 
+        configure_profile_handler = ProfileCommandHandler(
+            query_validate_new_information=QueryValidateNewDataService(),
+            query_get_user_model=ORMQueryGetUserModelService(),
+            command_set_updated_information_of_user=ORMCommandSetUpdatedInformationOfUserService(),
+        )
+
         # commands
         # main app
         mediator.register_command(
@@ -197,6 +206,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             ProfilePageCommand,
             [configure_profile_page_handler],
+        )
+
+        mediator.register_command(
+            ProfileCommand,
+            [configure_profile_handler],
         )
 
         return mediator

@@ -91,3 +91,49 @@ class ProfilePageCommandHandler(CommandHandler[ProfilePageCommand, str]):
             form=form,
             referer=command.referer,
         )
+
+
+@dataclass(frozen=True)
+class ProfileCommand(BaseCommands):
+    user: SimpleLazyObject
+    username: Optional[str] | None = field(default=None)
+    is_authenticated: bool = field(default=False)
+    updated_data: Optional[ProfileDataSchema] | None = field(default=None)
+
+
+@dataclass(frozen=True)
+class ProfileCommandHandler(CommandHandler[ProfileCommand, str]):
+    query_validate_new_information: BaseQueryValidateNewDataService
+    query_get_user_model: BaseQueryGetUserModelService
+    command_set_updated_information_of_user: (
+        BaseCommandSetUpdatedInformationOfUserService
+    )
+
+    def handle(
+        self,
+        command: ProfileCommand,
+    ) -> None:
+        if not command.is_authenticated:
+            raise AuthenticationError("User is not authenticated.")
+
+        # value objects
+        username = vo.UserName(command.username)
+
+        if command.updated_data:
+            user_model = self.query_get_user_model.get_usermodel_by_username(
+                username=username.to_raw(),
+            )
+            if not user_model:
+                raise ValueError("Some Error In Server")
+
+            updated_information = (
+                self.query_validate_new_information.validate_new_information_user(
+                    user=user_model,
+                    new_data=command.updated_data,
+                )
+            )
+            if updated_information:
+                self.command_set_updated_information_of_user.set_information_user(
+                    user=user_model,
+                    updated_information=updated_information,
+                )

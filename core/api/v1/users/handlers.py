@@ -16,6 +16,7 @@ from core.api.v1.users.dto.extractors import (
     extract_login_page_dto,
     extract_logout_dto,
     extract_profile_dto,
+    extract_profile_page_dto,
     extract_register_dto,
     extract_registration_dto,
 )
@@ -32,6 +33,7 @@ from core.api.v1.users.renders import (
     render_login,
     render_logout,
     render_profile,
+    render_profile_page,
     render_register,
     render_registration,
 )
@@ -40,7 +42,10 @@ from core.apps.users.use_cases.login import (
     LoginPageCommand,
 )
 from core.apps.users.use_cases.logout import LogoutCommand
-from core.apps.users.use_cases.profile import ProfilePageCommand
+from core.apps.users.use_cases.profile import (
+    ProfileCommand,
+    ProfilePageCommand,
+)
 from core.apps.users.use_cases.registration import (
     RegisterCommand,
     RegistrationPageCommand,
@@ -248,7 +253,7 @@ def profile_get(
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
 
-    profile_page_dto: DTOProifleAPI = extract_profile_dto(
+    profile_page_dto: DTOProifleAPI = extract_profile_page_dto(
         request=request,
     )
 
@@ -267,8 +272,85 @@ def profile_get(
             detail={"error": exception.exception},
         )
 
-    return render_profile(
+    return render_profile_page(
         request=request,
         response=SuccessResponse(result=dto_response_profile_api),
         template="users/profile.html",
     )
+
+
+@router.post(
+    "profile_post",
+    url_name="profile_post",
+)
+def profile_post(
+    request: HttpRequest,
+) -> HttpResponse:
+    """API: Обновление данных профиля."""
+    container = init_container()
+    mediator: Mediator = container.resolve(Mediator)
+
+    profile_request_dto: DTOProifleAPI = extract_profile_dto(
+        request=request,
+    )
+
+    try:
+        mediator.handle_command(
+            ProfileCommand(
+                user=profile_request_dto.user,
+                username=profile_request_dto.username,
+                is_authenticated=profile_request_dto.is_authenticated,
+                updated_data=profile_request_dto.updated_data,
+            ),
+        )[0]
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.exception},
+        )
+
+    return render_profile(
+        request=request,
+        response=SuccessResponse(result=profile_request_dto),
+        template="users/profile.html",
+    )
+
+
+# @router.post(
+#     "register_post",
+#     url_name="register_post",
+# )
+# def register_post(
+#     request: HttpRequest,
+# ) -> HttpResponse:
+#     """API: Регистрации в БД пользователя."""
+#     container = init_container()
+#     mediator: Mediator = container.resolve(Mediator)
+
+#     register_request_dto: DTORegisterAPI = extract_register_dto(
+#         request=request,
+#     )
+
+#     try:
+#         dto_response_register_api: DTOResponseRegisterAPI = mediator.handle_command(
+#             RegisterCommand(
+#                 first_name=register_request_dto.first_name,
+#                 last_name=register_request_dto.last_name,
+#                 username=register_request_dto.username,
+#                 email=register_request_dto.email,
+#                 password1=register_request_dto.password1,
+#                 password2=register_request_dto.password2,
+#                 session_key=register_request_dto.session_key,
+#                 is_authenticated=register_request_dto.is_authenticated,
+#                 request=request,
+#             ),
+#         )[0]
+#     except BaseAppException as exception:
+#         raise ValueError(
+#             detail={"error": exception.exception},
+#         )
+
+#     return render_register(
+#         request=request,
+#         response=SuccessResponse(result=dto_response_register_api),
+#         template="main_favorite/index.html",
+#     )

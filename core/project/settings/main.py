@@ -140,9 +140,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-MEDIA_URL = "/media/"
+MEDIA_URL = "frontend/media/"
 
-MEDIA_ROOT = "media"
+MEDIA_ROOT = "frontend/media/"
 
 STATIC_URL = "frontend/static/"
 

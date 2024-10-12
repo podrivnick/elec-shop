@@ -5,9 +5,11 @@ from core.api.v1.users.dto.base import (
     DTOLoginPageAPI,
     DTOLogoutPageAPI,
     DTOProifleAPI,
+    DTOProiflePageAPI,
     DTORegisterAPI,
     DTORegistrationPageAPI,
 )
+from core.apps.users.schemas.user_profile import ProfileDataSchema
 
 
 def extract_login_page_dto(
@@ -88,9 +90,9 @@ def extract_register_dto(
     )
 
 
-def extract_profile_dto(
+def extract_profile_page_dto(
     request: HttpRequest,
-) -> DTOProifleAPI:
+) -> DTOProiflePageAPI:
     is_authenticated = request.user.is_authenticated
     username = request.user.username if is_authenticated else None
     user = request.user
@@ -98,10 +100,37 @@ def extract_profile_dto(
     updated_information = request.GET.dict() or None
     referer = request.META.get("HTTP_REFERER") if updated_information else None
 
-    return DTOProifleAPI(
+    return DTOProiflePageAPI(
         username=username,
         referer=referer,
         is_authenticated=is_authenticated,
         user=user,
-        updated_information=updated_information,
+        updated_information=ProfileDataSchema(**(updated_information or {})),
+    )
+
+
+def extract_profile_dto(
+    request: HttpRequest,
+) -> DTOProifleAPI:
+    files = request.FILES
+
+    is_authenticated = request.user.is_authenticated
+    username = request.user.username if is_authenticated else None
+
+    user = request.user
+
+    updated_image_avatar = files.get("avatar")
+    updated_username = request.POST["username"]
+
+    referer = request.META.get("HTTP_REFERER")
+
+    return DTOProifleAPI(
+        user=user,
+        username=username,
+        is_authenticated=is_authenticated,
+        referer=referer,
+        updated_data=ProfileDataSchema(
+            image=updated_image_avatar,
+            username=updated_username,
+        ),
     )

@@ -10,6 +10,7 @@ from typing import (
 from django.utils.functional import SimpleLazyObject
 
 from core.api.v1.base_dto import BaseDTOAPI
+from core.apps.users.schemas.user_profile import ProfileDataSchema
 
 
 @dataclass(frozen=True, eq=False)
@@ -52,9 +53,18 @@ class DTORegisterAPI(BaseDTOAPI):
 
 
 @dataclass(frozen=True, eq=False)
-class DTOProifleAPI(BaseDTOAPI):
+class DTOProiflePageAPI(BaseDTOAPI):
     user: SimpleLazyObject
     username: Optional[str] | None = field(default=None)
     referer: Optional[str] | None = field(default=None)
     is_authenticated: bool = field(default=False)
     updated_information: Optional[Dict] | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOProifleAPI(BaseDTOAPI):
+    user: SimpleLazyObject
+    username: Optional[str] | None = field(default=None)
+    is_authenticated: bool = field(default=False)
+    updated_data: Optional[ProfileDataSchema] | None = field(default=None)
+    referer: Optional[str] | None = field(default=None)

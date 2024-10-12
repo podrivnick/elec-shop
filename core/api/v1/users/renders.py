@@ -15,6 +15,7 @@ from core.api.schemas import (
     SuccessResponse,
     Template,
 )
+from core.api.v1.users.dto.base import DTOProifleAPI
 from core.api.v1.users.dto.responses import (
     DTOResponseAuthenticateAPI,
     DTOResponseLoginAPI,
@@ -23,7 +24,10 @@ from core.api.v1.users.dto.responses import (
     DTOResponseRegisterAPI,
     DTOResponseRegistrationAPI,
 )
-from core.apps.users.config.config import MESSAGE_UPDATE_PROFILE
+from core.apps.users.config.config import (
+    MESSAGE_UPDATE_PROFILE,
+    MESSAGE_UPDATED_AVATAR_OR_USERNAME,
+)
 
 
 def render_login(
@@ -142,7 +146,7 @@ def render_register(
         return HttpResponseRedirect(reverse("v1:index", args=["all"]))
 
 
-def render_profile(
+def render_profile_page(
     request: HttpRequest,
     response: SuccessResponse[DTOResponseProfileAPI],
     template: Template,
@@ -171,4 +175,29 @@ def render_profile(
                 "is_packet": response.result.is_packet,
                 "packet": response.result.packet,
             },
+        )
+
+
+def render_profile(
+    request: HttpRequest,
+    response: SuccessResponse[DTOProifleAPI],
+    template: Template,
+) -> HttpResponse:
+    """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
+    if request.headers.get("Content-Type") == "application/json":
+        return JsonResponse(
+            {
+                "status": response.status,
+                "result": {},
+            },
+        )
+    else:
+        if response.result.referer is not None:
+            messages.success(request, MESSAGE_UPDATED_AVATAR_OR_USERNAME)
+            return redirect(response.result.referer)
+
+        return render(
+            request,
+            template,
+            {},
         )

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import (
     Dict,
     List,
+    Optional,
 )
 
 from django.db import transaction
@@ -11,6 +12,7 @@ from core.apps.packet.entities.cart import CartEntity
 from core.apps.packet.models import Cart
 from core.apps.users import value_objects as vo
 from core.apps.users.models import User
+from core.apps.users.schemas.user_profile import ProfileDataSchema
 from core.apps.users.services.profile.base import (
     BaseCommandSetUpdatedInformationOfUserService,
     BaseQueryFilterCartsByUserService,
@@ -37,11 +39,11 @@ class QueryValidateNewDataService(BaseQueryValidateNewDataService):
     def validate_new_information_user(
         self,
         user: QuerySet[User],
-        new_data: Dict,
-    ):
+        new_data: Optional[ProfileDataSchema],
+    ) -> Dict:
         updated_fields = {}
 
-        for par, value in new_data.items():
+        for par, value in new_data.to_dict().items():
             current_value_in_user = getattr(user, par, None)
             if value and value != current_value_in_user:
                 updated_fields[par] = value

@@ -7,3 +7,6 @@ __pycache__/
 
 media/
 myenv/
+
+frontend/media/
+staticfiles/
