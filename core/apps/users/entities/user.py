@@ -63,3 +63,14 @@ class User(Entity):
             "image": self.image,
             "age": self.age,
         }
+
+    def __eq__(self, other):
+        if not isinstance(other, User):
+            return False
+        return (
+            self.username == other.username
+            and self.password == other.password
+            and self.first_name == other.first_name
+            and self.last_name == other.last_name
+            and self.email == other.email
+        )
