@@ -22,3 +22,17 @@ class CartEntity(ModelEntity):
     quantity: Optional[int] | None = field(default=None)
     session_key: Optional[str] | None = field(default=None)
     created_timestamp: Optional[Union[datetime, str]] = field(default=None)
+
+    @property
+    def products_price(self):
+        return round(self.product.sell_price() * self.quantity, 2)
+
+    @property
+    def total_price(self):
+        return sum(cart.products_price() for cart in self)
+
+    @property
+    def total_quantity(self):
+        if self:
+            return sum(cart.quantity for cart in self)
+        return 0

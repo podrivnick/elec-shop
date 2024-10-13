@@ -1,6 +1,6 @@
 // Добавляем товар в корзину, удаляем и изменяем количество товаров в корзине
 $(document).ready(function () {
-   function initCloseModalButton() {
+  function initCloseModalButton() {
     let modal_popup_window = document.querySelector('.container_modal_popup_packet');
     let close_modal_popup_packet = document.querySelector('.close_popup_packet_btn');
 
@@ -9,7 +9,7 @@ $(document).ready(function () {
         modal_popup_window.classList.remove('open');
       });
     }
-   }
+  }
   function initAddToCartButton() {
     // Ловим событие клика по кнопке добавить в корзину
     $(document).on("click", ".add_packet_product", function (e) {
@@ -22,7 +22,7 @@ $(document).ready(function () {
 
       $.ajax({
         type: "POST",
-        url: '/packet/save_product_packet/',
+        url: '/api/v1/packet/add_packet',
         data: {
           product_id: product_id,
           csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val(),

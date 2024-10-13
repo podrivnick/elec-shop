@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Cart
+from core.apps.packet.models.cart import Cart
 
 
 class CartTabAdmin(admin.TabularInline):

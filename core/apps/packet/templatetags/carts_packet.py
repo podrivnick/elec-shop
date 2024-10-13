@@ -1,6 +1,6 @@
 from django import template
 
-from core.apps.packet.utils import get_carts
+from core.apps.packet.utils.main import get_carts
 
 
 register = template.Library()

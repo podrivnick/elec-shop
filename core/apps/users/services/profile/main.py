@@ -9,7 +9,7 @@ from django.db import transaction
 from django.db.models import QuerySet
 
 from core.apps.packet.entities.cart import CartEntity
-from core.apps.packet.models import Cart
+from core.apps.packet.models.cart import Cart
 from core.apps.users import value_objects as vo
 from core.apps.users.entities.user import User as UserEntity
 from core.apps.users.models import User

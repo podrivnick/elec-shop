@@ -38,6 +38,9 @@ from core.apps.main.services.update_favorite.main import (
     ORMCommandUpdateFavoriteProductsService,
     ORMQueryUpdateFavoriteProductsService,
 )
+from punq import (
+    Scope,
+)
 from core.apps.users.use_cases.login import (
     AuthenticatePageCommandHandler,
     AuthenticatePageCommand,
@@ -60,6 +63,7 @@ from core.apps.users.use_cases.registration import (
     RegisterCommandHandler,
     RegisterCommand,
 )
+from core.apps.packet.services.base import BaseCommandUpdateDataCartService
 from core.apps.users.use_cases.login import LoginPageCommand, LoginPageCommandHandler
 from core.apps.users.services.logout.main import ORMCommandLogoutUserService
 from core.apps.users.use_cases.profile import (
@@ -70,6 +74,13 @@ from core.apps.users.use_cases.profile import (
 )
 from core.apps.users.services.profile.main import ORMQueryFilterCartsByUserService
 from core.apps.users.use_cases.profile import ChangeTabCommandHandler, ChangeTabCommand
+from core.apps.packet.repositories.main import ORMCommandUpdateCartRepository
+from core.apps.packet.services.main import (
+    CommandUpdateDataCartService,
+    ORMQueryGetCartService,
+    ORMQueryGetProductService,
+)
+from core.apps.packet.use_cases.packet import AddPacketCommandHandler, AddPacketCommand
 
 
 @lru_cache(1)
@@ -79,6 +90,18 @@ def init_container() -> Container:
 
 def _initialize_container() -> Container:
     container = Container()
+
+    # init services
+    def init_update_packet_service() -> BaseCommandUpdateDataCartService:
+        return CommandUpdateDataCartService(
+            command_update_cart=ORMCommandUpdateCartRepository(),
+        )
+
+    container.register(
+        BaseCommandUpdateDataCartService,
+        factory=init_update_packet_service,
+        scope=Scope.singleton,
+    )
 
     # Handlers
     container.register(MainPageCommandHandler)
@@ -93,6 +116,7 @@ def _initialize_container() -> Container:
     container.register(ProfilePageCommandHandler)
     container.register(ProfileCommandHandler)
     container.register(ChangeTabCommandHandler)
+    container.register(AddPacketCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -159,6 +183,16 @@ def _initialize_container() -> Container:
 
         configure_change_tab_handler = ChangeTabCommandHandler()
 
+        # packet app
+        configure_add_packet_handler = AddPacketCommandHandler(
+            query_get_user_model=ORMQueryGetUserModelService(),
+            query_get_product_by_id=ORMQueryGetProductService(),
+            query_get_cart_by_product_and_user=ORMQueryGetCartService(),
+            command_update_or_create_cart=container.resolve(
+                BaseCommandUpdateDataCartService,
+            ),
+        )
+
         # commands
         # main app
         mediator.register_command(
@@ -220,6 +254,12 @@ def _initialize_container() -> Container:
         mediator.register_command(
             ChangeTabCommand,
             [configure_change_tab_handler],
+        )
+
+        # packet app
+        mediator.register_command(
+            AddPacketCommand,
+            [configure_add_packet_handler],
         )
 
         return mediator

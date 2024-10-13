@@ -40,7 +40,7 @@ class Cart(models.Model):
         verbose_name = "Корзина"
         verbose_name_plural = "Корзина"
 
-    objects = CartQueryset().as_manager()
+    # objects = CartQueryset().as_manager()
 
     def to_entity(self) -> CartEntity:
         return CartEntity(
@@ -51,8 +51,8 @@ class Cart(models.Model):
             created_timestamp=self.created_timestamp,
         )
 
-    def products_price(self):
-        return round(self.product.sell_price() * self.quantity, 2)
+    # def products_price(self): noqa
+    #     return round(self.product.sell_price() * self.quantity, 2)    noqa
 
     def __str__(self):
         if self.user:

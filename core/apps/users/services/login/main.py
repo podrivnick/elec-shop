@@ -4,7 +4,7 @@ from django.contrib import auth
 from django.contrib.auth import authenticate
 from django.http import HttpRequest
 
-from core.apps.packet.models import Cart
+from core.apps.packet.models.cart import Cart
 from core.apps.users.entities.user import User as UserEntity
 from core.apps.users.models import User
 from core.apps.users.services.login.base import (
