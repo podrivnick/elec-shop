@@ -95,18 +95,18 @@ def extract_profile_page_dto(
     request: HttpRequest,
 ) -> DTOProiflePageAPI:
     is_authenticated = request.user.is_authenticated
-    username = request.user.username if is_authenticated else None
     user = request.user
 
     updated_information = request.GET.dict() or None
     referer = request.META.get("HTTP_REFERER") if updated_information else None
 
     return DTOProiflePageAPI(
-        username=username,
         referer=referer,
         is_authenticated=is_authenticated,
         user=user,
-        updated_information=ProfileDataSchema(**(updated_information or {})),
+        updated_information=ProfileDataSchema(**(updated_information or {}))
+        if updated_information
+        else None,
     )
 
 

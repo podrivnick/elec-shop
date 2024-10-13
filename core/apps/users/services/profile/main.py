@@ -1,8 +1,8 @@
+import logging
 from dataclasses import dataclass
 from typing import (
     Dict,
     List,
-    Optional,
 )
 
 from django.db import transaction
@@ -11,6 +11,7 @@ from django.db.models import QuerySet
 from core.apps.packet.entities.cart import CartEntity
 from core.apps.packet.models import Cart
 from core.apps.users import value_objects as vo
+from core.apps.users.entities.user import User as UserEntity
 from core.apps.users.models import User
 from core.apps.users.schemas.user_profile import ProfileDataSchema
 from core.apps.users.services.profile.base import (
@@ -39,14 +40,14 @@ class QueryValidateNewDataService(BaseQueryValidateNewDataService):
     def validate_new_information_user(
         self,
         user: QuerySet[User],
-        new_data: Optional[ProfileDataSchema],
+        new_data: ProfileDataSchema | UserEntity,
     ) -> Dict:
         updated_fields = {}
 
         for par, value in new_data.to_dict().items():
             current_value_in_user = getattr(user, par, None)
-            if value and value != current_value_in_user:
-                updated_fields[par] = value
+            if value and value.to_raw() != current_value_in_user:
+                updated_fields[par] = value.to_raw()
 
         return updated_fields or None
 
@@ -60,8 +61,10 @@ class ORMCommandSetUpdatedInformationOfUserService(
         user: QuerySet[User],
         updated_information: Dict,
     ):
+        logging.info(f"{updated_information}")
         with transaction.atomic():
             for field, value in updated_information.items():
-                setattr(user, field, value)
+                if value is not None:
+                    setattr(user, field, value)
 
             user.save(update_fields=updated_information.keys())

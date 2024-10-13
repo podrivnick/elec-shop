@@ -55,7 +55,6 @@ class DTORegisterAPI(BaseDTOAPI):
 @dataclass(frozen=True, eq=False)
 class DTOProiflePageAPI(BaseDTOAPI):
     user: SimpleLazyObject
-    username: Optional[str] | None = field(default=None)
     referer: Optional[str] | None = field(default=None)
     is_authenticated: bool = field(default=False)
     updated_information: Optional[Dict] | None = field(default=None)

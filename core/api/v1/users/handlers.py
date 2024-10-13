@@ -264,7 +264,6 @@ def profile_get(
     try:
         dto_response_profile_api: DTOResponseProfileAPI = mediator.handle_command(
             ProfilePageCommand(
-                username=profile_page_dto.username,
                 referer=profile_page_dto.referer,
                 is_authenticated=profile_page_dto.is_authenticated,
                 user=profile_page_dto.user,

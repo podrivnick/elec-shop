@@ -3,7 +3,6 @@ from dataclasses import (
     field,
 )
 from typing import (
-    Dict,
     List,
     Optional,
 )
@@ -18,6 +17,7 @@ from core.apps.common.exceptions.main import AuthenticationError
 from core.apps.common.services.base import BaseQueryGetUserModelService
 from core.apps.packet.entities.cart import CartEntity
 from core.apps.users import value_objects as vo
+from core.apps.users.entities.user import User as UserEntity
 from core.apps.users.schemas.user_profile import ProfileDataSchema
 from core.apps.users.services.profile.base import (
     BaseCommandSetUpdatedInformationOfUserService,
@@ -33,8 +33,7 @@ class ProfilePageCommand(BaseCommands):
     user: SimpleLazyObject
     is_authenticated: bool = field(default=False)
     referer: Optional[str] | None = field(default=None)
-    username: Optional[str] | None = field(default=None)
-    updated_information: Optional[Dict] | None = field(default=None)
+    updated_information: Optional[ProfileDataSchema] | None = field(default=None)
 
 
 @dataclass(frozen=True)
@@ -54,39 +53,44 @@ class ProfilePageCommandHandler(CommandHandler[ProfilePageCommand, str]):
             raise AuthenticationError("User is not authenticated.")
 
         # value objects
-        username = vo.UserName(command.username)
+        username = vo.UserName(command.user.username)
+        first_name = vo.FirstName(command.user.first_name)
+        last_name = vo.LastName(command.user.last_name)
+        age = vo.AgeUser(command.user.age)
+        image = vo.ImageUser(command.user.image)
+        phone = vo.PhoneNumber(command.user.phone)
+        email = vo.Email(command.user.email)
 
         if command.updated_information:
-            user_model = self.query_get_user_model.get_usermodel_by_username(
-                username=username.to_raw(),
-            )
-            if not user_model:
-                raise ValueError("Some Error In Server")
+            # value objects
+            updated_first_name = vo.FirstName(command.updated_information.first_name)
+            updated_last_name = vo.LastName(command.updated_information.last_name)
+            updated_age = vo.AgeUser(command.updated_information.age)
+            updated_phone = vo.PhoneNumber(command.updated_information.phone)
+            updated_email = vo.Email(command.updated_information.email)
 
-            updated_data = (
-                self.query_validate_new_information.validate_new_information_user(
-                    user=user_model,
-                    new_data=command.updated_information,
-                )
+            # entity
+            user_entity = UserEntity.create_user(
+                first_name=updated_first_name,
+                last_name=updated_last_name,
+                age=updated_age,
+                phone=updated_phone,
+                email=updated_email,
             )
-            if updated_data:
-                self.command_set_updated_information_of_user.set_information_user(
-                    user=user_model,
-                    updated_information=updated_data,
-                )
+            self._update_profile_info(username, user_entity)
 
         packet: List[CartEntity] = self.query_filter_carts_by_user.get_carts_user(
             username=username,
         )
 
         form = ProfileDataSchema(
-            first_name=command.user.first_name,
-            last_name=command.user.last_name,
-            username=command.user.username,
-            email=command.user.email,
-            phone=command.user.phone,
-            image=command.user.image,
-            age=command.user.age,
+            first_name=first_name.to_raw(),
+            last_name=last_name.to_raw(),
+            username=username.to_raw(),
+            email=email.to_raw(),
+            phone=phone.to_raw(),
+            image=image.to_raw(),
+            age=age.to_raw(),
         )
 
         return DTOResponseProfileAPI(
@@ -94,6 +98,30 @@ class ProfilePageCommandHandler(CommandHandler[ProfilePageCommand, str]):
             form=form,
             referer=command.referer,
         )
+
+    def _update_profile_info(
+        self,
+        username: vo.UserName,
+        updated_information: UserEntity,
+    ):
+        user_model = self.query_get_user_model.get_usermodel_by_username(
+            username=username.to_raw(),
+        )
+        if not user_model:
+            raise ValueError("Some Error In Server")
+
+        updated_data = (
+            self.query_validate_new_information.validate_new_information_user(
+                user=user_model,
+                new_data=updated_information,
+            )
+        )
+
+        if updated_data:
+            self.command_set_updated_information_of_user.set_information_user(
+                user=user_model,
+                updated_information=updated_data,
+            )
 
 
 @dataclass(frozen=True)
@@ -123,23 +151,39 @@ class ProfileCommandHandler(CommandHandler[ProfileCommand, str]):
         username = vo.UserName(command.username)
 
         if command.updated_data:
-            user_model = self.query_get_user_model.get_usermodel_by_username(
-                username=username.to_raw(),
-            )
-            if not user_model:
-                raise ValueError("Some Error In Server")
+            # value objects
+            updated_username = vo.UserName(command.updated_data.username)
+            updated_image = vo.ImageUser(command.updated_data.image)
 
-            updated_information = (
-                self.query_validate_new_information.validate_new_information_user(
-                    user=user_model,
-                    new_data=command.updated_data,
-                )
+            # entity
+            user_entity = UserEntity.create_user(
+                username=updated_username,
+                image=updated_image,
             )
-            if updated_information:
-                self.command_set_updated_information_of_user.set_information_user(
-                    user=user_model,
-                    updated_information=updated_information,
-                )
+
+            self._update_profile_info(
+                username=username,
+                updated_data=user_entity,
+            )
+
+    def _update_profile_info(self, username: vo.UserName, updated_data: UserEntity):
+        user_model = self.query_get_user_model.get_usermodel_by_username(
+            username=username.to_raw(),
+        )
+        if not user_model:
+            raise ValueError("Some Error In Server")
+
+        updated_information = (
+            self.query_validate_new_information.validate_new_information_user(
+                user=user_model,
+                new_data=updated_data,
+            )
+        )
+        if updated_information:
+            self.command_set_updated_information_of_user.set_information_user(
+                user=user_model,
+                updated_information=updated_information,
+            )
 
 
 @dataclass(frozen=True)
