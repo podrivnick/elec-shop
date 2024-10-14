@@ -8,6 +8,7 @@ from django.db.models import QuerySet
 
 from core.apps.main.entities.product import ProductEntity
 from core.apps.main.models.products import Products
+from core.apps.packet.entities.cart import CartEntity
 from core.apps.packet.models.cart import Cart
 from core.apps.packet.repositories.base import BaseCommandUpdateCartRepository
 from core.apps.packet.services.base import (
@@ -25,20 +26,20 @@ class ORMQueryGetProductService(BaseQueryGetProductService):
         id_product: Optional[int],
     ) -> ProductEntity:
         product = Products.objects.get(id_product=id_product)
-
-        return ProductEntity(
-            id_product=product.id_product,
-            name=product.name,
-            description=product.description,
-            slug=product.slug,
-            image=product.image,
-            discount=product.discount,
-            price=product.price,
-            count_product=product.count_product,
-            category=product.category,
-            created_at=product.created_at,
-            updated_at=product.updated_at,
-        )
+        return product
+        # return ProductEntity(
+        #     id_product=product.id_product,
+        #     name=product.name,
+        #     description=product.description,
+        #     slug=product.slug,
+        #     image=product.image,
+        #     discount=product.discount,
+        #     price=product.price,
+        #     count_product=product.count_product,
+        #     category=product.category,
+        #     created_at=product.created_at,
+        #     updated_at=product.updated_at,
+        # )
 
 
 @dataclass
@@ -72,4 +73,22 @@ class CommandUpdateDataCartService(BaseCommandUpdateDataCartService):
                 filters=filters,
             )
 
-        return packet
+        packet_entity = CartEntity(
+            user=packet.user,
+            product=ProductEntity(
+                id_product=packet.product.id_product,
+                name=packet.product.name,
+                description=packet.product.description,
+                slug=packet.product.slug,
+                image=packet.product.image,
+                discount=packet.product.discount,
+                price=packet.product.price,
+                count_product=packet.product.count_product,
+                category=packet.product.category,
+                created_at=packet.product.created_at,
+                updated_at=packet.product.updated_at,
+            ),
+            quantity=packet.quantity,
+        )
+
+        return packet_entity

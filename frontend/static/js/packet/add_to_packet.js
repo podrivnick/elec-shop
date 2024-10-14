@@ -57,7 +57,7 @@ $(document).ready(function () {
   initAddToCartButton();
 
   function initDeleteCart() {
-     $(document).on("click", ".btn_delete_product_from_packet", function (e) {
+    $(document).on("click", ".btn_delete_product_from_packet", function (e) {
         e.preventDefault();
 
         let cart_id = $(this).data("cart-id");

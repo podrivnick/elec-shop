@@ -31,7 +31,7 @@ class AddProductToPacket(UserOrSessionKeyMixin, View):
         packets = add_to_packet.add_product_packet()
 
         carts_items_user = render_to_string(
-            "modal_packet.html",
+            "frontend/modal_packet.html",
             {"packet": packets},
             request=self.request,
         )

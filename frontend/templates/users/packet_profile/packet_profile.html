@@ -2,7 +2,7 @@
 {% load carts_packet %}
 
 {% get_packets request as packet %}
-            <h2 style="font-size: 40px; color: white; display: flex;">{{ packet.total_price }}$</h2>
+            <h2 style="font-size: 40px; color: white; display: flex;">{{ total_price }}$</h2>
             {% for cart in packet %}
             {% if cart.quantity >= 1 %}
                 <div class="carts_on_sell">

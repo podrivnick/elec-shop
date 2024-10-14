@@ -10,7 +10,7 @@
   </div>
   <h2>Корзина</h2>
   <div class="block_cart_product_packet" id="modal_packet_popup">
-    {% for packet_item in packet %}
+    {% for packet_item in packet.packet %}
     {% if packet_item.quantity >= 1 %}
       <div class="block_cart_product_packet_name" >
         <a href="" style="text-decoration: none">
@@ -42,7 +42,7 @@
         <button class="btn_delete_product_from_packet"
                 data-cart-id="{{ packet_item.pk }}">
           <img src="{% static 'icons/free-icon-recycle-bin-container-12960.png' %}"
-               alt="recycle" style="width: 16px; height: 18px;">
+              alt="recycle" style="width: 16px; height: 18px;">
         </button>
       </div>
     {% endif %}
