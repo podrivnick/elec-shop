@@ -1,7 +1,13 @@
 from dataclasses import dataclass
-from typing import Dict
+from typing import (
+    Dict,
+    Optional,
+)
 
-from django.db.models import QuerySet
+from django.db.models import (
+    F,
+    QuerySet,
+)
 
 from core.apps.main.models.products import Products
 from core.apps.packet.models.cart import Cart
@@ -30,3 +36,10 @@ class ORMCommandUpdateCartRepository(BaseCommandUpdateCartRepository):
             quantity=1,
             **filters,
         )
+
+    def change_quantity_products(
+        self,
+        cart_id: Optional[int],
+        change_value: Optional[int],
+    ) -> None:
+        Cart.objects.filter(pk=cart_id).update(quantity=F("quantity") + change_value)

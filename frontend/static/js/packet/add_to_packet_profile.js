@@ -50,7 +50,7 @@ $(document).ready(function () {
 
         $.ajax({
         type: "POST",
-        url: '/packet/change_count_product/',
+        url: '/api/v1/packet/change_packet',
         data: {
           is_profile: true,
           cart_id: cart_id,
@@ -91,7 +91,7 @@ $(document).ready(function () {
 
         $.ajax({
         type: "POST",
-        url: '/packet/change_count_product/',
+        url: '/api/v1/packet/change_packet',
         data: {
           is_plus: is_plus,
           is_profile: true,

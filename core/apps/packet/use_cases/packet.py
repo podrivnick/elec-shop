@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 
 from core.api.v1.packet.dto.responses import (
     DTOResponseAddPacketAPI,
-    DTOResponseDeletePacketAPI,
+    DTOResponseUpdatePacketAPI,
 )
 from core.apps.common.services.base import BaseQueryGetUserModelService
 from core.apps.packet.services.base import (
@@ -96,7 +96,7 @@ class DeletePacketCommandHandler(CommandHandler[DeletePacketCommand, str]):
     def handle(
         self,
         command: DeletePacketCommand,
-    ) -> DTOResponseDeletePacketAPI:
+    ) -> DTOResponseUpdatePacketAPI:
         self.command_delete_cart_from_packet.delete_cart_from_packet(
             cart_id=command.cart_id,
         )
@@ -129,7 +129,72 @@ class DeletePacketCommandHandler(CommandHandler[DeletePacketCommand, str]):
                 request=command.request,
             )
 
-        return DTOResponseDeletePacketAPI(
+        return DTOResponseUpdatePacketAPI(
+            carts_items_user=carts_items_user,
+            new_quantity=total_quantity,
+        )
+
+
+@dataclass(frozen=True)
+class ChangePacketCommand(BaseCommands):
+    is_plus: Optional[int] | None = field(default=None)
+    cart_id: Optional[int] | None = field(default=None)
+    is_profile: Optional[str] | None = field(default=None)
+    is_authenticated: bool = field(default=False)
+    username: Optional[str] | None = field(default=None)
+    session_key: Optional[str] | None = field(default=None)
+    request: HttpRequest | None = field(default=None)
+
+
+@dataclass(frozen=True)
+class ChangePacketCommandHandler(CommandHandler[ChangePacketCommand, str]):
+    command_change_quantity_cart_from_packet: BaseCommandUpdateDataCartService
+    query_get_user_model: BaseQueryGetUserModelService
+    query_get_cart: BaseQueryGetCartService
+
+    def handle(
+        self,
+        command: ChangePacketCommand,
+    ) -> DTOResponseUpdatePacketAPI:
+        if command.is_authenticated:
+            username = vo.UserName(command.username)
+            user = self.query_get_user_model.get_usermodel_by_username(
+                username=username.to_raw(),
+            )
+        filter_kwargs = (
+            {"user": user}
+            if command.is_authenticated
+            else {"session_key": command.session_key}
+        )
+
+        cart = self.query_get_cart.get_cart_by_id(cart_id=command.cart_id)
+        if not cart:
+            raise ValueError("Some Error")
+
+        self.command_change_quantity_cart_from_packet.process_change_quantity_products_in_packet(
+            cart_id=command.cart_id,
+            is_plus=command.is_plus,
+            cart=cart,
+        )
+
+        packet, total_quantity = self.query_get_cart.get_all_carts_by_user(
+            filters=filter_kwargs,
+        )
+
+        if command.is_profile == "true":
+            carts_items_user = render_to_string(
+                "users/packet_profile/packet_profile.html",
+                {"packet": packet},
+                request=command.request,
+            )
+        else:
+            carts_items_user = render_to_string(
+                "modal_packet.html",
+                {"packet": packet},
+                request=command.request,
+            )
+
+        return DTOResponseUpdatePacketAPI(
             carts_items_user=carts_items_user,
             new_quantity=total_quantity,
         )

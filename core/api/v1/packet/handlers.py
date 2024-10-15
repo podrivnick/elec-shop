@@ -6,29 +6,29 @@ from ninja import Router
 
 from core.api.schemas import SuccessResponse
 from core.api.v1.packet.dto.base import (
+    DTOChangePacketAPI,
     DTODeletePacketAPI,
     DTOPacketAPI,
 )
 from core.api.v1.packet.dto.extractors import (
     extract_add_packet_dto,
+    extract_change_packet_dto,
     extract_delete_packet_dto,
 )
 from core.api.v1.packet.dto.responses import (
     DTOResponseAddPacketAPI,
-    DTOResponseDeletePacketAPI,
+    DTOResponseUpdatePacketAPI,
 )
 from core.api.v1.packet.renders import (
     render_add_packet,
+    render_change_packet,
     render_delete_packet,
 )
-from core.api.v1.users.dto.extractors import extract_authenticate_dto
-from core.api.v1.users.dto.responses import DTOResponseAuthenticateAPI
-from core.api.v1.users.renders import render_authenticate
 from core.apps.packet.use_cases.packet import (
     AddPacketCommand,
+    ChangePacketCommand,
     DeletePacketCommand,
 )
-from core.apps.users.use_cases.login import AuthenticatePageCommand
 from core.infrastructure.di.main import init_container
 from core.infrastructure.exceptions.base import BaseAppException
 from core.infrastructure.mediator.mediator import Mediator
@@ -90,7 +90,7 @@ def delete_packet(
     )
 
     try:
-        dto_response_delete_packet_api: DTOResponseDeletePacketAPI = (
+        dto_response_delete_packet_api: DTOResponseUpdatePacketAPI = (
             mediator.handle_command(
                 DeletePacketCommand(
                     cart_id=delete_packet_request_dto.cart_id,
@@ -124,19 +124,20 @@ def change_packet(
     container = init_container()
     mediator: Mediator = container.resolve(Mediator)
 
-    authenticate_request_dto = extract_authenticate_dto(
+    change_packet_request_dto: DTOChangePacketAPI = extract_change_packet_dto(
         request=request,
     )
 
     try:
-        dto_response_authenticate_api: DTOResponseAuthenticateAPI = (
+        dto_response_change_packet_api: DTOResponseUpdatePacketAPI = (
             mediator.handle_command(
-                AuthenticatePageCommand(
-                    username=authenticate_request_dto.username,
-                    email=authenticate_request_dto.email,
-                    password=authenticate_request_dto.password,
-                    session_key=authenticate_request_dto.session_key,
-                    is_authenticated=authenticate_request_dto.is_authenticated,
+                ChangePacketCommand(
+                    is_plus=change_packet_request_dto.is_plus,
+                    cart_id=change_packet_request_dto.cart_id,
+                    is_profile=change_packet_request_dto.is_profile,
+                    is_authenticated=change_packet_request_dto.is_authenticated,
+                    username=change_packet_request_dto.username,
+                    session_key=change_packet_request_dto.session_key,
                     request=request,
                 ),
             )[0]
@@ -146,8 +147,8 @@ def change_packet(
             detail={"error": exception.exception},
         )
 
-    return render_authenticate(
+    return render_change_packet(
         request=request,
-        response=SuccessResponse(result=dto_response_authenticate_api),
+        response=SuccessResponse(result=dto_response_change_packet_api),
         template="main_favorite/index.html",
     )

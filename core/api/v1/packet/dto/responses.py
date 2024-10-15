@@ -13,6 +13,6 @@ class DTOResponseAddPacketAPI(BaseDTOAPI):
 
 
 @dataclass(frozen=True, eq=False)
-class DTOResponseDeletePacketAPI(BaseDTOAPI):
+class DTOResponseUpdatePacketAPI(BaseDTOAPI):
     carts_items_user: Optional[str] | None = field(default=None)
     new_quantity: Optional[int] | None = field(default=None)

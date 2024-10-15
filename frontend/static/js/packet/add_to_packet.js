@@ -108,7 +108,7 @@ $(document).ready(function () {
 
         $.ajax({
         type: "POST",
-        url: '/packet/change_count_product/',
+        url: '/api/v1/packet/change_packet',
         data: {
           cart_id: cart_id,
           is_profile: false,
@@ -152,7 +152,7 @@ $(document).ready(function () {
 
         $.ajax({
         type: "POST",
-        url: '/packet/change_count_product/',
+        url: '/api/v1/packet/change_packet',
         data: {
           is_profile: false,
           is_plus: is_plus,

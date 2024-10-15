@@ -18,3 +18,7 @@ class BaseCommandUpdateCartRepository(ABC):
     @abstractmethod
     def create_cart(self) -> QuerySet[Cart]:
         raise NotImplementedError()
+
+    @abstractmethod
+    def change_quantity_products(self) -> None:
+        raise NotImplementedError()

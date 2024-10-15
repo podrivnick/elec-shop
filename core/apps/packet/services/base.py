@@ -28,6 +28,10 @@ class BaseQueryGetCartService(ABC):
     def get_all_carts_by_user(self) -> Tuple[CartEntity, int]:
         raise NotImplementedError()
 
+    @abstractmethod
+    def get_cart_by_id(self):
+        raise NotImplementedError()
+
 
 @dataclass
 class BaseCommandUpdateDataCartService(ABC):
@@ -37,4 +41,12 @@ class BaseCommandUpdateDataCartService(ABC):
 
     @abstractmethod
     def delete_cart_from_packet(self) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def process_change_quantity_products_in_packet(self) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def _change_quantity(self) -> None:
         raise NotImplementedError()

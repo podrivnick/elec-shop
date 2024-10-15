@@ -81,6 +81,10 @@ from core.apps.packet.services.main import (
     ORMQueryGetProductService,
 )
 from core.apps.packet.use_cases.packet import (
+    ChangePacketCommandHandler,
+    ChangePacketCommand,
+)
+from core.apps.packet.use_cases.packet import (
     DeletePacketCommand,
     DeletePacketCommandHandler,
 )
@@ -122,6 +126,7 @@ def _initialize_container() -> Container:
     container.register(ChangeTabCommandHandler)
     container.register(AddPacketCommandHandler)
     container.register(DeletePacketCommandHandler)
+    container.register(ChangePacketCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -206,6 +211,14 @@ def _initialize_container() -> Container:
             query_get_cart_by_user=ORMQueryGetCartService(),
         )
 
+        configure_change_packet_handler = ChangePacketCommandHandler(
+            command_change_quantity_cart_from_packet=container.resolve(
+                BaseCommandUpdateDataCartService,
+            ),
+            query_get_user_model=ORMQueryGetUserModelService(),
+            query_get_cart=ORMQueryGetCartService(),
+        )
+
         # commands
         # main app
         mediator.register_command(
@@ -278,6 +291,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             DeletePacketCommand,
             [configure_delete_packet_handler],
+        )
+
+        mediator.register_command(
+            ChangePacketCommand,
+            [configure_change_packet_handler],
         )
 
         return mediator

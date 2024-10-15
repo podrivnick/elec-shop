@@ -10,7 +10,7 @@ from core.api.schemas import (
 )
 from core.api.v1.packet.dto.responses import (
     DTOResponseAddPacketAPI,
-    DTOResponseDeletePacketAPI,
+    DTOResponseUpdatePacketAPI,
 )
 
 
@@ -30,7 +30,22 @@ def render_add_packet(
 
 def render_delete_packet(
     request: HttpRequest,
-    response: SuccessResponse[DTOResponseDeletePacketAPI],
+    response: SuccessResponse[DTOResponseUpdatePacketAPI],
+    template: Template = None,
+) -> HttpResponse:
+    """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
+    return JsonResponse(
+        {
+            "message": "packet has updated",
+            "new_quantity": response.result.new_quantity,
+            "carts_items_user": response.result.carts_items_user,
+        },
+    )
+
+
+def render_change_packet(
+    request: HttpRequest,
+    response: SuccessResponse[DTOResponseUpdatePacketAPI],
     template: Template = None,
 ) -> HttpResponse:
     """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""

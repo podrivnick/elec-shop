@@ -34,6 +34,9 @@ class ORMQueryGetProductService(BaseQueryGetProductService):
 
 @dataclass
 class ORMQueryGetCartService(BaseQueryGetCartService):
+    def get_cart_by_id(self, cart_id: Optional[int]):
+        return Cart.objects.filter(pk=cart_id).first()
+
     def get_cart_by_product_and_user(
         self,
         product: ProductEntity,
@@ -134,3 +137,33 @@ class CommandUpdateDataCartService(BaseCommandUpdateDataCartService):
     ) -> None:
         cart = Cart.objects.get(pk=cart_id)
         cart.delete()
+
+    def process_change_quantity_products_in_packet(
+        self,
+        cart_id: Optional[int],
+        is_plus: Optional[str],
+        cart: QuerySet[Cart],
+    ) -> None:
+        try:
+            cart = Cart.objects.get(pk=cart_id)
+            self._change_quantity(is_plus=is_plus, cart=cart, cart_id=cart_id)
+        except Cart.DoesNotExist:
+            raise ValueError("Cart not found.")
+
+    def _change_quantity(
+        self,
+        cart_id: Optional[int],
+        is_plus: Optional[str],
+        cart: QuerySet[Cart],
+    ) -> None:
+        """Обновляем количество товара в корзине на основе значения is_plus."""
+        change_value = -1 if is_plus == "false" else 1
+        new_quantity = cart.quantity + change_value
+
+        if new_quantity <= 0:
+            cart.delete()
+        else:
+            self.command_update_cart.change_quantity_products(
+                cart_id=cart_id,
+                change_value=change_value,
+            )
