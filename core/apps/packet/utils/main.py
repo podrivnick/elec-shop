@@ -12,6 +12,7 @@ from core.apps.packet.models.cart import Cart
 def create_cart_entity(item) -> CartEntity:
     """Создаем сущность корзины на основе модели Cart."""
     return CartEntity(
+        pk=item.pk,
         user=item.user if item.user else None,
         session_key=item.session_key if not item.user else None,
         product=ProductEntity(

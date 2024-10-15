@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from typing import (
     Dict,
+    List,
     Optional,
+    Tuple,
 )
 
 from django.db.models import QuerySet
@@ -26,20 +28,8 @@ class ORMQueryGetProductService(BaseQueryGetProductService):
         id_product: Optional[int],
     ) -> ProductEntity:
         product = Products.objects.get(id_product=id_product)
+
         return product
-        # return ProductEntity(
-        #     id_product=product.id_product,
-        #     name=product.name,
-        #     description=product.description,
-        #     slug=product.slug,
-        #     image=product.image,
-        #     discount=product.discount,
-        #     price=product.price,
-        #     count_product=product.count_product,
-        #     category=product.category,
-        #     created_at=product.created_at,
-        #     updated_at=product.updated_at,
-        # )
 
 
 @dataclass
@@ -48,11 +38,55 @@ class ORMQueryGetCartService(BaseQueryGetCartService):
         self,
         product: ProductEntity,
         filters: Dict[str, QuerySet[User] | str],
-    ) -> QuerySet[Products]:
+    ) -> QuerySet[Cart]:
         return Cart.objects.filter(
             product__id_product=product.id_product,
             **filters,
         ).first()
+
+    def get_all_carts_by_user(
+        self,
+        filters: Dict[str, QuerySet[User] | str],
+    ) -> Tuple[CartEntity, int]:
+        carts = Cart.objects.filter(
+            **filters,
+        )
+
+        packet_entity = [
+            self.create_cart_entity(filtered_cart) for filtered_cart in carts
+        ]
+        total_quantity = self.calculate_total_quantity(packet_entity)
+
+        return (packet_entity, total_quantity)
+
+    @staticmethod
+    def create_cart_entity(filtered_cart: QuerySet[Cart]) -> CartEntity:
+        return CartEntity(
+            pk=filtered_cart.pk,
+            user=filtered_cart.user if filtered_cart.user else None,
+            session_key=filtered_cart.session_key if not filtered_cart.user else None,
+            product=ProductEntity(
+                id_product=filtered_cart.product.id_product,
+                name=filtered_cart.product.name,
+                description=filtered_cart.product.description,
+                slug=filtered_cart.product.slug,
+                image=filtered_cart.product.image,
+                discount=filtered_cart.product.discount,
+                price=filtered_cart.product.price,
+                count_product=filtered_cart.product.count_product,
+                category=filtered_cart.product.category,
+                created_at=filtered_cart.product.created_at,
+                updated_at=filtered_cart.product.updated_at,
+            ),
+            quantity=filtered_cart.quantity,
+        )
+
+    @staticmethod
+    def calculate_total_quantity(
+        packet_entity: List[CartEntity],
+    ) -> int:
+        total_quantity = sum(item.quantity for item in packet_entity)
+        return total_quantity
 
 
 @dataclass
@@ -74,6 +108,7 @@ class CommandUpdateDataCartService(BaseCommandUpdateDataCartService):
             )
 
         packet_entity = CartEntity(
+            pk=packet.pk,
             user=packet.user,
             product=ProductEntity(
                 id_product=packet.product.id_product,
@@ -92,3 +127,10 @@ class CommandUpdateDataCartService(BaseCommandUpdateDataCartService):
         )
 
         return packet_entity
+
+    def delete_cart_from_packet(
+        self,
+        cart_id: int,
+    ) -> None:
+        cart = Cart.objects.get(pk=cart_id)
+        cart.delete()

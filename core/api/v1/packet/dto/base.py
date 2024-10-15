@@ -13,3 +13,12 @@ class DTOPacketAPI(BaseDTOAPI):
     username: Optional[str] | None = field(default=None)
     product_id: Optional[int] | None = field(default=None)
     session_key: Optional[str] | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTODeletePacketAPI(BaseDTOAPI):
+    cart_id: Optional[int] | None = field(default=None)
+    is_profile: Optional[str] | None = field(default=None)
+    is_authenticated: bool = field(default=False)
+    username: Optional[str] | None = field(default=None)
+    session_key: Optional[str] | None = field(default=None)

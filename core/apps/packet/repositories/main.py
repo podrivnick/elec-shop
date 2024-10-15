@@ -25,7 +25,7 @@ class ORMCommandUpdateCartRepository(BaseCommandUpdateCartRepository):
         product: QuerySet[Products],
         filters: Dict[str, QuerySet[User] | str],
     ) -> None:
-        Cart.objects.create(
+        return Cart.objects.create(
             product=product,
             quantity=1,
             **filters,

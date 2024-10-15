@@ -17,6 +17,7 @@ from core.apps.users.models import User
 
 @dataclass(frozen=True, eq=False)
 class CartEntity(ModelEntity):
+    pk: Optional[int] | None = field(default=None)
     user: QuerySet[User] | None = field(default=None)
     product: ProductEntity | None = field(default=None)
     quantity: Optional[int] | None = field(default=None)

@@ -1,7 +1,7 @@
 // Добавляем товар в корзину, удаляем и изменяем количество товаров в корзине профиля
 $(document).ready(function () {
   function initDeleteCart() {
-     $(document).on("click", ".btn_delete_product_from_packet", function (e) {
+    $(document).on("click", ".btn_delete_product_from_packet", function (e) {
         e.preventDefault();
 
         let cart_id = $(this).data("cart-id");
@@ -11,7 +11,7 @@ $(document).ready(function () {
 
         $.ajax({
         type: "POST",
-        url: '/packet/delete_cart/',
+        url: '/api/v1/packet/delete_packet',
         data: {
           is_profile: true,
           cart_id: cart_id,
@@ -32,13 +32,13 @@ $(document).ready(function () {
           console.log("Ошибка при удалении товара из корзины");
         },
       });
-     })
+    })
   }
 
   // Инициализируем обработчик событий на кнопке удалить из корзины
   initDeleteCart();
   function initUpdateCartPlus() {
-     $(document).on("click", ".btn_plus", function (e) {
+    $(document).on("click", ".btn_plus", function (e) {
         e.preventDefault();
 
         let cart_id = $(this).data("cart-id");

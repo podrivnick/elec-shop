@@ -3,6 +3,12 @@ from abc import (
     abstractmethod,
 )
 from dataclasses import dataclass
+from typing import Tuple
+
+from django.db.models import QuerySet
+
+from core.apps.packet.entities.cart import CartEntity
+from core.apps.packet.models.cart import Cart
 
 
 @dataclass
@@ -15,12 +21,20 @@ class BaseQueryGetProductService(ABC):
 @dataclass
 class BaseQueryGetCartService(ABC):
     @abstractmethod
-    def get_cart_by_product_and_user(self):
+    def get_cart_by_product_and_user(self) -> QuerySet[Cart]:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_all_carts_by_user(self) -> Tuple[CartEntity, int]:
         raise NotImplementedError()
 
 
 @dataclass
 class BaseCommandUpdateDataCartService(ABC):
     @abstractmethod
-    def update_or_create_cart(self):
+    def update_or_create_cart(self) -> QuerySet[Cart]:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def delete_cart_from_packet(self) -> None:
         raise NotImplementedError()

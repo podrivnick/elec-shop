@@ -67,7 +67,7 @@ $(document).ready(function () {
 
         $.ajax({
         type: "POST",
-        url: '/packet/delete_cart/',
+        url: '/api/v1/packet/delete_packet',
         data: {
           cart_id: cart_id,
           is_profile: false,

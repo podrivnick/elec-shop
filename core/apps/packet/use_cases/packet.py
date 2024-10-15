@@ -7,7 +7,10 @@ from typing import Optional
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 
-from core.api.v1.packet.dto.responses import DTOResponseAddPacketAPI
+from core.api.v1.packet.dto.responses import (
+    DTOResponseAddPacketAPI,
+    DTOResponseDeletePacketAPI,
+)
 from core.apps.common.services.base import BaseQueryGetUserModelService
 from core.apps.packet.services.base import (
     BaseCommandUpdateDataCartService,
@@ -72,3 +75,61 @@ class AddPacketCommandHandler(CommandHandler[AddPacketCommand, str]):
         )
 
         return DTOResponseAddPacketAPI(carts_items_user=carts_items_user)
+
+
+@dataclass(frozen=True)
+class DeletePacketCommand(BaseCommands):
+    cart_id: Optional[int] | None = field(default=None)
+    is_profile: Optional[str] | None = field(default=None)
+    is_authenticated: bool = field(default=False)
+    username: Optional[str] | None = field(default=None)
+    session_key: Optional[str] | None = field(default=None)
+    request: HttpRequest | None = field(default=None)
+
+
+@dataclass(frozen=True)
+class DeletePacketCommandHandler(CommandHandler[DeletePacketCommand, str]):
+    command_delete_cart_from_packet: BaseCommandUpdateDataCartService
+    query_get_user_model: BaseQueryGetUserModelService
+    query_get_cart_by_user: BaseQueryGetCartService
+
+    def handle(
+        self,
+        command: DeletePacketCommand,
+    ) -> DTOResponseDeletePacketAPI:
+        self.command_delete_cart_from_packet.delete_cart_from_packet(
+            cart_id=command.cart_id,
+        )
+
+        if command.is_authenticated:
+            username = vo.UserName(command.username)
+            user = self.query_get_user_model.get_usermodel_by_username(
+                username=username.to_raw(),
+            )
+
+        filter_kwargs = (
+            {"user": user}
+            if command.is_authenticated
+            else {"session_key": command.session_key}
+        )
+        packet, total_quantity = self.query_get_cart_by_user.get_all_carts_by_user(
+            filters=filter_kwargs,
+        )
+
+        if command.is_profile == "true":
+            carts_items_user = render_to_string(
+                "users/packet_profile/packet_profile.html",
+                {"packet": packet},
+                request=command.request,
+            )
+        else:
+            carts_items_user = render_to_string(
+                "modal_packet.html",
+                {"packet": packet},
+                request=command.request,
+            )
+
+        return DTOResponseDeletePacketAPI(
+            carts_items_user=carts_items_user,
+            new_quantity=total_quantity,
+        )
