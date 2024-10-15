@@ -1,4 +1,3 @@
-import logging
 from dataclasses import dataclass
 
 from django.contrib.auth import get_user_model
@@ -29,7 +28,6 @@ class ORMCommandCreateUserService(BaseCommandCreateUserService):
         self,
         user: UserEntity,
     ) -> QuerySet[User]:
-        logging.info(user)
         user_instance = get_user_model().objects.create(
             username=user.username.to_raw(),
             email=user.email.to_raw(),

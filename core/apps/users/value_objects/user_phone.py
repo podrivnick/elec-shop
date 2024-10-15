@@ -50,7 +50,7 @@ class PhoneNumber(ValueObject[str | None]):
     value: str | None
 
     def validate(self) -> None:
-        if self.value is None:
+        if self.value == "0":
             return
 
         if len(self.value) == 0:

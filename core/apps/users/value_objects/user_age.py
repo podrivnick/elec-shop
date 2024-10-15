@@ -60,7 +60,7 @@ class AgeUser(ValueObject[str | None]):
     value: str | None
 
     def validate(self) -> None:
-        if self.value is None:
+        if not self.value:
             return
 
         if not self.value:

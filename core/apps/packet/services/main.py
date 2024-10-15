@@ -112,7 +112,8 @@ class CommandUpdateDataCartService(BaseCommandUpdateDataCartService):
 
         packet_entity = CartEntity(
             pk=packet.pk,
-            user=packet.user,
+            user=packet.user if packet.user else None,
+            session_key=packet.session_key if not packet.user else None,
             product=ProductEntity(
                 id_product=packet.product.id_product,
                 name=packet.product.name,

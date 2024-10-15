@@ -15,7 +15,7 @@ def extract_add_packet_dto(
     is_authenticated = request.user.is_authenticated
 
     username = request.user.username if is_authenticated else None
-    session_key = request.session.session_key if is_authenticated else None
+    session_key = request.session.session_key if not is_authenticated else None
 
     return DTOPacketAPI(
         is_authenticated=is_authenticated,
@@ -34,7 +34,7 @@ def extract_delete_packet_dto(
     is_authenticated = request.user.is_authenticated
 
     username = request.user.username if is_authenticated else None
-    session_key = request.session.session_key if is_authenticated else None
+    session_key = request.session.session_key if not is_authenticated else None
 
     return DTODeletePacketAPI(
         cart_id=cart_id,
@@ -55,7 +55,7 @@ def extract_change_packet_dto(
     is_authenticated = request.user.is_authenticated
 
     username = request.user.username if is_authenticated else None
-    session_key = request.session.session_key if is_authenticated else None
+    session_key = request.session.session_key if not is_authenticated else None
 
     return DTOChangePacketAPI(
         is_plus=is_plus,

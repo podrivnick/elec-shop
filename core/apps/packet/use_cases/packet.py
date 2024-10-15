@@ -12,6 +12,7 @@ from core.api.v1.packet.dto.responses import (
     DTOResponseUpdatePacketAPI,
 )
 from core.apps.common.services.base import BaseQueryGetUserModelService
+from core.apps.packet.exceptions.main import DatabaseCartError
 from core.apps.packet.services.base import (
     BaseCommandUpdateDataCartService,
     BaseQueryGetCartService,
@@ -169,7 +170,7 @@ class ChangePacketCommandHandler(CommandHandler[ChangePacketCommand, str]):
 
         cart = self.query_get_cart.get_cart_by_id(cart_id=command.cart_id)
         if not cart:
-            raise ValueError("Some Error")
+            raise DatabaseCartError("Not Found Cart")
 
         self.command_change_quantity_cart_from_packet.process_change_quantity_products_in_packet(
             cart_id=command.cart_id,
