@@ -42,7 +42,7 @@ class ORMProductsService(BaseProductsService):
         category_slug: str,
     ) -> Tuple[bool, Iterable[ProductEntity]]:
         """Filtering Products + Search."""
-
+        # TODO: fix architecture
         is_search_failed = False
 
         if filters.available:

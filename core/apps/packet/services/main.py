@@ -11,6 +11,7 @@ from django.db.models import QuerySet
 from core.apps.main.entities.product import ProductEntity
 from core.apps.main.models.products import Products
 from core.apps.packet.entities.cart import CartEntity
+from core.apps.packet.exceptions.main import DatabaseCartError
 from core.apps.packet.models.cart import Cart
 from core.apps.packet.repositories.base import BaseCommandUpdateCartRepository
 from core.apps.packet.services.base import (
@@ -149,7 +150,7 @@ class CommandUpdateDataCartService(BaseCommandUpdateDataCartService):
             cart = Cart.objects.get(pk=cart_id)
             self._change_quantity(is_plus=is_plus, cart=cart, cart_id=cart_id)
         except Cart.DoesNotExist:
-            raise ValueError("Cart not found.")
+            raise DatabaseCartError("Not Found Cart")
 
     def _change_quantity(
         self,

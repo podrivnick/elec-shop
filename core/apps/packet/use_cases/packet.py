@@ -12,6 +12,7 @@ from core.api.v1.packet.dto.responses import (
     DTOResponseUpdatePacketAPI,
 )
 from core.apps.common.services.base import BaseQueryGetUserModelService
+from core.apps.packet.entities.cart import CartEntity
 from core.apps.packet.exceptions.main import DatabaseCartError
 from core.apps.packet.services.base import (
     BaseCommandUpdateDataCartService,
@@ -43,6 +44,7 @@ class AddPacketCommandHandler(CommandHandler[AddPacketCommand, str]):
         self,
         command: AddPacketCommand,
     ) -> DTOResponseAddPacketAPI:
+        # TODO: fix dry
         if command.is_authenticated:
             username = vo.UserName(command.username)
             user = self.query_get_user_model.get_usermodel_by_username(
@@ -69,13 +71,25 @@ class AddPacketCommandHandler(CommandHandler[AddPacketCommand, str]):
             filters=filter_kwargs,
         )
 
-        carts_items_user = render_to_string(
-            "modal_packet.html",
-            {"packet": updated_packet},
+        carts_items_user: str = self._render_template(
+            packet=updated_packet,
             request=command.request,
         )
 
         return DTOResponseAddPacketAPI(carts_items_user=carts_items_user)
+
+    @staticmethod
+    def _render_template(
+        packet: CartEntity,
+        request: HttpRequest,
+    ) -> str:
+        carts_items_user = render_to_string(
+            "modal_packet.html",
+            {"packet": packet},
+            request=request,
+        )
+
+        return carts_items_user
 
 
 @dataclass(frozen=True)
@@ -117,23 +131,37 @@ class DeletePacketCommandHandler(CommandHandler[DeletePacketCommand, str]):
             filters=filter_kwargs,
         )
 
-        if command.is_profile == "true":
-            carts_items_user = render_to_string(
-                "users/packet_profile/packet_profile.html",
-                {"packet": packet},
-                request=command.request,
-            )
-        else:
-            carts_items_user = render_to_string(
-                "modal_packet.html",
-                {"packet": packet},
-                request=command.request,
-            )
+        carts_items_user: str = self._render_template(
+            is_profile=command.is_profile,
+            packet=packet,
+            request=command.request,
+        )
 
         return DTOResponseUpdatePacketAPI(
             carts_items_user=carts_items_user,
             new_quantity=total_quantity,
         )
+
+    @staticmethod
+    def _render_template(
+        is_profile: Optional[str],
+        packet: CartEntity,
+        request: HttpRequest,
+    ) -> str:
+        if is_profile == "true":
+            carts_items_user = render_to_string(
+                "users/packet_profile/packet_profile.html",
+                {"packet": packet},
+                request=request,
+            )
+        else:
+            carts_items_user = render_to_string(
+                "modal_packet.html",
+                {"packet": packet},
+                request=request,
+            )
+
+        return carts_items_user
 
 
 @dataclass(frozen=True)
@@ -182,20 +210,34 @@ class ChangePacketCommandHandler(CommandHandler[ChangePacketCommand, str]):
             filters=filter_kwargs,
         )
 
-        if command.is_profile == "true":
-            carts_items_user = render_to_string(
-                "users/packet_profile/packet_profile.html",
-                {"packet": packet},
-                request=command.request,
-            )
-        else:
-            carts_items_user = render_to_string(
-                "modal_packet.html",
-                {"packet": packet},
-                request=command.request,
-            )
+        carts_items_user: str = self._render_template(
+            is_profile=command.is_profile,
+            packet=packet,
+            request=command.request,
+        )
 
         return DTOResponseUpdatePacketAPI(
             carts_items_user=carts_items_user,
             new_quantity=total_quantity,
         )
+
+    @staticmethod
+    def _render_template(
+        is_profile: Optional[str],
+        packet: CartEntity,
+        request: HttpRequest,
+    ) -> str:
+        if is_profile == "true":
+            carts_items_user = render_to_string(
+                "users/packet_profile/packet_profile.html",
+                {"packet": packet},
+                request=request,
+            )
+        else:
+            carts_items_user = render_to_string(
+                "modal_packet.html",
+                {"packet": packet},
+                request=request,
+            )
+
+        return carts_items_user
