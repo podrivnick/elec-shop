@@ -3,24 +3,36 @@ from dataclasses import (
     field,
 )
 from typing import (
+    Iterable,
     List,
     Optional,
 )
 
 from core.api.v1.main.dto.base import BaseDTOAPI
-from core.apps.main.entities.product import ProductEntity
-
-
-LikesEntity = 1
-ReviewEntity = 4
-ReviewForomSchema = 4
+from core.apps.main.entities.information import InformationEntity
+from core.apps.main.entities.product import (
+    CategoriesProduct,
+    ProductEntity,
+)
+from core.apps.main.schemas.main import PaginatedProductsResponse
 
 
 @dataclass(frozen=True, eq=False)
-class DTOResponseCartAPI(BaseDTOAPI):
-    products: ProductEntity | None = field(default=None)
+class DTOResponseIndexAPI(BaseDTOAPI):
     favorites: List[int] | None = field(default_factory=list, kw_only=True)
-    count_all_opinions: Optional[int] | None = field(default=None)
-    liked_objects: List[LikesEntity] | None = field(default=None)
-    opinions: List[ReviewEntity] | None = field(default=None)
-    form: ReviewForomSchema | None = field(default=None)
+    categories: Iterable[CategoriesProduct] | None = field(
+        default_factory=list,
+        kw_only=True,
+    )
+    is_search_failed: Optional[bool] | None = field(default=False)
+    products: Optional[PaginatedProductsResponse] | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOResponseFavoriteAPI(BaseDTOAPI):
+    products: List[ProductEntity] | None = field(default_factory=list, kw_only=True)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOResponseInformationAPI(BaseDTOAPI):
+    info: List[InformationEntity] | None = field(default_factory=list, kw_only=True)

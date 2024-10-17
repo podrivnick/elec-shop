@@ -43,11 +43,11 @@
       <div class="main_data_product">
     <div class="main-data">
       <span class="name_product">
-       <a href="{% url 'carts_products:product' product.slug %}" style="text-decoration: none">{{ product.name }}</a>
+       <a href="{% url 'v1:cart' product.slug %}" style="text-decoration: none">{{ product.name }}</a>
       </span>
       <span class="name_product">
         {% with opinions|length as list_length %}
-          <a href="{% url 'carts_products:product_all_opinion' product.slug %}" style="text-decoration: none">{{ list_length }} Отзывов</a>
+          <a href="{% url 'v1:cart' product.slug %}" style="text-decoration: none">{{ list_length }} Отзывов</a>
         {% endwith %}
       </span>
     </div>
@@ -72,7 +72,7 @@
           </div>
       </div>
         <h3 style="color: white">Отзывы</h3>
-        <form action="{% url 'carts_products:save_opinion' %}" class="form_sender_opinion" method="post">
+        <form action="{% url 'v1:cart' product.slug %}" class="form_sender_opinion" method="post">
           {% csrf_token %}
           <label for="id_opinion"></label>
           <input type="hidden" name="id_product" value="{{ product.id_product }}">

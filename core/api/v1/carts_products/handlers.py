@@ -9,8 +9,9 @@ from ninja import Router
 from core.api.schemas import SuccessResponse
 from core.api.v1.carts_products.dto.base import DTOCartPageAPI
 from core.api.v1.carts_products.dto.extractors import extract_cart_page_dto
+from core.api.v1.carts_products.dto.responses import DTOResponseCartAPI
 from core.api.v1.carts_products.renders import render_cart
-from core.api.v1.main.dto.responses import DTOResponseCartAPI
+from core.apps.carts_products.use_cases.cart import CartPageCommand
 from core.infrastructure.di.main import init_container
 from core.infrastructure.exceptions.base import BaseAppException
 from core.infrastructure.mediator.mediator import Mediator
@@ -20,7 +21,7 @@ router = Router(tags=["cart"])
 
 
 @router.get(
-    "/cart/{product}",
+    "/{product}",
     url_name="cart",
 )
 def cart(
@@ -38,7 +39,7 @@ def cart(
 
     try:
         dto_response_cart_api: DTOResponseCartAPI = mediator.handle_command(
-            CartPageCommand(  # noqa
+            CartPageCommand(
                 is_authenticated=cart_page_dto.is_authenticated,
                 username=cart_page_dto.username,
                 product_slug=cart_page_dto.product_slug,

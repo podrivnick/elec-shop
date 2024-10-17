@@ -4,6 +4,8 @@ from abc import (
 )
 from dataclasses import dataclass
 
+from core.apps.main.entities.product import ProductEntity
+
 
 @dataclass
 class BaseCategoriesService(ABC):
@@ -20,4 +22,8 @@ class BaseProductsService(ABC):
 
     @abstractmethod
     def paginate_products(self):
+        raise NotImplementedError()
+
+    @abstractmethod
+    def get_filtered_product_by_slug(self) -> ProductEntity:
         raise NotImplementedError()

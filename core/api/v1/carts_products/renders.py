@@ -9,7 +9,7 @@ from core.api.schemas import (
     SuccessResponse,
     Template,
 )
-from core.api.v1.main.dto.responses import DTOResponseCartAPI
+from core.api.v1.carts_products.dto.responses import DTOResponseCartAPI
 
 
 def render_cart(
@@ -24,10 +24,10 @@ def render_cart(
                 "status": response.status,
                 "result": {
                     "products": response.result.products,
-                    "count_all_opinions": response.result.count_all_opinions,
+                    "count_all_opinions": response.result.count_all_reviews,
                     "favorites": response.result.favorites,
                     "liked_objects": response.result.liked_objects,
-                    "opinions": response.result.opinions,
+                    "opinions": response.result.reviews,
                     "form": response.result.form,
                 },
             },
@@ -38,10 +38,10 @@ def render_cart(
             template,
             {
                 "products": response.result.products,
-                "count_all_opinions": response.result.count_all_opinions,
+                "count_all_opinions": response.result.count_all_reviews,
                 "favorites": response.result.favorites,
                 "liked_objects": response.result.liked_objects,
-                "opinions": response.result.opinions,
+                "opinions": response.result.reviews,
                 "form": response.result.form,
             },
         )

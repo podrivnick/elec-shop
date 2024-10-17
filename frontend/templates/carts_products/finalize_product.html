@@ -90,7 +90,7 @@
           <img src="{{ cart.product.image.url }}" alt="product"
         style="height: 100px; width: 170px; margin: 0px 0px 7px 0px;">
           <span>
-            <a href="{% url 'carts_products:product' cart.product.slug %}">
+            <a href="{% url 'v1:cart' cart.product.slug %}">
               {{ cart.product.name }}
             </a>
           </span>

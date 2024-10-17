@@ -72,6 +72,15 @@ from core.apps.users.use_cases.profile import (
     ProfileCommand,
     ProfileCommandHandler,
 )
+from core.apps.carts_products.services.main import (
+    ORMQueryLikesReviewService,
+    ORMQueryGetReviewsService,
+)
+from core.apps.carts_products.use_cases.cart import (
+    CartPageCommand,
+    CartPageCommandHandler,
+)
+
 from core.apps.users.services.profile.main import ORMQueryFilterCartsByUserService
 from core.apps.users.use_cases.profile import ChangeTabCommandHandler, ChangeTabCommand
 from core.apps.packet.repositories.main import ORMCommandUpdateCartRepository
@@ -127,6 +136,7 @@ def _initialize_container() -> Container:
     container.register(AddPacketCommandHandler)
     container.register(DeletePacketCommandHandler)
     container.register(ChangePacketCommandHandler)
+    container.register(CartPageCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -219,6 +229,16 @@ def _initialize_container() -> Container:
             query_get_cart=ORMQueryGetCartService(),
         )
 
+        # cart app
+        configure_cart_page_handler = CartPageCommandHandler(
+            query_get_all_products_service=ORMAllProductsService(),
+            query_products_service=ORMProductsService(),
+            query_reviews_filtered_service=ORMQueryGetReviewsService(),
+            query_favorite_products_service_ids=ORMFavoriteProductsIdsService(),
+            query_likes_filter_service=ORMQueryLikesReviewService(),
+            query_get_user_model_by_username=ORMQueryGetUserModelService(),
+        )
+
         # commands
         # main app
         mediator.register_command(
@@ -296,6 +316,12 @@ def _initialize_container() -> Container:
         mediator.register_command(
             ChangePacketCommand,
             [configure_change_packet_handler],
+        )
+
+        # cart app
+        mediator.register_command(
+            CartPageCommand,
+            [configure_cart_page_handler],
         )
 
         return mediator

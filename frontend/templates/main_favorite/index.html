@@ -54,7 +54,7 @@
                             <div class="data_product">
                                 {% autoescape off %}
                                     <span class="name_product">
-                                        <a href="#">
+                                        <a href="{% url 'v1:cart' product.slug %}">
                                         {% autoescape off %}
                                             {% if product.headline %}
                                             {{ product.headline|safe }}

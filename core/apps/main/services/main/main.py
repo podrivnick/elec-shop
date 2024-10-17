@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import (
     Iterable,
     List,
+    Optional,
     Tuple,
 )
 
@@ -84,3 +85,12 @@ class ORMProductsService(BaseProductsService):
         )
 
         return paginated_response
+
+    def get_filtered_product_by_slug(
+        self,
+        products: QuerySet[ProductsModel],
+        slug: Optional[str],
+    ) -> ProductEntity:
+        product = products.filter(slug=slug)
+
+        return [item.to_entity() for item in product][0]

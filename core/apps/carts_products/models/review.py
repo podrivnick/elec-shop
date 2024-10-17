@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from core.apps.carts_products.entities.review import ReviewEntity
 from core.apps.main.models.products import Products
 
 
@@ -18,6 +19,18 @@ class Reviews(models.Model):
     class Meta:
         db_table = "review"
         verbose_name = "Отзывы"
+
+    def to_entity(
+        self,
+    ) -> ReviewEntity:
+        return ReviewEntity(
+            pk=self.pk,
+            id_product=self.id_product,
+            user=self.user,
+            review=self.review,
+            data_added=self.data_added,
+            likes=self.likes,
+        )
 
 
 class LikesReviews(models.Model):

@@ -45,7 +45,7 @@
         {{ products.name }}
       </span>
       <span class="name_product">
-        <a href="{% url 'carts_products:product_all_opinion' products.slug %}" style="text-decoration: none">{{ count_all_opinions }} Отзывов</a>
+        <a href="{% url 'v1:cart' products.slug %}" style="text-decoration: none">{{ count_all_opinions }} Отзывов</a>
       </span>
     </div>
     <div class="additionally_data_product">
@@ -109,7 +109,7 @@
       </div>
     </div>
     <h3 style="color: white">Отзывы</h3>
-    <form action="{% url 'carts_products:save_opinion' %}" class="form_sender_opinion" method="post">
+    <form action="{% url 'v1:cart' products.slug %}" class="form_sender_opinion" method="post">
       {% csrf_token %}
       <label for="id_opinion"></label>
       <input type="hidden" name="id_product" value="{{ products.id_product }}">
