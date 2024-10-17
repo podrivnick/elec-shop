@@ -4,23 +4,23 @@ from django.db import models
 from core.apps.main.models.products import Products
 
 
-class Opinions(models.Model):
+class Reviews(models.Model):
     id_product = models.ForeignKey(
         Products,
         on_delete=models.CASCADE,
         verbose_name="Товар",
     )
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    opinion = models.CharField(max_length=300, verbose_name="Отзывы")
+    review = models.CharField(max_length=300, verbose_name="Отзывы")
     data_added = models.DateField()
     likes = models.IntegerField(default=0, verbose_name="Лайки")
 
     class Meta:
-        db_table = "opinions"
+        db_table = "review"
         verbose_name = "Отзывы"
 
 
-class LikesOpinion(models.Model):
+class LikesReviews(models.Model):
     id_product = models.ForeignKey(
         Products,
         on_delete=models.CASCADE,
@@ -31,12 +31,12 @@ class LikesOpinion(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Пользователь",
     )
-    opinion_id = models.ForeignKey(
-        "Opinions",
+    review_id = models.ForeignKey(
+        "Reviews",
         on_delete=models.CASCADE,
         null=True,
         verbose_name="Отзыв",
     )
 
     class Meta:
-        verbose_name = "Лайкнутыее отзывы"
+        verbose_name = "Лайкнутые отзывы"
