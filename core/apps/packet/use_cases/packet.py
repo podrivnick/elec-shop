@@ -28,7 +28,7 @@ from core.infrastructure.mediator.handlers.commands import CommandHandler
 class AddPacketCommand(BaseCommands):
     is_authenticated: bool = field(default=False)
     username: Optional[str] | None = field(default=None)
-    product_id: Optional[int] | None = field(default=None)
+    product_id: Optional[str] | None = field(default=None)
     session_key: Optional[str] | None = field(default=None)
     request: HttpRequest | None = field(default=None)
 

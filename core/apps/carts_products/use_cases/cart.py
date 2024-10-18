@@ -60,11 +60,14 @@ class CartPageCommandHandler(CommandHandler[CartPageCommand, str]):
         )
         count_all_reviews = self.count_reviews(reviews=reviews)
 
-        favorites_ids = (
-            self.query_favorite_products_service_ids.get_ids_products_in_favorite(
-                username=command.username,
+        favorites_ids = []
+        if command.is_authenticated and command.username:
+            favorites_ids = (
+                self.query_favorite_products_service_ids.get_ids_products_in_favorite(
+                    username=command.username,
+                )
             )
-        )
+
         list_liked_review = []
         if reviews and command.is_authenticated:
             user = self.query_get_user_model_by_username.get_usermodel_by_username(

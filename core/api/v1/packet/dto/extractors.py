@@ -20,7 +20,7 @@ def extract_add_packet_dto(
     return DTOPacketAPI(
         is_authenticated=is_authenticated,
         username=username,
-        product_id=int(product_id),
+        product_id=product_id,
         session_key=session_key,
     )
 
