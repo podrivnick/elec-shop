@@ -19,10 +19,7 @@ from core.apps.carts_products.services.base import (
 )
 from core.apps.common.services.base import BaseQueryGetUserModelService
 from core.apps.main.entities.product import ProductEntity
-from core.apps.main.services.base import (
-    BaseAllProductsService,
-    BaseFavoriteProductsIdsService,
-)
+from core.apps.main.services.base import BaseFavoriteProductsIdsService
 from core.apps.main.services.main.base import BaseProductsService
 from core.infrastructure.mediator.base import BaseCommands
 from core.infrastructure.mediator.handlers.commands import CommandHandler
@@ -37,7 +34,6 @@ class CartPageCommand(BaseCommands):
 
 @dataclass(frozen=True)
 class CartPageCommandHandler(CommandHandler[CartPageCommand, str]):
-    query_get_all_products_service: BaseAllProductsService
     query_products_service: BaseProductsService
     query_reviews_filtered_service: BaseQueryGetReviewsService
     query_favorite_products_service_ids: BaseFavoriteProductsIdsService
@@ -48,7 +44,6 @@ class CartPageCommandHandler(CommandHandler[CartPageCommand, str]):
         self,
         command: CartPageCommand,
     ) -> DTOResponseCartAPI:
-        # products = self.query_get_all_products_service.get_all_products()
         product_entity: ProductEntity = (
             self.query_products_service.get_filtered_product_by_slug(
                 slug=command.product_slug,
