@@ -7,7 +7,10 @@ from typing import (
     Optional,
 )
 
-from core.api.v1.carts_products.dto.responses import DTOResponseCartAPI
+from core.api.v1.carts_products.dto.responses import (
+    DTOResponseCartAPI,
+    DTOResponseReviewsAPI,
+)
 from core.apps.carts_products.entities.review import ReviewEntity
 from core.apps.carts_products.schemas.main import ReviewDataSchema
 from core.apps.carts_products.services.base import (
@@ -45,10 +48,9 @@ class CartPageCommandHandler(CommandHandler[CartPageCommand, str]):
         self,
         command: CartPageCommand,
     ) -> DTOResponseCartAPI:
-        products = self.query_get_all_products_service.get_all_products()
+        # products = self.query_get_all_products_service.get_all_products()
         product_entity: ProductEntity = (
             self.query_products_service.get_filtered_product_by_slug(
-                products=products,
                 slug=command.product_slug,
             )
         )
@@ -96,3 +98,56 @@ class CartPageCommandHandler(CommandHandler[CartPageCommand, str]):
     @staticmethod
     def count_reviews(reviews: List[ReviewEntity]) -> int:
         return len(reviews)
+
+
+@dataclass(frozen=True)
+class ReviewsPageCommand(BaseCommands):
+    is_authenticated: bool = field(default=False)
+    username: Optional[str] | None = field(default=None)
+    product_slug: Optional[str] | None = field(default=None)
+
+
+@dataclass(frozen=True)
+class ReviewsPageCommandHandler(CommandHandler[ReviewsPageCommand, str]):
+    query_products_service: BaseProductsService
+    query_reviews_filtered_service: BaseQueryGetReviewsService
+    query_likes_filter_service: BaseQueryLikesReviewService
+    query_get_user_model_by_username: BaseQueryGetUserModelService
+
+    def handle(
+        self,
+        command: ReviewsPageCommand,
+    ) -> DTOResponseReviewsAPI:
+        product_entity: ProductEntity = (
+            self.query_products_service.get_filtered_product_by_slug(
+                slug=command.product_slug,
+            )
+        )
+
+        reviews: List[ReviewEntity] = (
+            self.query_reviews_filtered_service.get_reviews_product(
+                id_product=product_entity.id_product,
+            )
+        )
+
+        list_liked_review = []
+        if reviews and command.is_authenticated:
+            user = self.query_get_user_model_by_username.get_usermodel_by_username(
+                username=command.username,
+            )
+
+            list_liked_review = self.query_likes_filter_service.get_liked_review(
+                user=user,
+                id_product=product_entity.id_product,
+                reviews=reviews,
+            )
+            reviews = self.query_likes_filter_service.filter_reviews_by_user(
+                user=user,
+                reviews=reviews,
+            )
+
+        return DTOResponseReviewsAPI(
+            product=product_entity,
+            liked_objects=list_liked_review,
+            reviews=reviews,
+        )

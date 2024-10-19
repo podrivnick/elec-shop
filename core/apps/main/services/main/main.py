@@ -16,6 +16,7 @@ from core.apps.main.entities.product import (
 )
 from core.apps.main.models.products import (
     CategoriesProduct as CategoriesProductModel,
+    Products,
     Products as ProductsModel,
 )
 from core.apps.main.schemas.main import PaginatedProductsResponse
@@ -88,9 +89,8 @@ class ORMProductsService(BaseProductsService):
 
     def get_filtered_product_by_slug(
         self,
-        products: QuerySet[ProductsModel],
         slug: Optional[str],
     ) -> ProductEntity:
-        product = products.filter(slug=slug)
+        product = Products.objects.filter(slug=slug)
 
         return [item.to_entity() for item in product][0]

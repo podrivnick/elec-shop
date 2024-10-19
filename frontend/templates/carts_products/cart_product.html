@@ -36,7 +36,7 @@
     {% endif %}
     {% if products.image %}
     <img src="{{ products.image.url }}" alt="мышь"
-         class="img_product">
+        class="img_product">
     {% endif  %}
   </div>
   <div class="main_data_product">
@@ -45,7 +45,7 @@
         {{ products.name }}
       </span>
       <span class="name_product">
-        <a href="{% url 'v1:cart' products.slug %}" style="text-decoration: none">{{ count_all_opinions }} Отзывов</a>
+        <a href="{% url 'v1:reviews' products.slug %}" style="text-decoration: none">{{ count_all_opinions }} Отзывов</a>
       </span>
     </div>
     <div class="additionally_data_product">
@@ -121,10 +121,10 @@
       <div class="store_opinions" style="margin: 4px">
       {% if opinion.user.image %}
         <img src="{{ opinion.user.image.url }}" alt="avatar"
-             style="height: 40px; width: 40px" class="img_avatar_opinion">
+            style="height: 40px; width: 40px" class="img_avatar_opinion">
       {% else %}
         <img src="{% static 'icons/1640528661_1-abrakadabra-fun-p-serii-chelovek-na-avu-1.png' %}" alt="avatar"
-             style="height: 40px; width: 40px" class="img_avatar_opinion">
+            style="height: 40px; width: 40px" class="img_avatar_opinion">
       {% endif %}
 
       <span class="nickname">{{ opinion.user.username }}.  </span>
@@ -132,13 +132,13 @@
       <span class="data_added_opinion">{{ opinion.data_added }}</span>
       <hr>
       <p class="text_opinion">
-        {{ opinion.opinion }}
+        {{ opinion.review }}
       </p>
       <div class="appreciate_opinion">
         {% csrf_token %}
         <button class="like_btn d" onclick="like('{{user.username}}', '{{ products.id_product }}',
-         '{{ opinion.pk }}', this)"
-               {% for like in liked_objects %}
+        '{{ opinion.pk }}', this)"
+              {% for like in liked_objects %}
                 {% if opinion == like.opinion_id %}
                   style="color: red;"
                 {% endif %}
@@ -151,7 +151,7 @@
         <div class="block_delete__opinion">
           <button class="btn_delete_opinion">
             <img src="{% static 'icons/free-icon-recycle-bin-container-12960.png' %}"
-                 alt="recycle" style="width: 16px; height: 18px;">
+                alt="recycle" style="width: 16px; height: 18px;">
           </button>
         </div>
         {% endif %}

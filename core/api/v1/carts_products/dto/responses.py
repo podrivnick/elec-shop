@@ -21,3 +21,10 @@ class DTOResponseCartAPI(BaseDTOAPI):
     liked_objects: List[int] | None = field(default=list)
     reviews: List[ReviewEntity] | None = field(default=None)
     form: ReviewDataSchema | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOResponseReviewsAPI(BaseDTOAPI):
+    product: ProductEntity | None = field(default=None)
+    liked_objects: List[int] | None = field(default=list)
+    reviews: List[ReviewEntity] | None = field(default=None)

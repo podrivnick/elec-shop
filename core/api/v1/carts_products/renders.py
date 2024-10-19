@@ -9,7 +9,10 @@ from core.api.schemas import (
     SuccessResponse,
     Template,
 )
-from core.api.v1.carts_products.dto.responses import DTOResponseCartAPI
+from core.api.v1.carts_products.dto.responses import (
+    DTOResponseCartAPI,
+    DTOResponseReviewsAPI,
+)
 
 
 def render_cart(
@@ -43,5 +46,34 @@ def render_cart(
                 "liked_objects": response.result.liked_objects,
                 "opinions": response.result.reviews,
                 "form": response.result.form,
+            },
+        )
+
+
+def render_reviews(
+    request: HttpRequest,
+    response: SuccessResponse[DTOResponseReviewsAPI],
+    template: Template,
+) -> HttpResponse:
+    """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
+    if request.headers.get("Content-Type") == "application/json":
+        return JsonResponse(
+            {
+                "status": response.status,
+                "result": {
+                    "product": response.result.product,
+                    "liked_objects": response.result.liked_objects,
+                    "opinions": response.result.reviews,
+                },
+            },
+        )
+    else:
+        return render(
+            request,
+            template,
+            {
+                "product": response.result.product,
+                "liked_objects": response.result.liked_objects,
+                "opinions": response.result.reviews,
             },
         )

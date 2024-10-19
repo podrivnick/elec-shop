@@ -5,10 +5,8 @@ from typing import (
 )
 
 from core.apps.carts_products.entities.review import ReviewEntity
-from core.apps.carts_products.models.review import (
-    LikesReviews,
-    Reviews,
-)
+from core.apps.carts_products.models.review import Reviews
+from core.apps.carts_products.repositories.base import BaseQueryLikeReviewsRepository
 from core.apps.carts_products.services.base import (
     BaseQueryGetReviewsService,
     BaseQueryLikesReviewService,
@@ -32,6 +30,8 @@ class ORMQueryGetReviewsService(BaseQueryGetReviewsService):
 
 @dataclass
 class ORMQueryLikesReviewService(BaseQueryLikesReviewService):
+    query_filter_likes_review_repository: BaseQueryLikeReviewsRepository
+
     def get_liked_review(
         self,
         user: User,
@@ -40,11 +40,11 @@ class ORMQueryLikesReviewService(BaseQueryLikesReviewService):
     ) -> List[int]:
         review_ids = [review.pk for review in reviews]
 
-        liked_reviews = LikesReviews.objects.filter(
+        liked_reviews = self.query_filter_likes_review_repository.filter_liked_review(
             user=user,
             id_product=id_product,
-            opinion_id__in=review_ids,
-        ).select_related("id_product", "user")
+            reviews_ids=review_ids,
+        )
 
         liked_reviews_dict = {like.opinion_id: like for like in liked_reviews}
 
