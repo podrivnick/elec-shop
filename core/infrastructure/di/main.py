@@ -103,8 +103,17 @@ from core.apps.packet.use_cases.packet import (
     DeletePacketCommand,
     DeletePacketCommandHandler,
 )
+from core.apps.main.services.main.base import (
+    BaseProductsService,
+)
 from core.apps.carts_products.repositories.main import ORMQueryLikeReviewsRepository
 from core.apps.packet.use_cases.packet import AddPacketCommandHandler, AddPacketCommand
+from core.apps.main.repositories.main import ORMQueryProductRepository
+from core.apps.carts_products.use_cases.reviews import (
+    CreateReviewCommandHandler,
+    CreateReviewCommand,
+)
+from core.apps.carts_products.services.main import ORMCommandReviewsService
 
 
 @lru_cache(1)
@@ -126,6 +135,11 @@ def _initialize_container() -> Container:
             query_filter_likes_review_repository=ORMQueryLikeReviewsRepository(),
         )
 
+    def init_product_service() -> BaseProductsService:
+        return ORMProductsService(
+            query_product_repository=ORMQueryProductRepository(),
+        )
+
     container.register(
         BaseCommandUpdateDataCartService,
         factory=init_update_packet_service,
@@ -135,6 +149,12 @@ def _initialize_container() -> Container:
     container.register(
         BaseQueryLikesReviewService,
         factory=init_likes_review_service,
+        scope=Scope.singleton,
+    )
+
+    container.register(
+        BaseProductsService,
+        factory=init_product_service,
         scope=Scope.singleton,
     )
 
@@ -156,6 +176,7 @@ def _initialize_container() -> Container:
     container.register(ChangePacketCommandHandler)
     container.register(CartPageCommandHandler)
     container.register(ReviewsPageCommandHandler)
+    container.register(CreateReviewCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -166,7 +187,9 @@ def _initialize_container() -> Container:
             favorite_products_service_ids=ORMFavoriteProductsIdsService(),
             get_all_products_service=ORMAllProductsService(),
             categories_service=ORMCategoriesService(),
-            products_service=ORMProductsService(),
+            products_service=container.resolve(
+                BaseProductsService,
+            ),
         )
 
         configure_favorite_page_handler = FavoritePageCommandHandler(
@@ -250,7 +273,9 @@ def _initialize_container() -> Container:
 
         # cart app
         configure_cart_page_handler = CartPageCommandHandler(
-            query_products_service=ORMProductsService(),
+            query_products_service=container.resolve(
+                BaseProductsService,
+            ),
             query_reviews_filtered_service=ORMQueryGetReviewsService(),
             query_favorite_products_service_ids=ORMFavoriteProductsIdsService(),
             query_likes_filter_service=container.resolve(
@@ -260,12 +285,21 @@ def _initialize_container() -> Container:
         )
 
         configure_reviews_page_handler = ReviewsPageCommandHandler(
-            query_products_service=ORMProductsService(),
+            query_products_service=container.resolve(
+                BaseProductsService,
+            ),
             query_reviews_filtered_service=ORMQueryGetReviewsService(),
             query_likes_filter_service=container.resolve(
                 BaseQueryLikesReviewService,
             ),
             query_get_user_model_by_username=ORMQueryGetUserModelService(),
+        )
+
+        configure_create_reviews_handler = CreateReviewCommandHandler(
+            query_get_user_model_by_username=ORMQueryGetUserModelService(),
+            query_get_review_service=ORMQueryGetReviewsService(),
+            query_product_repository=ORMQueryProductRepository(),
+            command_update_review_service=ORMCommandReviewsService(),
         )
 
         # commands
@@ -356,6 +390,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             ReviewsPageCommand,
             [configure_reviews_page_handler],
+        )
+
+        mediator.register_command(
+            CreateReviewCommand,
+            [configure_create_reviews_handler],
         )
 
         return mediator

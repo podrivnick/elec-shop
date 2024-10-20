@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import (
+    Dict,
+    Optional,
+)
 
 
 @dataclass
@@ -23,6 +26,21 @@ class ProductEntity:
         if self.discount:
             return round(self.price - self.price * self.discount / 100, 2)
         return self.price
+
+    def to_dict(self) -> Dict:
+        return {
+            "id_product": self.id_product,
+            "name": self.name,
+            "description": self.description,
+            "slug": self.slug,
+            "image": self.image,
+            "discount": self.discount,
+            "price": self.price,
+            "count_product": self.count_product,
+            "category": self.category,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
 
 
 @dataclass

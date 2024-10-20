@@ -1,5 +1,6 @@
 from typing import Optional
 
+from django.contrib import messages
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -9,24 +10,30 @@ from ninja import Router
 from core.api.schemas import SuccessResponse
 from core.api.v1.carts_products.dto.base import (
     DTOCartPageAPI,
+    DTOReviewCreateAPI,
     DTOReviewPageAPI,
 )
 from core.api.v1.carts_products.dto.extractors import (
     extract_cart_page_dto,
+    extract_create_review_dto,
     extract_reviews_page_dto,
 )
 from core.api.v1.carts_products.dto.responses import (
     DTOResponseCartAPI,
+    DTOResponseCreateReviewAPI,
     DTOResponseReviewsAPI,
 )
 from core.api.v1.carts_products.renders import (
     render_cart,
+    render_create_review,
     render_reviews,
 )
+from core.apps.carts_products.exceptions.main import UserAlreadyWriteReviewError
 from core.apps.carts_products.use_cases.cart import (
     CartPageCommand,
     ReviewsPageCommand,
 )
+from core.apps.carts_products.use_cases.reviews import CreateReviewCommand
 from core.infrastructure.di.main import init_container
 from core.infrastructure.exceptions.base import BaseAppException
 from core.infrastructure.mediator.mediator import Mediator
@@ -106,4 +113,47 @@ def reviews(
         request=request,
         response=SuccessResponse(result=dto_response_reviews_api),
         template="carts_products/all_opinions.html",
+    )
+
+
+@router.post(
+    "/reviews/create_review/",
+    url_name="reviews_create",
+)
+def reviews_create(
+    request: HttpRequest,
+) -> HttpResponse:
+    """API: Создание отзыва."""
+    container = init_container()
+    mediator: Mediator = container.resolve(Mediator)
+
+    reviews_create_dto: DTOReviewCreateAPI = extract_create_review_dto(
+        request=request,
+    )
+
+    try:
+        dto_response_reviews_create_api: DTOResponseCreateReviewAPI = (
+            mediator.handle_command(
+                CreateReviewCommand(
+                    is_authenticated=reviews_create_dto.is_authenticated,
+                    username=reviews_create_dto.username,
+                    review=reviews_create_dto.review,
+                    id_product=reviews_create_dto.id_product,
+                    product_slug=reviews_create_dto.product_slug,
+                ),
+            )[0]
+        )
+    except UserAlreadyWriteReviewError as e:
+        messages.success(
+            request,
+            e.message,
+        )
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.message},
+        )
+
+    return render_create_review(
+        request=request,
+        response=SuccessResponse(result=dto_response_reviews_create_api),
     )

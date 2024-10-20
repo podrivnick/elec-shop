@@ -1,9 +1,11 @@
 from django.http import (
     HttpRequest,
     HttpResponse,
+    HttpResponseRedirect,
     JsonResponse,
 )
 from django.shortcuts import render
+from django.urls import reverse
 
 from core.api.schemas import (
     SuccessResponse,
@@ -11,6 +13,7 @@ from core.api.schemas import (
 )
 from core.api.v1.carts_products.dto.responses import (
     DTOResponseCartAPI,
+    DTOResponseCreateReviewAPI,
     DTOResponseReviewsAPI,
 )
 
@@ -77,3 +80,15 @@ def render_reviews(
                 "opinions": response.result.reviews,
             },
         )
+
+
+def render_create_review(
+    request: HttpRequest,
+    response: SuccessResponse[DTOResponseCreateReviewAPI],
+    template: Template = None,
+) -> HttpResponse:
+    """Перенаправление на html страницу."""
+
+    return HttpResponseRedirect(
+        reverse("v1:cart", args=[response.result.product_slug]),
+    )

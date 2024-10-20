@@ -27,7 +27,6 @@ def create_user(db):
 @pytest.fixture
 def setup_command_handler():
     # Mocks
-    query_get_all_products_service = MagicMock()
     query_products_service = MagicMock()
     query_reviews_filtered_service = MagicMock()
     query_favorite_products_service_ids = MagicMock()
@@ -35,7 +34,6 @@ def setup_command_handler():
     query_get_user_model_by_username = MagicMock()
 
     return CartPageCommandHandler(
-        query_get_all_products_service=query_get_all_products_service,
         query_products_service=query_products_service,
         query_reviews_filtered_service=query_reviews_filtered_service,
         query_favorite_products_service_ids=query_favorite_products_service_ids,
@@ -67,9 +65,7 @@ def test_handle_authenticated_user(setup_command_handler, setup_command, create_
         created_at=datetime(2024, 10, 10, 14, 30, 45),
         updated_at=datetime(2024, 10, 10, 14, 30, 45),
     )
-    setup_command_handler.query_get_all_products_service.get_all_products.return_value = [
-        product_entity,
-    ]
+
     setup_command_handler.query_products_service.get_filtered_product_by_slug.return_value = product_entity
 
     reviews = [
@@ -110,7 +106,6 @@ def test_handle_authenticated_user(setup_command_handler, setup_command, create_
     assert result.reviews == reviews
     assert isinstance(result.form, ReviewDataSchema)
 
-    setup_command_handler.query_get_all_products_service.get_all_products.assert_called_once()
     setup_command_handler.query_products_service.get_filtered_product_by_slug.assert_called_once_with(
         products=[product_entity],
         slug="test-product-slug",

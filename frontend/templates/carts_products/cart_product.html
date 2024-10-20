@@ -109,7 +109,7 @@
       </div>
     </div>
     <h3 style="color: white">Отзывы</h3>
-    <form action="{% url 'v1:cart' products.slug %}" class="form_sender_opinion" method="post">
+    <form action="{% url 'v1:reviews_create' %}" class="form_sender_opinion" method="post">
       {% csrf_token %}
       <label for="id_opinion"></label>
       <input type="hidden" name="id_product" value="{{ products.id_product }}">

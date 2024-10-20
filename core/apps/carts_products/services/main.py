@@ -1,16 +1,21 @@
 from dataclasses import dataclass
+from datetime import date
 from typing import (
     List,
     Optional,
 )
 
+from django.db.models import QuerySet
+
 from core.apps.carts_products.entities.review import ReviewEntity
 from core.apps.carts_products.models.review import Reviews
 from core.apps.carts_products.repositories.base import BaseQueryLikeReviewsRepository
 from core.apps.carts_products.services.base import (
+    BaseCommandReviewsService,
     BaseQueryGetReviewsService,
     BaseQueryLikesReviewService,
 )
+from core.apps.main.models.products import Products
 from core.apps.users.models import User
 
 
@@ -26,6 +31,35 @@ class ORMQueryGetReviewsService(BaseQueryGetReviewsService):
         )
 
         return [review.to_entity() for review in reviews]
+
+    def get_review_product_by_user(
+        self,
+        id_product: Optional[int],
+        user: QuerySet[User],
+    ) -> List[ReviewEntity]:
+        reviews = Reviews.objects.filter(
+            id_product=id_product,
+            user=user,
+        )
+
+        return [review.to_entity() for review in reviews]
+
+
+@dataclass
+class ORMCommandReviewsService(BaseCommandReviewsService):
+    def create_review_product(
+        self,
+        product_object: QuerySet[Products],
+        user: QuerySet[User],
+        review: Optional[str],
+    ) -> None:
+        review = Reviews.objects.create(
+            id_product=product_object,
+            review=review,
+            user=user,
+            data_added=date.today(),
+        )
+        review.save()
 
 
 @dataclass
@@ -62,9 +96,7 @@ class ORMQueryLikesReviewService(BaseQueryLikesReviewService):
             None,
         )
 
-        # Если мнение пользователя найдено (индекс не равен None)
         if index_to_move is not None:
-            # Удалить элемент из текущей позиции и вставить его в начало списка
             reviews.insert(0, reviews.pop(index_to_move))
 
         return reviews

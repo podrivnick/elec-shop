@@ -28,3 +28,8 @@ class DTOResponseReviewsAPI(BaseDTOAPI):
     product: ProductEntity | None = field(default=None)
     liked_objects: List[int] | None = field(default=list)
     reviews: List[ReviewEntity] | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOResponseCreateReviewAPI(BaseDTOAPI):
+    product_slug: Optional[str] | None = field(default=None)

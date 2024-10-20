@@ -14,6 +14,17 @@ class BaseQueryGetReviewsService(ABC):
     def get_reviews_product(self) -> List[ReviewEntity]:
         raise NotImplementedError()
 
+    @abstractmethod
+    def get_review_product_by_user(self) -> List[ReviewEntity]:
+        raise NotImplementedError()
+
+
+@dataclass
+class BaseCommandReviewsService(ABC):
+    @abstractmethod
+    def create_review_product(self) -> List[ReviewEntity]:
+        raise NotImplementedError()
+
 
 @dataclass
 class BaseQueryLikesReviewService(ABC):
