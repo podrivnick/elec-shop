@@ -107,7 +107,6 @@ def test_handle_authenticated_user(setup_command_handler, setup_command, create_
     assert isinstance(result.form, ReviewDataSchema)
 
     setup_command_handler.query_products_service.get_filtered_product_by_slug.assert_called_once_with(
-        products=[product_entity],
         slug="test-product-slug",
     )
     setup_command_handler.query_reviews_filtered_service.get_reviews_product.assert_called_once_with(

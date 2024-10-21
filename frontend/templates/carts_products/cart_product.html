@@ -139,7 +139,7 @@
         <button class="like_btn d" onclick="like('{{user.username}}', '{{ products.id_product }}',
         '{{ opinion.pk }}', this)"
               {% for like in liked_objects %}
-                {% if opinion == like.opinion_id %}
+                {% if opinion.pk == like.review_id.pk %}
                   style="color: red;"
                 {% endif %}
               {% endfor %} >

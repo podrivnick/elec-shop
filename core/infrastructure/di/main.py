@@ -84,6 +84,10 @@ from core.apps.carts_products.use_cases.cart import (
     ReviewsPageCommandHandler,
     ReviewsPageCommand,
 )
+from core.apps.carts_products.services.base import (
+    BaseQueryGetReviewsService,
+    BaseQueryLikesReviewService,
+)
 from core.apps.users.services.profile.main import ORMQueryFilterCartsByUserService
 from core.apps.users.use_cases.profile import ChangeTabCommandHandler, ChangeTabCommand
 from core.apps.packet.repositories.main import ORMCommandUpdateCartRepository
@@ -95,9 +99,6 @@ from core.apps.packet.services.main import (
 from core.apps.packet.use_cases.packet import (
     ChangePacketCommandHandler,
     ChangePacketCommand,
-)
-from core.apps.carts_products.services.base import (
-    BaseQueryLikesReviewService,
 )
 from core.apps.packet.use_cases.packet import (
     DeletePacketCommand,
@@ -113,7 +114,14 @@ from core.apps.carts_products.use_cases.reviews import (
     CreateReviewCommandHandler,
     CreateReviewCommand,
 )
+from core.apps.carts_products.services.base import BaseCommandLikesReviewService
+from core.apps.carts_products.repositories.main import ORMCommandLikeReviewsRepository
+from core.apps.carts_products.services.main import ORMCommandLikesReviewService
 from core.apps.carts_products.services.main import ORMCommandReviewsService
+from core.apps.carts_products.use_cases.reviews import (
+    ChangeLikesReviewCommandHandler,
+    ChangeLikesReviewCommand,
+)
 
 
 @lru_cache(1)
@@ -135,14 +143,36 @@ def _initialize_container() -> Container:
             query_filter_likes_review_repository=ORMQueryLikeReviewsRepository(),
         )
 
+    def init_reviews_service() -> BaseQueryGetReviewsService:
+        return ORMQueryGetReviewsService(
+            query_filter_likes_review_repository=ORMQueryLikeReviewsRepository(),
+        )
+
     def init_product_service() -> BaseProductsService:
         return ORMProductsService(
             query_product_repository=ORMQueryProductRepository(),
         )
 
+    def init_command_like_review_service() -> BaseCommandLikesReviewService:
+        return ORMCommandLikesReviewService(
+            command_likes_review_repository=ORMCommandLikeReviewsRepository(),
+        )
+
     container.register(
         BaseCommandUpdateDataCartService,
         factory=init_update_packet_service,
+        scope=Scope.singleton,
+    )
+
+    container.register(
+        BaseCommandLikesReviewService,
+        factory=init_command_like_review_service,
+        scope=Scope.singleton,
+    )
+
+    container.register(
+        BaseQueryGetReviewsService,
+        factory=init_reviews_service,
         scope=Scope.singleton,
     )
 
@@ -177,6 +207,7 @@ def _initialize_container() -> Container:
     container.register(CartPageCommandHandler)
     container.register(ReviewsPageCommandHandler)
     container.register(CreateReviewCommandHandler)
+    container.register(ChangeLikesReviewCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -276,7 +307,9 @@ def _initialize_container() -> Container:
             query_products_service=container.resolve(
                 BaseProductsService,
             ),
-            query_reviews_filtered_service=ORMQueryGetReviewsService(),
+            query_reviews_filtered_service=container.resolve(
+                BaseQueryGetReviewsService,
+            ),
             query_favorite_products_service_ids=ORMFavoriteProductsIdsService(),
             query_likes_filter_service=container.resolve(
                 BaseQueryLikesReviewService,
@@ -288,7 +321,9 @@ def _initialize_container() -> Container:
             query_products_service=container.resolve(
                 BaseProductsService,
             ),
-            query_reviews_filtered_service=ORMQueryGetReviewsService(),
+            query_reviews_filtered_service=container.resolve(
+                BaseQueryGetReviewsService,
+            ),
             query_likes_filter_service=container.resolve(
                 BaseQueryLikesReviewService,
             ),
@@ -297,9 +332,25 @@ def _initialize_container() -> Container:
 
         configure_create_reviews_handler = CreateReviewCommandHandler(
             query_get_user_model_by_username=ORMQueryGetUserModelService(),
-            query_get_review_service=ORMQueryGetReviewsService(),
+            query_get_review_service=container.resolve(
+                BaseQueryGetReviewsService,
+            ),
             query_product_repository=ORMQueryProductRepository(),
             command_update_review_service=ORMCommandReviewsService(),
+        )
+
+        configure_change_likes_reviews_handler = ChangeLikesReviewCommandHandler(
+            query_get_user_model_by_username=ORMQueryGetUserModelService(),
+            query_product_repository=ORMQueryProductRepository(),
+            query_get_review_service=container.resolve(
+                BaseQueryGetReviewsService,
+            ),
+            query_like_review_service=container.resolve(
+                BaseQueryLikesReviewService,
+            ),
+            command_likes_review_service=container.resolve(
+                BaseCommandLikesReviewService,
+            ),
         )
 
         # commands
@@ -395,6 +446,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             CreateReviewCommand,
             [configure_create_reviews_handler],
+        )
+
+        mediator.register_command(
+            ChangeLikesReviewCommand,
+            [configure_change_likes_reviews_handler],
         )
 
         return mediator

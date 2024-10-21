@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from core.api.v1.main.schemas import FiltersProductsSchema
+from core.apps.main.repositories.main import ORMQueryProductRepository
 from core.apps.main.services.main.main import (
     ORMCategoriesService,
     ORMProductsService,
@@ -20,7 +21,9 @@ class TestMainPageCommandHandlerIntegration(TestCase):
         self.favorite_products_service_ids = ORMFavoriteProductsIdsService()
         self.get_all_products_service = ORMAllProductsService()
         self.categories_service = ORMCategoriesService()
-        self.products_service = ORMProductsService()
+        self.products_service = ORMProductsService(
+            query_product_repository=ORMQueryProductRepository(),
+        )
 
         self.command_handler = MainPageCommandHandler(
             favorite_products_service_ids=self.favorite_products_service_ids,

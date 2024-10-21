@@ -10,21 +10,25 @@ from ninja import Router
 from core.api.schemas import SuccessResponse
 from core.api.v1.carts_products.dto.base import (
     DTOCartPageAPI,
+    DTOReviewChangeAPI,
     DTOReviewCreateAPI,
     DTOReviewPageAPI,
 )
 from core.api.v1.carts_products.dto.extractors import (
     extract_cart_page_dto,
+    extract_change_review_dto,
     extract_create_review_dto,
     extract_reviews_page_dto,
 )
 from core.api.v1.carts_products.dto.responses import (
     DTOResponseCartAPI,
+    DTOResponseChangeReviewAPI,
     DTOResponseCreateReviewAPI,
     DTOResponseReviewsAPI,
 )
 from core.api.v1.carts_products.renders import (
     render_cart,
+    render_change_review,
     render_create_review,
     render_reviews,
 )
@@ -33,7 +37,10 @@ from core.apps.carts_products.use_cases.cart import (
     CartPageCommand,
     ReviewsPageCommand,
 )
-from core.apps.carts_products.use_cases.reviews import CreateReviewCommand
+from core.apps.carts_products.use_cases.reviews import (
+    ChangeLikesReviewCommand,
+    CreateReviewCommand,
+)
 from core.infrastructure.di.main import init_container
 from core.infrastructure.exceptions.base import BaseAppException
 from core.infrastructure.mediator.mediator import Mediator
@@ -156,4 +163,41 @@ def reviews_create(
     return render_create_review(
         request=request,
         response=SuccessResponse(result=dto_response_reviews_create_api),
+    )
+
+
+@router.post(
+    "/reviews/change_like/",
+    url_name="change_like",
+)
+def change_like(
+    request: HttpRequest,
+) -> HttpResponse:
+    """API: Изменение количества лайков."""
+    container = init_container()
+    mediator: Mediator = container.resolve(Mediator)
+
+    reviews_change_dto: DTOReviewChangeAPI = extract_change_review_dto(
+        request=request,
+    )
+
+    try:
+        dto_response_reviews_change_likes_api: DTOResponseChangeReviewAPI = (
+            mediator.handle_command(
+                ChangeLikesReviewCommand(
+                    is_authenticated=reviews_change_dto.is_authenticated,
+                    username=reviews_change_dto.username,
+                    product_id=reviews_change_dto.product_id,
+                    review_id=reviews_change_dto.review_id,
+                ),
+            )[0]
+        )
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.message},
+        )
+
+    return render_change_review(
+        request=request,
+        response=SuccessResponse(result=dto_response_reviews_change_likes_api),
     )

@@ -13,6 +13,7 @@ from core.api.schemas import (
 )
 from core.api.v1.carts_products.dto.responses import (
     DTOResponseCartAPI,
+    DTOResponseChangeReviewAPI,
     DTOResponseCreateReviewAPI,
     DTOResponseReviewsAPI,
 )
@@ -91,4 +92,16 @@ def render_create_review(
 
     return HttpResponseRedirect(
         reverse("v1:cart", args=[response.result.product_slug]),
+    )
+
+
+def render_change_review(
+    request: HttpRequest,
+    response: SuccessResponse[DTOResponseChangeReviewAPI],
+    template: Template = None,
+) -> HttpResponse:
+    """Json Response."""
+
+    return JsonResponse(
+        {"likes_count": response.result.updated_likes},
     )

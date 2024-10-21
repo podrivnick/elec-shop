@@ -4,7 +4,7 @@ function like(user, id_product, opinion_id, element) {
 
   const data_favorite =  [user, id_product, opinion_id]
   console.log(data_favorite)
-  fetch('/carts_products/save_like_opinion/', {
+  fetch('/api/v1/cart/reviews/change_like/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -13,7 +13,7 @@ function like(user, id_product, opinion_id, element) {
     body: JSON.stringify({data: data_favorite}),
 
   })
-     .then(response => {
+    .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
