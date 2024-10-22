@@ -29,7 +29,11 @@ class BaseQueryGetReviewsService(ABC):
 @dataclass
 class BaseCommandReviewsService(ABC):
     @abstractmethod
-    def create_review_product(self) -> List[ReviewEntity]:
+    def create_review_product(self) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def delete_review_product(self) -> None:
         raise NotImplementedError()
 
 

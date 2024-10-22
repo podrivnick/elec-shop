@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from datetime import date
 from typing import (
@@ -81,6 +82,15 @@ class ORMCommandReviewsService(BaseCommandReviewsService):
             data_added=date.today(),
         )
         review.save()
+
+    def delete_review_product(
+        self,
+        user: QuerySet[User],
+        pk_product: Optional[str],
+    ) -> None:
+        logging.info(pk_product)
+        review = Reviews.objects.get(user=user, id_product=pk_product)
+        review.delete()
 
 
 @dataclass

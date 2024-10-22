@@ -4,7 +4,10 @@ from django.http import (
     HttpResponseRedirect,
     JsonResponse,
 )
-from django.shortcuts import render
+from django.shortcuts import (
+    redirect,
+    render,
+)
 from django.urls import reverse
 
 from core.api.schemas import (
@@ -15,6 +18,7 @@ from core.api.v1.carts_products.dto.responses import (
     DTOResponseCartAPI,
     DTOResponseChangeReviewAPI,
     DTOResponseCreateReviewAPI,
+    DTOResponseDeleteReviewAPI,
     DTOResponseReviewsAPI,
 )
 
@@ -105,3 +109,13 @@ def render_change_review(
     return JsonResponse(
         {"likes_count": response.result.updated_likes},
     )
+
+
+def render_delete_review(
+    request: HttpRequest,
+    response: SuccessResponse[DTOResponseDeleteReviewAPI],
+    template: Template = None,
+) -> HttpResponse:
+    """Redirect."""
+
+    return redirect(reverse("v1:cart", args=[response.result.slug_product]))

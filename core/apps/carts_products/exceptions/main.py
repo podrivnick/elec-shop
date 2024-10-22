@@ -32,3 +32,12 @@ class ReviewNotFoundError(DomainException):
     @property
     def message(self) -> Optional[str]:
         return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class ProductNotFoundError(DomainException):
+    exception: Optional[str] = field(default="Product Not Exist.")
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception

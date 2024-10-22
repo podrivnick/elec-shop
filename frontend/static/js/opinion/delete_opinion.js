@@ -18,13 +18,13 @@ $(document).ready(function () {
   $(document).on("click", ".sure_delete_opinion", function (e) {
     let product_slug = $(this).data("product-slug");
     let product_pk = $(this).data("product-pk");
-    console.log(product_slug)
+    console.log(product_pk)
     e.preventDefault();
     $(confirm_delete_opinion).addClass("dis_none");
 
     $.ajax({
       type: "POST",
-      url: '/carts_products/delete_opinion/',
+      url: '/api/v1/cart/reviews/delete_reveiw/',
       data: {
         product_pk: product_pk,
         product_slug: product_slug,

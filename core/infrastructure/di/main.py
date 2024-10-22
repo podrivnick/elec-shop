@@ -122,6 +122,10 @@ from core.apps.carts_products.use_cases.reviews import (
     ChangeLikesReviewCommandHandler,
     ChangeLikesReviewCommand,
 )
+from core.apps.carts_products.use_cases.reviews import (
+    DeleteReviewCommandHandler,
+    DeleteReviewCommand,
+)
 
 
 @lru_cache(1)
@@ -208,6 +212,7 @@ def _initialize_container() -> Container:
     container.register(ReviewsPageCommandHandler)
     container.register(CreateReviewCommandHandler)
     container.register(ChangeLikesReviewCommandHandler)
+    container.register(DeleteReviewCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -353,6 +358,11 @@ def _initialize_container() -> Container:
             ),
         )
 
+        configure_delete_reviews_handler = DeleteReviewCommandHandler(
+            query_get_user_model_by_username=ORMQueryGetUserModelService(),
+            command_review_service=ORMCommandReviewsService(),
+        )
+
         # commands
         # main app
         mediator.register_command(
@@ -451,6 +461,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             ChangeLikesReviewCommand,
             [configure_change_likes_reviews_handler],
+        )
+
+        mediator.register_command(
+            DeleteReviewCommand,
+            [configure_delete_reviews_handler],
         )
 
         return mediator

@@ -8,6 +8,7 @@ from core.api.v1.carts_products.dto.base import (
     DTOCartPageAPI,
     DTOReviewChangeAPI,
     DTOReviewCreateAPI,
+    DTOReviewDeleteAPI,
     DTOReviewPageAPI,
 )
 
@@ -75,4 +76,21 @@ def extract_change_review_dto(
         username=username,
         product_id=product_id,
         review_id=review_id,
+    )
+
+
+def extract_delete_review_dto(
+    request: HttpRequest,
+) -> DTOReviewDeleteAPI:
+    slug_product = request.POST.get("product_slug")
+    pk_product = request.POST.get("product_pk")
+
+    is_authenticated = request.user.is_authenticated
+    username = request.user.username if is_authenticated else None
+
+    return DTOReviewDeleteAPI(
+        is_authenticated=is_authenticated,
+        username=username,
+        slug_product=slug_product,
+        pk_product=pk_product,
     )

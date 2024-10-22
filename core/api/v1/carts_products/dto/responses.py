@@ -38,3 +38,8 @@ class DTOResponseCreateReviewAPI(BaseDTOAPI):
 @dataclass(frozen=True, eq=False)
 class DTOResponseChangeReviewAPI(BaseDTOAPI):
     updated_likes: Optional[int] | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOResponseDeleteReviewAPI(BaseDTOAPI):
+    slug_product: Optional[str] | None = field(default=None)

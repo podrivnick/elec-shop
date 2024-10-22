@@ -28,3 +28,9 @@ class DTOReviewCreateAPI(BaseDTOAPIUserData):
 class DTOReviewChangeAPI(BaseDTOAPIUserData):
     product_id: Optional[str] | None = field(default=None)
     review_id: Optional[str] | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOReviewDeleteAPI(BaseDTOAPIUserData):
+    slug_product: Optional[str] | None = field(default=None)
+    pk_product: Optional[str] | None = field(default=None)
