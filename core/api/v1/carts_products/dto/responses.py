@@ -11,6 +11,8 @@ from core.api.v1.main.dto.base import BaseDTOAPI
 from core.apps.carts_products.entities.review import ReviewEntity
 from core.apps.carts_products.schemas.main import ReviewDataSchema
 from core.apps.main.entities.product import ProductEntity
+from core.apps.orders.schemas.main import OrderSchema
+from core.apps.packet.entities.cart import CartEntity
 
 
 @dataclass(frozen=True, eq=False)
@@ -43,3 +45,10 @@ class DTOResponseChangeReviewAPI(BaseDTOAPI):
 @dataclass(frozen=True, eq=False)
 class DTOResponseDeleteReviewAPI(BaseDTOAPI):
     slug_product: Optional[str] | None = field(default=None)
+
+
+@dataclass(frozen=True, eq=False)
+class DTOResponseFinalizeAPI(BaseDTOAPI):
+    carts: List[CartEntity] | None = field(default=None)
+    total_price: Optional[int] | None = field(default=None)
+    form: OrderSchema | None = field(default=None)

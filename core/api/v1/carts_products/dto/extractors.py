@@ -4,6 +4,7 @@ from django.http import HttpRequest
 
 import orjson
 
+from core.api.v1.base_dto import BaseDTOAPIUserData
 from core.api.v1.carts_products.dto.base import (
     DTOCartPageAPI,
     DTOReviewChangeAPI,
@@ -93,4 +94,16 @@ def extract_delete_review_dto(
         username=username,
         slug_product=slug_product,
         pk_product=pk_product,
+    )
+
+
+def extract_finalize_dto_dto(
+    request: HttpRequest,
+) -> BaseDTOAPIUserData:
+    is_authenticated = request.user.is_authenticated
+    username = request.user.username if is_authenticated else None
+
+    return BaseDTOAPIUserData(
+        is_authenticated=is_authenticated,
+        username=username,
     )

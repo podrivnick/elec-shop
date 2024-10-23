@@ -20,28 +20,29 @@
   <div class="finalize_data_product">
     <h1 class="header_one_finalize">Оформление заказа</h1>
     <h3 class="header_tree_finalize">Ваши контактные данные</h3>
-    <form action="{% url 'orders:create_order' %}" method="post" id="form_finalize_product_">
+    <form action="#" method="post" id="form_finalize_product_">
+      <!-- orders:create_order -->
       {% csrf_token %}
       <div class="block_contact_data_on_buy">
         <label for="id_name_finalize">Ваше имя</label>
         <input type="text" id="id_name_finalize" name="first_name" placeholder="Имя:"
         class="form_input_contact_data"
-        {% if form.initial.first_name %} value="{{form.initial.first_name}}" {% endif %}>
+        {% if form.first_name %} value="{{form.first_name}}" {% endif %}>
 
         <label for="id_surname_finalize">Ваша фамилия</label>
         <input type="text" id="id_surname_finalize" name="last_name" placeholder="Фамилия:"
         class="form_input_contact_data"
-        {% if form.initial.last_name %} value="{{form.initial.last_name}}" {% endif %}>
+        {% if form.last_name %} value="{{form.last_name}}" {% endif %}>
 
         <label for="id_email_finalize">Ваш email</label>
         <input type="text" id="id_email_finalize" name="email" placeholder="Email:"
         class="form_input_contact_data"
-        {% if form.initial.email %} value="{{form.initial.email}}" {% endif %}>
+        {% if form.email %} value="{{form.email}}" {% endif %}>
 
         <label for="id_phone_finalize">Ваш телефон</label>
         <input type="text" id="id_phone_finalize" name="phone" placeholder="Phone:"
         class="form_input_contact_data"
-        {% if form.initial.phone and form.initial.phone|length > 4 %} value="{{form.initial.phone}}" {% endif %}>
+        {% if form.phone and form.phone|length > 4 %} value="{{form.phone}}" {% endif %}>
 
         <label for="id_address_finalize">Ваш адрес</label>
         <input type="text" id="id_address_finalize" name="delivery_address" placeholder="address (не обязательно):"
@@ -80,7 +81,7 @@
       <span>Продавец:</span>
       <a href="{% url 'v1:information' %}">
           <img src="{% static 'icons/logo.png' %}" alt="inter"
-               style="width: 90px; height: 35px">
+              style="width: 90px; height: 35px">
       </a>
 
     </div>

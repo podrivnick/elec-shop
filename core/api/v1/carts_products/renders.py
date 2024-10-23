@@ -19,6 +19,7 @@ from core.api.v1.carts_products.dto.responses import (
     DTOResponseChangeReviewAPI,
     DTOResponseCreateReviewAPI,
     DTOResponseDeleteReviewAPI,
+    DTOResponseFinalizeAPI,
     DTOResponseReviewsAPI,
 )
 
@@ -119,3 +120,32 @@ def render_delete_review(
     """Redirect."""
 
     return redirect(reverse("v1:cart", args=[response.result.slug_product]))
+
+
+def render_finilaze_review(
+    request: HttpRequest,
+    response: SuccessResponse[DTOResponseFinalizeAPI],
+    template: Template,
+) -> HttpResponse:
+    """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
+    if request.headers.get("Content-Type") == "application/json":
+        return JsonResponse(
+            {
+                "status": response.status,
+                "result": {
+                    "carts": response.result.carts,
+                    "total_price": response.result.total_price,
+                    "form": response.result.form,
+                },
+            },
+        )
+    else:
+        return render(
+            request,
+            template,
+            {
+                "carts": response.result.carts,
+                "total_price": response.result.total_price,
+                "form": response.result.form,
+            },
+        )

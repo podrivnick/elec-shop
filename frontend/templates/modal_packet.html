@@ -13,7 +13,7 @@
     {% for packet_item in packet.packet %}
     {% if packet_item.quantity >= 1 %}
       <div class="block_cart_product_packet_name" >
-        <a href="" style="text-decoration: none">
+        <a href="{% url 'v1:cart' packet_item.product.slug %}" style="text-decoration: none">
           {{packet_item.product.name}}
         </a>
       </div>
@@ -66,7 +66,7 @@
     <div class="block_output_button">
       <br>
       <button class="btn_buy_product btn btn_submit_filters">
-        <a href="">Оформить заказ</a>
+        <a href="{% url 'v1:finalize' %}">Оформить заказ</a>
       </button>
     </div>
   </div>

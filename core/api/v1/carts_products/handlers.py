@@ -8,6 +8,7 @@ from django.http import (
 from ninja import Router
 
 from core.api.schemas import SuccessResponse
+from core.api.v1.base_dto import BaseDTOAPIUserData
 from core.api.v1.carts_products.dto.base import (
     DTOCartPageAPI,
     DTOReviewChangeAPI,
@@ -20,6 +21,7 @@ from core.api.v1.carts_products.dto.extractors import (
     extract_change_review_dto,
     extract_create_review_dto,
     extract_delete_review_dto,
+    extract_finalize_dto_dto,
     extract_reviews_page_dto,
 )
 from core.api.v1.carts_products.dto.responses import (
@@ -27,6 +29,7 @@ from core.api.v1.carts_products.dto.responses import (
     DTOResponseChangeReviewAPI,
     DTOResponseCreateReviewAPI,
     DTOResponseDeleteReviewAPI,
+    DTOResponseFinalizeAPI,
     DTOResponseReviewsAPI,
 )
 from core.api.v1.carts_products.renders import (
@@ -34,6 +37,7 @@ from core.api.v1.carts_products.renders import (
     render_change_review,
     render_create_review,
     render_delete_review,
+    render_finilaze_review,
     render_reviews,
 )
 from core.apps.carts_products.exceptions.main import UserAlreadyWriteReviewError
@@ -41,6 +45,7 @@ from core.apps.carts_products.use_cases.cart import (
     CartPageCommand,
     ReviewsPageCommand,
 )
+from core.apps.carts_products.use_cases.finalize import FinalizePageCommand
 from core.apps.carts_products.use_cases.reviews import (
     ChangeLikesReviewCommand,
     CreateReviewCommand,
@@ -242,4 +247,38 @@ def delete_reveiw(
     return render_delete_review(
         request=request,
         response=SuccessResponse(result=dto_response_delete_review_api),
+    )
+
+
+@router.get(
+    "/finalize/",
+    url_name="finalize",
+)
+def finalize(
+    request: HttpRequest,
+) -> HttpResponse:
+    """API: Оформления заказа."""
+    container = init_container()
+    mediator: Mediator = container.resolve(Mediator)
+
+    finalize_dto: BaseDTOAPIUserData = extract_finalize_dto_dto(
+        request=request,
+    )
+
+    try:
+        dto_response_finalize_api: DTOResponseFinalizeAPI = mediator.handle_command(
+            FinalizePageCommand(
+                is_authenticated=finalize_dto.is_authenticated,
+                username=finalize_dto.username,
+            ),
+        )[0]
+    except BaseAppException as exception:
+        raise ValueError(
+            detail={"error": exception.message},
+        )
+
+    return render_finilaze_review(
+        request=request,
+        response=SuccessResponse(result=dto_response_finalize_api),
+        template="carts_products/finalize_product.html",
     )
