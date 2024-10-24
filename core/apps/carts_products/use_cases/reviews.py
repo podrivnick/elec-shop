@@ -20,7 +20,10 @@ from core.apps.carts_products.services.base import (
     BaseQueryGetReviewsService,
     BaseQueryLikesReviewService,
 )
-from core.apps.common.exceptions.main import AuthenticationError
+from core.apps.common.exceptions.main import (
+    AuthenticationError,
+    UserNotFoundByUsername,
+)
 from core.apps.common.services.base import BaseQueryGetUserModelService
 from core.apps.main.repositories.base import BaseQueryProductRepository
 from core.apps.packet.exceptions.main import DatabaseCartError
@@ -157,14 +160,24 @@ class DeleteReviewCommandHandler(CommandHandler[DeleteReviewCommand, str]):
     ) -> DTOResponseDeleteReviewAPI:
         if not command.is_authenticated:
             raise AuthenticationError("User is not authenticated.")
+
         user_model = self.query_get_user_model_by_username.get_usermodel_by_username(
             username=command.username,
         )
+
+        if not user_model:
+            raise UserNotFoundByUsername("Incorrect username")
+
+        if not command.pk_product:
+            raise ValueError("Product id Not Found")
 
         self.command_review_service.delete_review_product(
             user=user_model,
             pk_product=command.pk_product,
         )
+
+        if not command.slug_product:
+            raise ValueError("Product slug Not Found")
 
         return DTOResponseDeleteReviewAPI(
             slug_product=command.slug_product,

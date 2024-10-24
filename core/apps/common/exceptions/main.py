@@ -32,3 +32,12 @@ class LogoutUserError(DomainException):
     @property
     def message(self) -> Optional[str]:
         return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class UserNotFoundByUsername(DomainException):
+    exception: Optional[str] | None = field(default="Username incorrect")
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception
