@@ -29,6 +29,10 @@ class BaseQueryGetCartService(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def get_carts_by_user_quantity(self) -> QuerySet[Cart]:
+        raise NotImplementedError()
+
+    @abstractmethod
     def get_cart_by_id(self):
         raise NotImplementedError()
 

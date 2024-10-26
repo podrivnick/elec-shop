@@ -1,25 +1,32 @@
-from typing import Optional
-
 from django.http import HttpRequest
-from ninja import Query
 
-from core.api.v1.main.dto.base import DTOMainPageAPI
-from core.api.v1.main.schemas import FiltersProductsSchema
+from core.api.v1.orders.dto.base import DTOCreateOrderAPI
 
 
-def extract_main_page_dto(
+def extract_create_order_dto(
     request: HttpRequest,
-    filters: Query[FiltersProductsSchema],
-    category_slug: Optional[str],
-) -> DTOMainPageAPI:
-    page_number = request.GET.get("page")
+) -> DTOCreateOrderAPI:
     is_authenticated = request.user.is_authenticated
     username = request.user.username if is_authenticated else None
 
-    return DTOMainPageAPI(
+    first_name = request.POST.get("first_name")
+    last_name = request.POST.get("last_name")
+    email = request.POST.get("email")
+    phone = request.POST.get("phone")
+    delivery_address = request.POST.get("delivery_address")
+    required_delivery = request.POST.get("required_delivery")
+    payment_on_get = request.POST.get("payment_on_get")
+    total_price = request.POST.get("total_price")
+
+    return DTOCreateOrderAPI(
         is_authenticated=is_authenticated,
         username=username,
-        filters=filters,
-        page_number=page_number,
-        category_slug=category_slug,
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        phone=phone,
+        delivery_address=delivery_address,
+        required_delivery=required_delivery,
+        payment_on_get=payment_on_get,
+        total_price=total_price,
     )

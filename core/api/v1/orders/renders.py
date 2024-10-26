@@ -1,43 +1,22 @@
 from django.http import (
     HttpRequest,
     HttpResponse,
-    JsonResponse,
 )
-from django.shortcuts import render
+from django.shortcuts import redirect
+from django.urls import reverse
 
 from core.api.schemas import (
     SuccessResponse,
     Template,
 )
-from core.api.v1.main.dto.responses import DTOResponseIndexAPI
+from core.api.v1.orders.dto.responses import DTOResponseOrderAPI
 
 
-def render_index(
+def render_order(
     request: HttpRequest,
-    response: SuccessResponse[DTOResponseIndexAPI],
+    response: SuccessResponse[DTOResponseOrderAPI],
     template: Template,
 ) -> HttpResponse:
     """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
-    if request.headers.get("Content-Type") == "application/json":
-        return JsonResponse(
-            {
-                "status": response.status,
-                "result": {
-                    "favorites": response.result.favorites,
-                    "categories": response.result.categories,
-                    "is_search_failed": response.result.is_search_failed,
-                    "products": response.result.products,
-                },
-            },
-        )
-    else:
-        return render(
-            request,
-            template,
-            {
-                "favorites": response.result.favorites,
-                "categories": response.result.categories,
-                "is_search_failed": response.result.is_search_failed,
-                "products": response.result.products,
-            },
-        )
+
+    return redirect(reverse(template))

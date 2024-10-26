@@ -2,17 +2,20 @@ from dataclasses import (
     dataclass,
     field,
 )
+from typing import Optional
 
-from ninja import Query
-
-from core.api.v1.base_dto import BaseDTOAPI
-from core.api.v1.main.schemas import FiltersProductsSchema
+from core.api.v1.base_dto import BaseDTOAPIUserData
 
 
 @dataclass(frozen=True, eq=False)
-class DTOMainPageAPI(BaseDTOAPI):
-    filters: Query[FiltersProductsSchema]
+class DTOCreateOrderAPI(BaseDTOAPIUserData):
     is_authenticated: bool = field(default=False)
-    username: str | None = field(default=None)
-    page_number: int = field(default=1)
-    category_slug: str = field(default="all")
+    username: Optional[str] | None = field(default=None)
+    first_name: Optional[str] | None = field(default=None)
+    last_name: Optional[str] | None = field(default=None)
+    email: Optional[str] | None = field(default=None)
+    phone: Optional[str] | None = field(default=None)
+    delivery_address: Optional[str] | None = field(default=None)
+    required_delivery: Optional[str] | None = field(default=None)
+    payment_on_get: Optional[str] | None = field(default=None)
+    total_price: Optional[str] | None = field(default=None)

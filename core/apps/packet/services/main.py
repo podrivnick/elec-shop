@@ -63,6 +63,16 @@ class ORMQueryGetCartService(BaseQueryGetCartService):
 
         return (packet_entity, total_quantity)
 
+    def get_carts_by_user_quantity(
+        self,
+        user: QuerySet[User],
+    ) -> QuerySet[Cart]:
+        return (
+            Cart.objects.filter(user=user)
+            .order_by("quantity")
+            .prefetch_related("product")
+        )
+
     @staticmethod
     def create_cart_entity(filtered_cart: QuerySet[Cart]) -> CartEntity:
         return CartEntity(
