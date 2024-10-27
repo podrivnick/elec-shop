@@ -201,7 +201,6 @@ class ChangeTabCommandHandler(CommandHandler[ChangeTabCommand, str]):
     ) -> SafeString:
         if not command.is_authenticated:
             raise AuthenticationError("User is not authenticated.")
-
         if command.is_packet == "order":
             carts_items_user = render_to_string(
                 "users/packet_profile/orders_profile.html",
@@ -214,5 +213,4 @@ class ChangeTabCommandHandler(CommandHandler[ChangeTabCommand, str]):
                 {"is_packet": True},
                 request=command.request,
             )
-
         return carts_items_user

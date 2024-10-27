@@ -3,10 +3,10 @@
 
 {% get_orders request as orders %}
 
-
 {% for order in orders %}
 
 <div class="carts_on_sell">
+
                 <img src="{{ order.product.image.url }}" alt="..." style="height: 90px; width: 130px;"
                 class="img_product_profile">
                 <div class="data_cart_product">

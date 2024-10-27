@@ -4,16 +4,6 @@ from django.db import models
 from core.apps.main.models.products import Products
 
 
-class OrderitemQueryset(models.QuerySet):
-    def total_price(self):
-        return sum(cart.products_price() for cart in self)
-
-    def total_quantity(self):
-        if self:
-            return sum(cart.quantity for cart in self)
-        return 0
-
-
 class Orders(models.Model):
     user = models.ForeignKey(
         get_user_model(),
@@ -97,11 +87,6 @@ class OrderItem(models.Model):
         db_table = "order_item"
         verbose_name = "Заказанный товар"
         verbose_name_plural = "Заказанные товары"
-
-    objects = OrderitemQueryset.as_manager()
-
-    def products_price(self):
-        return round(self.product.sell_price() * self.quantity, 2)
 
     def __str__(self):
         return f"Товар {self.name} | Заказ № {self.order.pk}"
