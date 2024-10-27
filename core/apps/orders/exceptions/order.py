@@ -34,3 +34,63 @@ class OrderNotCreatedError(DomainException):
     @property
     def message(self) -> Optional[str]:
         return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class OrderDataTooLongError(DomainException):
+    exception: Optional[str] = field(default="Order data too long.")
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class OrderDataIsEmptyException(DomainException):
+    exception: Optional[str] = field(default="Order data is empty.")
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class OrderDataIsNotAlphabeticException(DomainException):
+    exception: Optional[str] = field(default="Order data is not alphabetic error.")
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class OrderDataContainsNotOnlyDigitsException(DomainException):
+    exception: Optional[str] = field(
+        default="Order data contains not only digits error.",
+    )
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class OrderDataTotalPriceIncorrectFormatError(DomainException):
+    exception: Optional[str] = field(
+        default="Order data total price incorrect format error.",
+    )
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class DeliveryAddressNotAllowedSymbolsException(DomainException):
+    exception: Optional[str] = field(
+        default="Order data delivery address format error.",
+    )
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception

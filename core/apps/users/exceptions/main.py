@@ -41,3 +41,21 @@ class UserUpdatedDataNotValidated(DomainException):
     @property
     def message(self) -> Optional[str]:
         return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class IncorrectFormatEmailException(DomainException):
+    exception: Optional[str] = field(default="Invalid Email")
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception
+
+
+@dataclass(frozen=True, eq=False)
+class IncorrectFormatPhoneException(DomainException):
+    exception: Optional[str] = field(default="Invalid Phone")
+
+    @property
+    def message(self) -> Optional[str]:
+        return self.exception

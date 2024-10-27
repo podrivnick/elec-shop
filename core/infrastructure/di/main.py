@@ -130,6 +130,13 @@ from core.apps.carts_products.use_cases.finalize import (
     FinalizePageCommandHandler,
     FinalizePageCommand,
 )
+from core.apps.orders.use_cases.order import OrderCommandHandler, OrderCommand
+from core.apps.orders.services.order import (
+    QueryValidationOrderService,
+    ORMBaseCommandOrderService,
+)
+from core.apps.orders.repositories.order import ORMBaseCommandOrderRepository
+from core.apps.orders.services.order import BaseCommandOrderService
 
 
 @lru_cache(1)
@@ -165,6 +172,17 @@ def _initialize_container() -> Container:
         return ORMCommandLikesReviewService(
             command_likes_review_repository=ORMCommandLikeReviewsRepository(),
         )
+
+    def init_command_order_service() -> BaseCommandOrderService:
+        return ORMBaseCommandOrderService(
+            command_create_orders_item_repository=ORMBaseCommandOrderRepository(),
+        )
+
+    container.register(
+        BaseCommandOrderService,
+        factory=init_command_order_service,
+        scope=Scope.singleton,
+    )
 
     container.register(
         BaseCommandUpdateDataCartService,
@@ -218,6 +236,7 @@ def _initialize_container() -> Container:
     container.register(ChangeLikesReviewCommandHandler)
     container.register(DeleteReviewCommandHandler)
     container.register(FinalizePageCommandHandler)
+    container.register(OrderCommandHandler)
 
     def init_mediator() -> Mediator:
         mediator = Mediator()
@@ -373,6 +392,17 @@ def _initialize_container() -> Container:
             query_get_carts_service=ORMQueryGetCartService(),
         )
 
+        # order app
+        configure_order_handler = OrderCommandHandler(
+            query_get_user_model_by_username=ORMQueryGetUserModelService(),
+            query_validation_order_data_service=QueryValidationOrderService(),
+            command_create_basic_order=container.resolve(
+                BaseCommandOrderService,
+            ),
+            query_filter_packet_service=ORMQueryGetCartService(),
+            command_order_repository=ORMBaseCommandOrderRepository(),
+        )
+
         # commands
         # main app
         mediator.register_command(
@@ -481,6 +511,11 @@ def _initialize_container() -> Container:
         mediator.register_command(
             FinalizePageCommand,
             [configure_finalize_handler],
+        )
+
+        mediator.register_command(
+            OrderCommand,
+            [configure_order_handler],
         )
 
         return mediator

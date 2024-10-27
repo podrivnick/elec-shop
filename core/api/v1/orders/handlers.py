@@ -56,7 +56,7 @@ def order(
         return render_order(
             request=request,
             response=SuccessResponse(result=dto_response_order_api),
-            template="carts_products:finalize_product",
+            template="finalize",
         )
 
     messages.success(request, SUCCESSFUL_ORDER)
@@ -64,5 +64,5 @@ def order(
     return render_order(
         request=request,
         response=SuccessResponse(result=dto_response_order_api),
-        template="main_favorite:index",
+        template="index",
     )

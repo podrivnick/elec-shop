@@ -1,23 +1,37 @@
 from django.contrib import admin
 
-from .models import (
+from core.apps.orders.models.orders import (
     OrderItem,
     Orders,
 )
 
 
-# class OrdersAdmin(admin.ModelAdmin):
-#     list_display = ('user', 'name_receiver', 'surname_receiver', 'data_created_order', 'phone_number',
-#                     'required_delivery', 'delivery_address', 'payment_on_get', 'has_paid', 'status',
-#                     'email', 'total_price')
-#
-# class OrdersItemAdmin(admin.ModelAdmin):
-#     list_display = ('order', 'product', 'name', 'price', 'quantity',
-#                     'created_timestamp')
-#
-#
-# admin.site.register(Orders, OrdersAdmin)
-# admin.site.register(OrderItem, OrdersItemAdmin)
+class OrdersAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "name_receiver",
+        "surname_receiver",
+        "data_created_order",
+        "phone_number",
+        "required_delivery",
+        "delivery_address",
+        "payment_on_get",
+        "has_paid",
+        "status",
+        "email",
+        "total_price",
+    )
+
+
+class OrdersItemAdmin(admin.ModelAdmin):
+    list_display = (
+        "order",
+        "product",
+        "name",
+        "price",
+        "quantity",
+        "created_timestamp",
+    )
 
 
 class OrderItemTabulareAdmin(admin.TabularInline):

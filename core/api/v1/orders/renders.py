@@ -19,4 +19,7 @@ def render_order(
 ) -> HttpResponse:
     """Возвращает либо JSON-ответ, либо HTML в зависимости от типа запроса."""
 
-    return redirect(reverse(template))
+    if template == "index":
+        return redirect(reverse(f"v1:{template}", kwargs={"category_slug": "all"}))
+
+    return redirect(reverse(f"v1:{template}"))

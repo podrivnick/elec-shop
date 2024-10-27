@@ -20,7 +20,7 @@
   <div class="finalize_data_product">
     <h1 class="header_one_finalize">Оформление заказа</h1>
     <h3 class="header_tree_finalize">Ваши контактные данные</h3>
-    <form action="#" method="post" id="form_finalize_product_">
+    <form action="{% url 'v1:order' %}" method="post" id="form_finalize_product_">
       <!-- orders:create_order -->
       {% csrf_token %}
       <div class="block_contact_data_on_buy">

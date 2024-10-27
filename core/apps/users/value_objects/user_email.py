@@ -6,6 +6,12 @@ from dataclasses import (
 from typing import Optional
 
 from core.apps.common.domain.base import ValueObject
+from core.apps.orders.utils.spec import IsStringSpec
+from core.apps.orders.utils.validators import (
+    IsNotEmptySpec,
+    IsValidEmailSpec,
+    MaxLengthSpec,
+)
 from core.infrastructure.exceptions.base import DomainException
 
 
@@ -50,17 +56,14 @@ class Email(ValueObject[str | None]):
     value: str | None
 
     def validate(self) -> None:
-        if self.value is None:
-            return
+        email_spec = (
+            IsStringSpec()
+            .and_spec(IsNotEmptySpec())
+            .and_spec(MaxLengthSpec(MAX_EMAIL_LENGTH))
+            .and_spec(IsValidEmailSpec())
+        )
 
-        if len(self.value) == 0:
-            raise EmptyEmailException(self.value)
-
-        if len(self.value) > MAX_EMAIL_LENGTH:
-            raise TooLongEmailException(self.value)
-
-        if not EMAIL_PATTERN.match(self.value):
-            raise WrongEmailFormatException(self.value)
+        email_spec.is_satisfied(self.value)
 
     def exists(self) -> bool:
         return self.value is not None

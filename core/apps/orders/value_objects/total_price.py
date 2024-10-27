@@ -5,6 +5,11 @@ from dataclasses import (
 from typing import Optional
 
 from core.apps.common.domain.base import ValueObject
+from core.apps.orders.utils.spec import IsNumericTotalPriceSpec
+from core.apps.orders.utils.validators import (
+    IsNotEmptySpec,
+    IsNumbericCorrectFormat,
+)
 from core.infrastructure.exceptions.base import DomainException
 
 
@@ -48,17 +53,13 @@ class TotalPrice(ValueObject[str | None]):
     value: str | None
 
     def validate(self) -> None:
-        if self.value is None:
-            return
+        total_price_spec = (
+            IsNumericTotalPriceSpec()
+            .and_spec(IsNotEmptySpec())
+            .and_spec(IsNumbericCorrectFormat())
+        )
 
-        # if len(self.value) == 0:
-        #     raise EmptyTotalPriceException(self.value)
-
-        # if len(self.value) > MAX_TOTAL_PRICE_LENGTH:
-        #     raise TooLongTotalPriceException(self.value)
-
-        # if not ADDRESS_PATTERN.match(self.value): noqa
-        #     raise WrongTotalPriceFormatException(self.value)
+        total_price_spec.is_satisfied(self.value)
 
     def exists(self) -> bool:
         return self.value is not None

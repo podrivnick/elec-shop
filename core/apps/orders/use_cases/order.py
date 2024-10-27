@@ -7,8 +7,6 @@ from typing import Optional
 from core.api.v1.orders.dto.responses import DTOResponseOrderAPI
 from core.apps.common.exceptions.main import AuthenticationError
 from core.apps.common.services.base import BaseQueryGetUserModelService
-from core.apps.orders import value_objects as vo_orders
-from core.apps.orders.entities.order import Order as OrderEntity
 from core.apps.orders.exceptions.order import OrderNotCreatedError
 from core.apps.orders.repositories.base import BaseCommandOrderRepository
 from core.apps.orders.services.base import (
@@ -16,7 +14,6 @@ from core.apps.orders.services.base import (
     BaseQueryValidationOrderService,
 )
 from core.apps.packet.services.base import BaseQueryGetCartService
-from core.apps.users import value_objects as vo
 from core.infrastructure.mediator.base import BaseCommands
 from core.infrastructure.mediator.handlers.commands import CommandHandler
 
@@ -54,29 +51,19 @@ class OrderCommandHandler(CommandHandler[OrderCommand, str]):
             username=command.username,
         )
 
-        first_name = vo.FirstName(command.first_name)
-        last_name = vo.LastName(command.last_name)
-        email = vo.Email(command.email)
-        phone = vo.PhoneNumber(command.phone)
-        delivery_address = vo_orders.DeliveryAddress(command.delivery_address)
-        total_price = vo_orders.TotalPrice(command.total_price)
-
-        order_entity = OrderEntity.create_order_entity(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            phone=phone,
-            delivery_address=delivery_address,
+        order_entity = self.query_validation_order_data_service.validate_order_data(
+            first_name=command.first_name,
+            last_name=command.last_name,
+            email=command.email,
+            phone=command.phone,
+            delivery_address=command.delivery_address,
             required_delivery=command.required_delivery,
             payment_on_get=command.payment_on_get,
-            total_price=total_price,
-        )
-
-        self.query_validation_order_data_service.validate_order_data(
-            order=order_entity,
+            total_price=command.total_price,
         )
 
         basic_order = self.command_create_basic_order.create_basic_order(
+            user=user,
             order=order_entity,
         )
 
