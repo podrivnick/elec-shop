@@ -69,7 +69,7 @@
             <div class="container_data_user">
                 <label for="id_age">Current Age:</label>
                 <input id="id_age" type="text" name="age" class="username_data" placeholder="Введите новый возраст"
-                {% if form.age  %} value="{{form.age}}" {% endif %}>
+                {% if form.age  %} value="{{form.age}}" {% else %} value="18" {% endif %}>
             </div>
             <div class="block_btn_save_new_data_user">
                 <button class="btn_save_new_data_user btn_submit_filters btn" type="submit">Сохранить</button>

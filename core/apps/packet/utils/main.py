@@ -29,6 +29,7 @@ def create_cart_entity(item) -> CartEntity:
             updated_at=item.product.updated_at,
         ),
         quantity=item.quantity,
+        created_timestamp=item.created_timestamp,
     )
 
 

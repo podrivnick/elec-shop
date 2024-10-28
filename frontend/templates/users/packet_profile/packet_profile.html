@@ -3,7 +3,7 @@
 
 {% get_packets request as packet %}
 
-            <h2 style="font-size: 40px; color: white; display: flex;">{{ total_price }}$</h2>
+            <h2 style="font-size: 40px; color: white; display: flex;">{{ packet.total_price }}$</h2>
             {% for cart in packet.packet %}
             {% if cart.quantity >= 1 %}
                 <div class="carts_on_sell">
@@ -54,6 +54,6 @@
             {% endfor %}
             <div class="block_btn_buy_all_packet">
                 <button class="btn btn_buy_all_packet btn_submit_packet">
-                    <a href="#">Оформить заказ</a>
+                    <a href="{% url 'v1:finalize' %}">Оформить заказ</a>
                 </button>
             </div>

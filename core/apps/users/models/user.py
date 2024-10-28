@@ -22,7 +22,7 @@ class User(AbstractUser):
         null=True,
         blank=True,
         verbose_name="Телефон",
-        default=0,
+        default="+380 00 000 00 00",
     )
     age = models.PositiveIntegerField(
         default=0,

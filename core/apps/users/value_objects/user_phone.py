@@ -5,7 +5,6 @@ from core.apps.common.domain.base import ValueObject
 from core.apps.orders.utils.spec import IsStringSpec
 from core.apps.orders.utils.validators import (
     IsNotEmptySpec,
-    IsValidPhoneSpec,
     MaxLengthSpec,
 )
 
@@ -23,7 +22,6 @@ class PhoneNumber(ValueObject[str | None]):
             IsStringSpec()
             .and_spec(IsNotEmptySpec())
             .and_spec(MaxLengthSpec(MAX_PHONE_LENGTH))
-            .and_spec(IsValidPhoneSpec())
         )
 
         phone_spec.is_satisfied(self.value)

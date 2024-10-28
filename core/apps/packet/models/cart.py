@@ -5,16 +5,6 @@ from core.apps.main.models.products import Products
 from core.apps.packet.entities.cart import CartEntity
 
 
-class CartQueryset(models.QuerySet):
-    def total_price(self):
-        return sum(cart.products_price() for cart in self)
-
-    def total_quantity(self):
-        if self:
-            return sum(cart.quantity for cart in self)
-        return 0
-
-
 class Cart(models.Model):
     user = models.ForeignKey(
         to=get_user_model(),
@@ -40,8 +30,6 @@ class Cart(models.Model):
         verbose_name = "Корзина"
         verbose_name_plural = "Корзина"
 
-    # objects = CartQueryset().as_manager()
-
     def to_entity(self) -> CartEntity:
         return CartEntity(
             user=self.user,
@@ -50,9 +38,6 @@ class Cart(models.Model):
             session_key=self.session_key,
             created_timestamp=self.created_timestamp,
         )
-
-    # def products_price(self): noqa
-    #     return round(self.product.sell_price() * self.quantity, 2)    noqa
 
     def __str__(self):
         if self.user:
