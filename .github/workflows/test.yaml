@@ -4,9 +4,9 @@ on:
   workflow_call:
 
   pull_request:
-    branches: [ main ]
+    branches: [ main, deploy ]
   push:
-    branches: [ main ]
+    branches: [ main, deploy ]
 
 jobs:
   build:
