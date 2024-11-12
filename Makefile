@@ -8,6 +8,9 @@ ENV_FILE = --env-file .env
 APP_CONTAINER = shop
 DB_CONTAINER = ppostgres
 INTO_BASH = /bin/bash
+INTO_BASH_FOR_COMMANDS = /bin/bash -c
+RUN_COLLECTSTATIC = python manage.py collectstatic --noinput
+RUN_CREATESUPREUSER = python manage.py createsuperuser
 
 .PHONY: storage
 storage:
@@ -40,3 +43,11 @@ runtest:
 .PHONY: migrate
 migrate:
 	${EXEC} ${APP_CONTAINER} python manage.py migrate
+
+.PHONY: collectstatic
+collectstatic:
+	${EXEC} ${APP_CONTAINER} ${INTO_BASH_FOR_COMMANDS} "${RUN_COLLECTSTATIC}"
+
+.PHONY: createsuperuser
+createsuperuser:
+	${EXEC} ${APP_CONTAINER} ${INTO_BASH_FOR_COMMANDS} "${RUN_CREATESUPREUSER}"

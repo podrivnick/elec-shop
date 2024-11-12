@@ -4,6 +4,7 @@ services:
     image: prodrigestivill/postgres-backup-local:15-alpine
     networks:
       - ppostgres.network
+    restart: unless-stopped
     environment:
       - POSTGRES_HOST=postgres
       - POSTGRES_DB=${POSTGRES_DB:-${POSTGRES_USER:-$USER}}
