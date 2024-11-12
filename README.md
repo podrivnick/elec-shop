@@ -8,6 +8,11 @@ An e-commerce project with functionalities such as user authentication, product 
 * **Order Creation System**
 * **Packet: Add, Delete, Change**
 
+![API](docs/image1.png)
+![API](docs/image2.png)
+![API](docs/image3.png)
+![API](docs/image4.png)
+
 ### Installation and Running
 
 These instructions will help you run the project.
