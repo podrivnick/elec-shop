@@ -50,7 +50,7 @@ ___
 ___
 
 ## Technology
-+ **Django**
++ **Django/Ninja**
 + **Python**
 + **HTML/CSS/JS/JQuery**
 + **Docker**
